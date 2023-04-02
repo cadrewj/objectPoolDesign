@@ -1,0 +1,19 @@
+body{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+#main{
+    border: 5px solid black;
+    background: url("./images/bg3.png");
+    position: absolute;
+    top: 50%; /* offset top an left from the edge of the image*/
+    left: 50%;
+    transform: translate(-50%,-50%); /* used to re align to the absoulte center after offsetting it from the top left hand corner 50%*/
+    /* height: fit-content; */
+
+}
+#meteor{
+    display: none;  /* used to make the image invisible*/
+
+}
