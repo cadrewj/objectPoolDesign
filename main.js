@@ -1,5 +1,6 @@
 import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
+import InputHandler from "./classes/input.js";
 
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
@@ -16,13 +17,13 @@ addEventListener("load",()=>{
             this.height = height;
 
             this.spaceship = new Spaceship(this);
+            this.input = new InputHandler(this);
 
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.max = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
             this.createMeteorPool(); // automatically creating the pool as soon as an instance of the game class is created.
-            console.log(this.max)
         }
 
         createMeteorPool(){ //create an object pool of meteors  all at once for faster allocation
@@ -67,7 +68,7 @@ addEventListener("load",()=>{
     const game = new Game(canvas.width, canvas.height);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
-        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillRect(0,0,canvas.width, canvas.height);
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
 

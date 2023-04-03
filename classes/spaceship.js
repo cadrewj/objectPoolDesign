@@ -6,10 +6,25 @@ class Spaceship{
         this.x = this.game.width / 2;
         this.y = this.game.height / 2;
         this.radius = data.SPACESHIP_SIZE / 2;
-        this.sprtieWidth = data.SPACESHIP_SIZE;
-        this.sprtieHeight = data.SPACESHIP_SIZE;
-        this.shipImg = document.querySelector("#spaceship")
-        this.thrustImg = document.querySelector("#thrust1")
+        
+
+        this.ship = {
+            image: document.querySelector("#spaceship"),
+            width : data.SPACESHIP_SIZE,
+            height: data.SPACESHIP_SIZE,
+        }
+        this.thruster = {
+            image: document.querySelector("#thrust1"),
+            width : data.SPACESHIP_SIZE,
+            height: data.SPACESHIP_SIZE,
+            offset: 45,
+        }
+        this.revThruster = {
+            image: document.querySelector("#rthrust"),
+            width : data.SPACESHIP_SIZE/6,
+            height: data.SPACESHIP_SIZE/4,
+            offset:{x:20,y:5} ,
+        }
         this.direction = degToRad(90);
         this.rotation = 0;
         this.angle = 0;
@@ -29,22 +44,19 @@ class Spaceship{
         this.shooting = false;
         this.shots = 0;
         this.inSpace = true;
-        this.turnThrust = degToRad(270);
         this.angle = 0;
         this.velocityAngle = Math.random() * 0.02 - 0.01 // random number between -0.01 and 0.01
     }
     update(context){
         let exploding = this.explodeTime > 0;
         let blinkOn = this.blinkNum % 2 == 0;
-        // this.draw(context)
 
         if(!exploding){
             if (blinkOn) {
-                // console.log("blinking Num", this.blinkNum)
                 context.save();
                 context.translate(this.x, this.y);
-                // context.rotate(this.angle);
-                context.drawImage(this.shipImg, -this.radius, -this.radius, this.sprtieWidth, this.sprtieHeight);
+                context.rotate(this.angle);
+                context.drawImage(this.ship.image, -this.radius, -this.radius, this.ship.width, this.ship.height);
                 context.restore();
                 this.thrustWithFriction(context);   
             }
@@ -86,19 +98,15 @@ class Spaceship{
         }    
     }
     thrustWithFriction(context){
-        console.log("thrust value",this.thrusting)
-        // if(this.fuel > 0 && this.lives !==0){
+        if(this.fuel > 0 && this.lives !==0){
             // add thrust and friction
             if(this.thrusting){
-                console.log("TT - thrusting")
                  // acceleration of the ship in pixels per second per second 
                  const thrustAngle = this.angle - Math.PI / 2; // adjust for the image facing upwards
                  this.thrust.x += data.SPACESHIP_THRUST * Math.cos(thrustAngle) / data.FPS;
                  this.thrust.y += data.SPACESHIP_THRUST * Math.sin(thrustAngle) / data.FPS;
             }
-        
             else if(this.reversing){ // reverse thrust
-                console.log("RR - Rthrusting")
                 const thrustAngle = this.angle + Math.PI / 2; // adjust for the image facing upwards
                 this.thrust.x += data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) /data.FPS; 
                 this.thrust.y += data.SPACESHIP_THRUST_REV * Math.sin(thrustAngle) /data.FPS;
@@ -108,31 +116,61 @@ class Spaceship{
                 this.thrust.x -= data.FRICTION * this.thrust.x / data.FPS;  // FPS = frames per second
                 this.thrust.y -= data.FRICTION * this.thrust.y / data.FPS;
             }
-            
             this.drawThruster(context)
-        // }
+        }
     }
     drawThruster(context){
-        if(this.thrusting && this.lives !==0){
+        if(this.thrusting){
             context.save();
             // Translate context to center of image
-            context.translate(this.x , this.y + this.radius);
-            context.rotate(this.turnThrust + this.angle);
-             // Draw image with center aligned
-            context.drawImage(this.thrustImg, -this.radius, -this.radius, this.sprtieWidth, this.sprtieHeight);
-            // Restore context state
-            context.restore();     
+            context.translate(this.x , this.y);
+            context.rotate(this.angle);
+            // Translate context to bottom of image
+            context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the spaceship
+            // Draw thruster
+            context.drawImage(this.thruster.image, -this.thruster.width/2, -this.thruster.height/2, this.thruster.width, this.thruster.height);
+            context.restore();
         }
         else if(this.reversing){ // draw thrusters
+            // draw the revThruster image
+            this.drawRevThruster(context);
         }
     }
+    drawRevThruster(context) {  
+        // save the current context state right revthrust
+        context.save();
+        // translate the context to the position of the spaceship
+        context.translate(this.x, this.y);
+        // rotate the context to the rotation of the spaceship
+        context.rotate(this.angle);
+        // translate the context to the position of the revThruster image relative to the spaceship
+        context.translate(this.revThruster.offset.x, -this.revThruster.offset.y);
+        // draw the revThruster image
+        context.drawImage(this.revThruster.image, -this.revThruster.width / 2, -this.revThruster.height / 2, this.revThruster.width, this.revThruster.height);
+        // restore the context state
+        context.restore();
+
+
+        // save the current context state of left revthrust
+        context.save();
+        // translate the context to the position of the spaceship
+        context.translate(this.x, this.y);
+        // rotate the context to the rotation of the spaceship
+        context.rotate(this.angle);
+        // translate the context to the position of the revThruster image relative to the spaceship
+        context.translate(-this.revThruster.offset.x, -this.revThruster.offset.y);
+        // draw the revThruster image
+        context.drawImage(this.revThruster.image, -this.revThruster.width / 2, -this.revThruster.height / 2, this.revThruster.width, this.revThruster.height);
+        // restore the context state
+        context.restore();
+      }
+      
     changeSpaceshipDirection(){ 
         if(this.lives === 0){ // if dead return and don't rotate
             return
         }
         //rotation
         this.angle += this.rotation; 
-        this.turnThrust += this.rotation;
         //keep the ship angle between 0 and 360 (two pie)
         if(this.angle < 0){
             this.angle +=(degToRad(360))// (MATH.PI * 2)
