@@ -170,7 +170,7 @@ class Spaceship{
         this.angle += this.rotation; 
         //keep the ship angle between 0 and 360 (two pie)
         if(this.angle < 0){
-            this.angle +=(degToRad(360))// (MATH.PI * 2)
+            this.angle +=(degToRad(360))
         }
         else if(this.angle >= degToRad(360)){
             this.angle -=(degToRad(360))

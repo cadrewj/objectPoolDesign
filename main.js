@@ -68,6 +68,7 @@ addEventListener("load",()=>{
     const game = new Game(canvas.width, canvas.height);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
+        ctx.fillStyle = "rgba(0,0,0,0.5)"
         ctx.fillRect(0,0,canvas.width, canvas.height);
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
