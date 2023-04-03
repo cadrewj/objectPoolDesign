@@ -18,7 +18,7 @@ addEventListener("load",()=>{
             this.spaceship = new Spaceship(this);
 
             this.meteorTimer = 0;
-            this.meteorInterval = 1000; 
+            this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.max = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
             this.createMeteorPool(); // automatically creating the pool as soon as an instance of the game class is created.
@@ -57,7 +57,7 @@ addEventListener("load",()=>{
             });
 
             //draw the spaceship
-            this.spaceship.draw(context);
+            this.spaceship.update(context)
             
         }
 
