@@ -1,6 +1,7 @@
 import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
+import gameData from "./data/data.json" assert { type: "json" }
 
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
@@ -12,10 +13,10 @@ addEventListener("load",()=>{
     canvas.height = innerHeight;
 
     class Game{
-        constructor(width, height){
+        constructor(width, height, data){
             this.width = width;
             this.height = height;
-
+            this.data = data;
             this.spaceship = new Spaceship(this);
             this.input = new InputHandler(this);
             this.lives = 3;
@@ -65,7 +66,7 @@ addEventListener("load",()=>{
     }
 
     let lastTime = 0;
-    const game = new Game(canvas.width, canvas.height);
+    const game = new Game(canvas.width, canvas.height, gameData);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         ctx.fillStyle = "rgba(0,0,0,0.5)"

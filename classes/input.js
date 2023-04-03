@@ -1,5 +1,3 @@
-import data from "../data/data.json" assert { type: "json" }
-
 class InputHandler{
     constructor(game){
         this.game = game;
@@ -13,7 +11,7 @@ class InputHandler{
             }
           
             //spaceship keys
-            if (this.game.spaceship.lives === 0 || data.AUTOMATION_ON === true){
+            if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
                 return
             }
             switch(pressedKey){
@@ -57,7 +55,7 @@ class InputHandler{
                 this.keys.splice(this.keys.indexOf(releasedKey, 1))
             }
             //spaceship keys released
-            if (this.game.spaceship.lives === 0  || data.AUTOMATION_ON === true){
+            if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
                 return
             }
             // const key = e.keyCode;

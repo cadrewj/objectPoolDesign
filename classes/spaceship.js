@@ -1,26 +1,26 @@
-import data from "../data/data.json" assert { type: "json" }
+
 import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 class Spaceship{
     constructor(game){
         this.game = game;
         this.x = this.game.width / 2;
         this.y = this.game.height / 2;
-        this.radius = data.SPACESHIP_SIZE / 2;
+        this.radius = this.game.data.SPACESHIP_SIZE / 2;
         this.ship = {
             image: document.querySelector("#spaceship"),
-            width : data.SPACESHIP_SIZE,
-            height: data.SPACESHIP_SIZE,
+            width : this.game.data.SPACESHIP_SIZE,
+            height: this.game.data.SPACESHIP_SIZE,
         }
         this.thruster = {
             image: document.querySelector("#thrust1"),
-            width : data.SPACESHIP_SIZE,
-            height: data.SPACESHIP_SIZE,
+            width : this.game.data.SPACESHIP_SIZE,
+            height: this.game.data.SPACESHIP_SIZE,
             offset: 45,
         }
         this.revThruster = {
             image: document.querySelector("#rthrust"),
-            width : data.SPACESHIP_SIZE/8,
-            height: data.SPACESHIP_SIZE/4,
+            width : this.game.data.SPACESHIP_SIZE/8,
+            height: this.game.data.SPACESHIP_SIZE/4,
             offset:{x:20,y:5} ,
         }
         this.rotation = 0;
@@ -28,8 +28,8 @@ class Spaceship{
         this.thrusting = false;
         this.thrust = { x: 0, y: 0 };
         this.reversing = false;
-        this.blinkTime = Math.ceil(data.SPACESHIP_BLINK_DUR * data.FPS);
-        this.blinkNum = Math.ceil(data.SPACESHIP_INV_DUR / data.SPACESHIP_BLINK_DUR);
+        this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS);
+        this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR);
         this.accelerationTime = 0;
         this.decelerationTime = 0;
         this.explodeTime = 0;
@@ -60,7 +60,7 @@ class Spaceship{
             if (this.blinkNum > 0) {
                 this.blinkTime--;
                 if (this.blinkTime == 0) {
-                    this.blinkTime = Math.ceil(data.SPACESHIP_BLINK_DUR * data.FPS);
+                    this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS);
                     this.blinkNum--;
                 }
             }
@@ -100,18 +100,18 @@ class Spaceship{
             if(this.thrusting){
                  // acceleration of the ship in pixels per second per second 
                  const thrustAngle = this.angle - Math.PI / 2; // adjust for the image facing upwards
-                 this.thrust.x += data.SPACESHIP_THRUST * Math.cos(thrustAngle) / data.FPS;
-                 this.thrust.y += data.SPACESHIP_THRUST * Math.sin(thrustAngle) / data.FPS;
+                 this.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle) / this.game.data.FPS;
+                 this.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle) / this.game.data.FPS;
             }
             else if(this.reversing){ // reverse thrust
                 const thrustAngle = this.angle + Math.PI / 2; // adjust for the image facing upwards
-                this.thrust.x += data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) /data.FPS; 
-                this.thrust.y += data.SPACESHIP_THRUST_REV * Math.sin(thrustAngle) /data.FPS;
+                this.thrust.x += this.game.data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) /this.game.data.FPS; 
+                this.thrust.y += this.game.data.SPACESHIP_THRUST_REV * Math.sin(thrustAngle) /this.game.data.FPS;
             }
             else{ //to make the ship come to a slow stop
                 // friction coefficient of space (0 = no friction, 1 = lots of friciton) note: friction in physic is a value from 0 -  1 
-                this.thrust.x -= data.FRICTION * this.thrust.x / data.FPS;  // FPS = frames per second
-                this.thrust.y -= data.FRICTION * this.thrust.y / data.FPS;
+                this.thrust.x -= this.game.data.FRICTION * this.thrust.x / this.game.data.FPS;  // FPS = frames per second
+                this.thrust.y -= this.game.data.FRICTION * this.thrust.y / this.game.data.FPS;
             }
             this.drawThruster(context)
         }
