@@ -18,7 +18,7 @@ addEventListener("load",()=>{
 
             this.spaceship = new Spaceship(this);
             this.input = new InputHandler(this);
-
+            this.lives = 3;
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.

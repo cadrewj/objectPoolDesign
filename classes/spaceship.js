@@ -6,8 +6,6 @@ class Spaceship{
         this.x = this.game.width / 2;
         this.y = this.game.height / 2;
         this.radius = data.SPACESHIP_SIZE / 2;
-        
-
         this.ship = {
             image: document.querySelector("#spaceship"),
             width : data.SPACESHIP_SIZE,
@@ -21,14 +19,13 @@ class Spaceship{
         }
         this.revThruster = {
             image: document.querySelector("#rthrust"),
-            width : data.SPACESHIP_SIZE/6,
+            width : data.SPACESHIP_SIZE/8,
             height: data.SPACESHIP_SIZE/4,
             offset:{x:20,y:5} ,
         }
-        this.direction = degToRad(90);
         this.rotation = 0;
         this.angle = 0;
-        this.thrusting = false; //false 
+        this.thrusting = false;
         this.thrust = { x: 0, y: 0 };
         this.reversing = false;
         this.blinkTime = Math.ceil(data.SPACESHIP_BLINK_DUR * data.FPS);
@@ -36,7 +33,7 @@ class Spaceship{
         this.accelerationTime = 0;
         this.decelerationTime = 0;
         this.explodeTime = 0;
-        this.lives = 3//lives;
+        this.lives = this.game.lives;
         this.health = 100;
         this.fuel = 100;
         this.canShoot = true;
