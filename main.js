@@ -1,4 +1,6 @@
 import Meteor from "./classes/meteor.js";
+import Spaceship from "./classes/spaceship.js";
+
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
@@ -12,6 +14,9 @@ addEventListener("load",()=>{
         constructor(width, height){
             this.width = width;
             this.height = height;
+
+            this.spaceship = new Spaceship(this);
+
             this.meteorTimer = 0;
             this.meteorInterval = 1000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
@@ -40,16 +45,19 @@ addEventListener("load",()=>{
                 if(meteor){ // if it return a free meteor then call start
                     meteor.start()
                 }
-                
                 //reset the timer
                 this.meteorTimer = 0;
             }
             else{
                 this.meteorTimer += deltaTime; // increase the value of the timer 
             }
+            //update the meteors
             this.meteorPool.forEach(meteor => {
                 meteor.update(context)
             });
+
+            //draw the spaceship
+            this.spaceship.draw(context);
             
         }
 

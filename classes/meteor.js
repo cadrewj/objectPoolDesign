@@ -1,18 +1,18 @@
+import { randomNum } from "../utilityFunctions/utilityFunctions.js";
+import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 class Meteor {
     constructor(game){
         this.game = game;
         this.radius = this.game.width * 0.05;
         this.image = document.querySelector("#meteor");
-        this.x = Math.random() * this.game.width - this.radius;
+        this.x = randomNum(this.radius, this.game.width - this.radius)
         this.y = 0 -  this.radius;
         this.sprtieWidth = this.radius * 2;
         this.sprtieHeight = this.radius * 2;
         this.speed = Math.random() * 1.5 + 0.1;
-        this.offset = Math.random();
         this.free = true; // boolean used to represent whether a meteor is active or not. 
         this.angle = 0;
         this.velocityAngle = Math.random() * 0.02 - 0.01 // random number between -0.01 and 0.01
-
     }
     draw(context){
         if(!this.free){ //used to draw only the active meteors
@@ -28,7 +28,7 @@ class Meteor {
         context.beginPath();  
         context.strokeStyle ="white";
         context.lineWidth = 3;
-        context.arc(this.x,this.y,this.radius, 0, Math.PI*2, false);
+        context.arc(this.x,this.y,this.radius, 0, degToRad(360), false);
         context.stroke();
     }
     update(context){
@@ -37,7 +37,7 @@ class Meteor {
             this.testBound(context);
             this.draw(context);
             this.y += this.speed;
-            this.x += this.speed * this.offset;
+            this.x += this.speed;
             this.angle += this.velocityAngle;
 
             //check if colliding with screen bounds
@@ -56,7 +56,7 @@ class Meteor {
     }
     start(){
         this.free = false;
-        this.x = Math.random() * this.game.width - this.radius * 2;
+        this.x = randomNum(this.radius, this.game.width - this.radius)
         this.y = 0  - this.radius * 2; 
     }
 }
