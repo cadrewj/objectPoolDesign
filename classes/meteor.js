@@ -28,7 +28,7 @@ class Meteor {
     }
     testBound(context){
         context.beginPath();  
-        context.strokeStyle ="white";
+        context.strokeStyle = "white";
         context.lineWidth = 3;
         context.arc(this.x,this.y,this.radius, 0, degToRad(360), false);
         context.stroke();

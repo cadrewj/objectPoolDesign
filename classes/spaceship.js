@@ -1,4 +1,3 @@
-
 import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 class Spaceship{
     constructor(game){
@@ -87,8 +86,7 @@ class Spaceship{
             }
         }
     }
-    moveSpaceship(){
-        // move ship
+    moveSpaceship(){ // move ship
         if(this.fuel > 0 && this.lives !== 0){
             this.x += this.thrust.x;
             this.y += this.thrust.y; 
@@ -96,10 +94,9 @@ class Spaceship{
     }
     thrustWithFriction(context){
         if(this.fuel > 0 && this.lives !==0){
-            // add thrust and friction
-            if(this.thrusting){
+            if(this.thrusting){ // add thrust and friction
                  // acceleration of the ship in pixels per second per second 
-                 const thrustAngle = this.angle - Math.PI / 2; // adjust for the image facing upwards
+                 const thrustAngle = this.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
                  this.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle) / this.game.data.FPS;
                  this.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle) / this.game.data.FPS;
             }
@@ -163,11 +160,10 @@ class Spaceship{
       }
       
     changeSpaceshipDirection(){ 
-        if(this.lives === 0){ // if dead return and don't rotate
+        if(this.lives === 0){ // if dead return and don't rotate the ship
             return
         }
-        //rotation
-        this.angle += this.rotation; 
+        this.angle += this.rotation;  //rotation the ship 
         //keep the ship angle between 0 and 360 (two pie)
         if(this.angle < 0){
             this.angle +=(degToRad(360))

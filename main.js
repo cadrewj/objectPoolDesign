@@ -1,7 +1,8 @@
+import gameData from "./data/data.json" assert { type: "json" }
 import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
-import gameData from "./data/data.json" assert { type: "json" }
+
 
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
@@ -19,7 +20,7 @@ addEventListener("load",()=>{
             this.data = data;
             this.spaceship = new Spaceship(this);
             this.input = new InputHandler(this);
-            this.lives = 3;
+            this.lives = this.data.GAME_LIVES;
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
@@ -57,7 +58,6 @@ addEventListener("load",()=>{
             this.meteorPool.forEach(meteor => {
                 meteor.update(context)
             });
-
             //draw the spaceship
             this.spaceship.update(context)
             
