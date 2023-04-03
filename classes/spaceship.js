@@ -13,7 +13,7 @@ class Spaceship{
         this.direction = degToRad(90);
         this.rotation = 0;
         this.angle = 0;
-        this.thrusting = false;
+        this.thrusting = false; //false 
         this.thrust = { x: 0, y: 0 };
         this.reversing = false;
         this.blinkTime = Math.ceil(data.SPACESHIP_BLINK_DUR * data.FPS);
