@@ -13,7 +13,7 @@ class Spaceship{
         this.direction = degToRad(90);
         this.rotation = 0;
         this.angle = 0;
-        this.thrusting = false;
+        this.thrusting = true;
         this.thrust = { x: 0, y: 0 };
         this.reversing = false;
         this.blinkTime = Math.ceil(data.SPACESHIP_BLINK_DUR * data.FPS);
@@ -60,7 +60,7 @@ class Spaceship{
             this.changeSpaceshipDirection();
         }
         else {
-            // this.drawExplodingShip();
+            this.drawExplodingShip(context);
             this.canShoot = false;
             this.explodeTime--;
             if (this.explodeTime === 0) {
@@ -117,9 +117,9 @@ class Spaceship{
             context.save();
             // Translate context to center of image
             context.translate(this.x , this.y + this.radius);
-            context.rotate(this.turnThrust);
+            context.rotate(this.turnThrust + this.angle);
              // Draw image with center aligned
-             context.drawImage(this.thrustImg, -this.radius, -this.radius, this.sprtieWidth, this.sprtieHeight);
+            context.drawImage(this.thrustImg, -this.radius, -this.radius, this.sprtieWidth, this.sprtieHeight);
             // Restore context state
             context.restore();     
         }
