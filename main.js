@@ -3,10 +3,15 @@ import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 
+//define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+//define the loading screen area and set it value to zero since the screen is already loaded
+const loading = document.querySelector("#loading")
+loading.style.display = "none";
 
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
@@ -19,7 +24,9 @@ addEventListener("load",()=>{
             this.data = data;
             this.spaceship = new Spaceship(this);
             this.input = new InputHandler(this);
-            this.lives = this.data.GAME_LIVES;
+
+           
+            // this.lives = this.data.GAME_LIVES;
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
@@ -60,6 +67,7 @@ addEventListener("load",()=>{
             //draw the spaceship
             this.spaceship.update(context)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
+            console.log(this.input.lastKey, "lastkey")
         }
 
     }

@@ -1,6 +1,10 @@
-body{
+*{
+    /*  *means do for all html tags */
     margin: 0;
     padding: 0;
+    font-family: Helvetica, sans-serif, cursive;
+}
+body{
     overflow: hidden;
 }
 #main{
@@ -12,19 +16,33 @@ body{
     transform: translate(-50%,-50%); /* used to re align to the absoulte center after offsetting it from the top left hand corner 50%*/
 
 }
+#loading{
+    position: absolute;
+    top: 30%; /* offset top an left from the edge of the image*/
+    left: 50%;
+    text-align: center;
+    font-size: 40px;
+    transform: translate(-50%,-30%); /* used to re align to the absoulte center after offsetting it from the top left hand corner 50%*/
+}
+
+img{
+    display: none;
+}
+/* 
 #rthrust{
-    display: none;  /* used to make the image invisible*/
+    display: none;  
+     /*used to make the image invisible
 
 }
 #thrust1{
-    display: none;  /* used to make the image invisible*/
+    display: none;   used to make the image invisible
 
 }
 #spaceship{
-    display: none;  /* used to make the image invisible*/
+    display: none;  used to make the image invisible
 
 }
 #spaceshipSprite{
-    display: none;  /* used to make the image invisible*/
+    display: none;  /* used to make the image invisible
 
-}
+} */
