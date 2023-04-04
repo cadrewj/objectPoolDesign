@@ -20,10 +20,10 @@ class InputHandler{
                     break;
                 case " ": //spacebar (spaceship shoot laser)
                 case "Spacebar":  // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
-                    // console.log("shooting");
                     this.game.spaceship.canShoot = this.game.spaceship.fuel > 0 
                     this.game.spaceship.shooting = true; 
                     this.game.spaceship.shots++;
+                    this.game.spaceship.shootLaser();
                 break;
                 case "ArrowLeft": //left arrow (rotate spaceship left)
                     // rotateSpaceShip(false)
@@ -32,9 +32,6 @@ class InputHandler{
                 case "ArrowUp": //up arrow (thrust forward spaceship up)
                     this.game.spaceship.thrusting = true;
                     this.game.spaceship.accelartionTime++;  
-                    console.log("up ",this.game.spaceship.thrusting)    
-                    // this.ship.thrustWithFriction();
-                //    this.ship.y--;
                 break;
                 case "ArrowRight": //right arrow (rotate spaceship right )
                     // rotateSpaceShip(true)
@@ -43,7 +40,6 @@ class InputHandler{
                 case "ArrowDown": //down arrow (thrust backward spaceship left)
                     this.game.spaceship.reversing = true;
                     this.game.spaceship.decelerationTime++;
-                    console.log("reversing", this.game.spaceship.reversing)
                 break;
             }
         })

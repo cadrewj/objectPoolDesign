@@ -60,6 +60,9 @@ addEventListener("load",()=>{
             });
             //draw the spaceship
             this.spaceship.update(context)
+            if(this.spaceship.shooting){
+                this.spaceship.drawLaser(context);
+            }
             
         }
 
