@@ -75,5 +75,13 @@ export function testBoundsOfObject(x,y,radius, data, ctx){
     }
 }
 
+export function drawStatusText(ctx, input){
+    ctx.font = "10px Helvetica";
+    ctx.fillStyle = "green"
+    ctx.fillText("Last input: " + input.lastKey, 10, 20);
+}
+
+
+
 
 
