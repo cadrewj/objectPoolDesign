@@ -10,10 +10,21 @@ body{
     top: 50%; /* offset top an left from the edge of the image*/
     left: 50%;
     transform: translate(-50%,-50%); /* used to re align to the absoulte center after offsetting it from the top left hand corner 50%*/
-    /* height: fit-content; */
 
 }
-#meteor{
+#rthrust{
+    display: none;  /* used to make the image invisible*/
+
+}
+#thrust1{
+    display: none;  /* used to make the image invisible*/
+
+}
+#spaceship{
+    display: none;  /* used to make the image invisible*/
+
+}
+#spaceshipSprite{
     display: none;  /* used to make the image invisible*/
 
 }

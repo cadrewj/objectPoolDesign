@@ -3,7 +3,6 @@ import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 
-
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
@@ -60,10 +59,7 @@ addEventListener("load",()=>{
             });
             //draw the spaceship
             this.spaceship.update(context)
-            if(this.spaceship.shooting){
-                this.spaceship.drawLaser(context);
-            }
-            
+            console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
         }
 
     }

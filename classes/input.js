@@ -23,7 +23,7 @@ class InputHandler{
                     this.game.spaceship.canShoot = this.game.spaceship.fuel > 0 
                     this.game.spaceship.shooting = true; 
                     this.game.spaceship.shots++;
-                    this.game.spaceship.shootLaser();
+                    
                 break;
                 case "ArrowLeft": //left arrow (rotate spaceship left)
                     // rotateSpaceShip(false)
@@ -60,12 +60,14 @@ class InputHandler{
                 case "Spacebar": // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
                     // console.log("not shooting");
                     this.game.spaceship.canShoot = false;
-                    this.game.spaceship.shooting = false;
+                    // this.game.spaceship.shooting = false;
                     this.game.spaceship.shots = 0;
+                  
                 break;
                 case "ArrowLeft": //left arrow (stop rotate spaceship left)
                     this.game.spaceship.rotation = 0; // add the frame rate to slow down the speed of the rotation;
                     this.game.spaceship.angle += 0;
+                    //using photo image 55 - 50 for a slight animation of tilting the ship
                 break;
                 case "ArrowUp": //up arrow (stop thrust forward spaceship up)
                     this.game.spaceship.thrusting = false;
@@ -74,7 +76,9 @@ class InputHandler{
         
                 case "ArrowRight": //right arrow (stop rotate spaceship right )
                     this.game.spaceship.rotation = 0;  // add the frame rate to slow down the speed of the rotation;
-                    this.game.spaceship.angle += 0;
+                    this.game.spaceship.angle += 0;  
+                    //using the photo images 4 - 9 for a slight animation of tilting the ship
+                   
                 break;
                 case "ArrowDown": //down arrow (stop thrust backward spaceship left)
                     this.game.spaceship.reversing = false;
