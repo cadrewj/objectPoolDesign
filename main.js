@@ -4,6 +4,7 @@ import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
 import Background from "./classes/background.js";
+import Enemy from "./classes/enemy.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -31,14 +32,19 @@ addEventListener("load",()=>{
 
     class Game{
         constructor(width, height, data){
+            this.gameFrames = 0;
             this.width = width;
             this.height = height;
             this.data = data;
-            this.background = new Background(this)
             this.spaceship = new Spaceship(this);
-            this.input = new InputHandler(this);
             this.player = new Player(this, 5)
-            this.gameFrames = 0;
+            this.background = new Background(this)
+            this.input = new InputHandler(this);
+            this.enemy = new Enemy(this);
+            this.enemyPool =[];
+            this.numOfEnemies = 10
+        
+            
             
            
             // this.lives = this.data.GAME_LIVES;
@@ -47,7 +53,9 @@ addEventListener("load",()=>{
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.max = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
             this.createMeteorPool(); // automatically creating the pool as soon as an instance of the game class is created.
+            createPool(this.enemy, this.enemyPool, this.numOfEnemies);
         }
+       
 
         createMeteorPool(){ //create an object pool of meteors  all at once for faster allocation
             for(let i = 0; i < this.max; i++){
@@ -81,11 +89,20 @@ addEventListener("load",()=>{
             this.meteorPool.forEach(meteor => {
                 meteor.update(context)
             });
+           
+
+
             //draw the spaceship
             this.spaceship.update(context)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
+
+            this.enemy.update(context)
+
             //draw player 
-            this.player.update(context, this.input)
+            if(this.player.onPlanet){
+                this.player.update(context, this.input)
+            }
+            
         }
 
     }
@@ -94,12 +111,9 @@ addEventListener("load",()=>{
     const game = new Game(canvas.width, canvas.height, gameData);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
-        ctx.fillStyle = "rgba(0,0,0,0.5)"
-        ctx.fillRect(0,0,canvas.width, canvas.height);
-
+        // ctx.clearRect(0,0,canvas.width, canvas.height)
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
-
         game.render(ctx, deltaTime)
         const stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
@@ -114,3 +128,9 @@ addEventListener("resize",()=>{
     canvas.height = innerHeight;
 
 })
+
+function createPool(classNam, arrayOfElements, maxIterations) {
+    for(let i = 0; i < maxIterations; i++){
+        arrayOfElements.push(new classNam(this)); //this is used to pass the entire game to the class
+    }         
+}

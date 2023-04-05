@@ -7,6 +7,7 @@ class Player{
         this.x = this.game.width * 0.20; //position of the player on the x axis
         this.y = this.game.height - this.height; //position of the player on the y axis
         this.inSpace = true;
+        this.onPlanet = true;
         this.playerImg = document.querySelector("#run")//new Image(); // sprite image of the player;
         this.velocityX = 0;
         this.maxSpeed = 2; 
@@ -87,7 +88,7 @@ class Player{
             }
             if(this.flip){
                 context.save(); // save the current state of the context
-                context.translate(this.x + this.width, this.y); // move the context to the right edge of the image
+                context.translate(this.x + this.width, this.y ); // move the context to the right edge of the image
                 context.scale(-1, 1); // flip the x-axis
                 context.drawImage(this.playerImg, this.frameX * this.width , this.frameY , this.width, this.height, 0, 0, this.width, this.height);
                 context.restore(); // restore the context to its previous state
