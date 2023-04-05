@@ -2,12 +2,23 @@ import gameData from "./data/data.json" assert { type: "json" }
 import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
+import Player from "./classes/player.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+ // note he optimised for 500 px in his styling for background;
+
+/*This property is useful for games and other apps that use pixel art. 
+When enlarging images, the default resizing algorithm will blur the pixels. 
+Set this property to false to retain the pixels' sharpness.*/
+ctx.mozImageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false;
+ctx.msImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
 
 //define the loading screen area and set it value to zero since the screen is already loaded
 const loading = document.querySelector("#loading")
@@ -24,6 +35,8 @@ addEventListener("load",()=>{
             this.data = data;
             this.spaceship = new Spaceship(this);
             this.input = new InputHandler(this);
+            this.player = new Player(this, 5)
+            this.gameFrames = 0;
 
            
             // this.lives = this.data.GAME_LIVES;
@@ -47,6 +60,7 @@ addEventListener("load",()=>{
             }
         }
         render(context, deltaTime){
+            this.gameFrames++;
             //create meteor periodically
             if(this.meteorTimer > this.meteorInterval){
                 //add a new meteor to be rendered from the meteorpool
@@ -67,7 +81,8 @@ addEventListener("load",()=>{
             //draw the spaceship
             this.spaceship.update(context)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
-            console.log(this.input.lastKey, "lastkey")
+            // this.player.draw(context)
+            this.player.update(context, this.input)
         }
 
     }

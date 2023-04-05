@@ -21,8 +21,8 @@ class Spaceship{
                 y:0, //only one y frame for the ship
             } 
         }
-        this.gameFrame = 0;
-        this.staggerFrames = 2;
+        this.spaceshipFrames = 0; // note: didn't use gameFrame for main.js for custom animation
+        this.staggerFrames = 2; // used to slowdown the animation lower faster, higher slower
         
         this.thruster = {
             image: document.querySelector("#thrust1"),
@@ -59,7 +59,7 @@ class Spaceship{
 
     }
   
-    update(context){
+    update(context, input){
         let exploding = this.explodeTime > 0;
         let blinkOn = this.blinkNum % 2 == 0;
 
@@ -85,7 +85,8 @@ class Spaceship{
                 }
             }
              // draw lasers shooting
-             if(this.shooting){
+            if(this.shooting){
+          
                 this.shootLaser(context);
              
             }
@@ -127,7 +128,7 @@ class Spaceship{
                  this.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle) / this.game.data.FPS;
 
                 //go through an animation frame to make the ship look like it is spiraling while thrusting
-                if(this.gameFrame % this.staggerFrames === 0){ //used to slow down the speed of the animation between frames
+                if(this.spaceshipFrames % this.staggerFrames === 0){ //used to slow down the speed of the animation between frames
                     if(this.ship.frame.x < 59){
                         this.ship.frame.x++;
                         // console.log(this.ship.frame.x, "gp")
@@ -137,7 +138,7 @@ class Spaceship{
                         // console.log("finished")
                     }
                 }
-                this.gameFrame++;
+                this.spaceshipFrames++;
             }
             else if(this.reversing){ // reverse thrust
                 const thrustAngle = this.angle + Math.PI / 2; // adjust for the image facing upwards
@@ -150,12 +151,12 @@ class Spaceship{
                 this.thrust.y -= this.game.data.FRICTION * this.thrust.y / this.game.data.FPS;
                 
                 //go reverse through an animation frame to make the ship look like it is reverse spiraling when not thrusting
-                if(this.gameFrame % (this.staggerFrames * 4)=== 0){ //used to slow down the speed of the animation between frames
+                if(this.spaceshipFrames % (this.staggerFrames * 4)=== 0){ //used to slow down the speed of the animation between frames
                     if(this.ship.frame.x !==0){
                         this.ship.frame.x--;
                     }
                 }
-                this.gameFrame--;       
+                this.spaceshipFrames--;       
             }
             this.drawThruster(context)   
         }

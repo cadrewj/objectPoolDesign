@@ -5,11 +5,16 @@ class InputHandler{
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
             //player keys
-            if((pressedKey === "w" || pressedKey === "s" || pressedKey === "d" || pressedKey === "a" || pressedKey ===  "g")
-                && this.keys.indexOf(pressedKey)=== -1){
+            if((pressedKey === "w" || 
+                    pressedKey === "s" || 
+                    pressedKey === "d" || 
+                    pressedKey === "a" || 
+                    pressedKey ===  "g" ||
+                    pressedKey ===  "e")
+                    && this.keys.indexOf(pressedKey)=== -1){
                     this.keys.push(pressedKey)
             }
-          
+            console.log(this.keys)
             //spaceship keys
             if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
                 return
