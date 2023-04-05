@@ -81,7 +81,7 @@ addEventListener("load",()=>{
             //draw the spaceship
             this.spaceship.update(context)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
-            // this.player.draw(context)
+            //draw player 
             this.player.update(context, this.input)
         }
 

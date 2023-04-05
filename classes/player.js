@@ -8,11 +8,6 @@ class Player{
         this.y = this.game.height - this.height; //position of the player on the y axis
         this.inSpace = true;
         this.playerImg = document.querySelector("#run")//new Image(); // sprite image of the player;
-        // this.loaded = false;
-        // this.playerImg.src = "./images/player/run.png";
-        // this.playerImg.onload = () => {
-        //     this.loaded = true;      
-        // };
         this.velocityX = 0;
         this.maxSpeed = 2; 
         this.velocityY = 0;

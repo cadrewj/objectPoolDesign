@@ -43,8 +43,6 @@ class Spaceship{
         this.reversing = false;
         this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); 
         this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR);
-        this.accelerationTime = 0;
-        this.decelerationTime = 0;
         this.explodeTime = 0;
         this.lives = this.game.data.GAME_LIVES;
         this.health = 100;
@@ -55,11 +53,10 @@ class Spaceship{
         this.shots = 0;
         this.inSpace = true;
         this.angle = 0;
-        this.velocityAngle = Math.random() * 0.02 - 0.01 // random number between -0.01 and 0.01
 
     }
   
-    update(context, input){
+    update(context){
         let exploding = this.explodeTime > 0;
         let blinkOn = this.blinkNum % 2 == 0;
 
@@ -74,8 +71,6 @@ class Spaceship{
                 -this.ship.radius, -this.ship.radius, this.ship.width, this.ship.height);
                 // context.drawImage(this.ship.image, -this.ship.radius, -this.ship.radius, this.ship.width, this.ship.height);
                 context.restore();
-               
-                this.thrustWithFriction(context);   
             }
             if (this.blinkNum > 0) {
                 this.blinkTime--;
@@ -86,7 +81,6 @@ class Spaceship{
             }
              // draw lasers shooting
             if(this.shooting){
-          
                 this.shootLaser(context);
              
             }
@@ -122,20 +116,18 @@ class Spaceship{
     thrustWithFriction(context){
         if(this.fuel > 0 && this.lives !== 0){
             if(this.thrusting){ // add thrust and friction
-                 // acceleration of the ship in pixels per second per second 
-                 const thrustAngle = this.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
-                 this.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle) / this.game.data.FPS;
-                 this.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle) / this.game.data.FPS;
+                // acceleration of the ship in pixels per second per second 
+                const thrustAngle = this.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
+                this.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle) / this.game.data.FPS;
+                this.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle) / this.game.data.FPS;
 
                 //go through an animation frame to make the ship look like it is spiraling while thrusting
                 if(this.spaceshipFrames % this.staggerFrames === 0){ //used to slow down the speed of the animation between frames
                     if(this.ship.frame.x < 59){
                         this.ship.frame.x++;
-                        // console.log(this.ship.frame.x, "gp")
                     }
                     else{
                         this.ship.frame.x = 0
-                        // console.log("finished")
                     }
                 }
                 this.spaceshipFrames++;

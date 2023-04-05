@@ -27,8 +27,7 @@ class InputHandler{
                 case "Spacebar":  // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
                     this.game.spaceship.canShoot = this.game.spaceship.fuel > 0 
                     this.game.spaceship.shooting = true; 
-                    this.game.spaceship.shots++;
-                    
+                    this.game.spaceship.shots++;          
                 break;
                 case "ArrowLeft": //left arrow (rotate spaceship left)
                     // rotateSpaceShip(false)
@@ -36,7 +35,6 @@ class InputHandler{
                 break;
                 case "ArrowUp": //up arrow (thrust forward spaceship up)
                     this.game.spaceship.thrusting = true;
-                    this.game.spaceship.accelartionTime++;  
                 break;
                 case "ArrowRight": //right arrow (rotate spaceship right )
                     // rotateSpaceShip(true)
@@ -44,13 +42,11 @@ class InputHandler{
                 break;
                 case "ArrowDown": //down arrow (thrust backward spaceship left)
                     this.game.spaceship.reversing = true;
-                    this.game.spaceship.decelerationTime++;
                 break;
             }
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
-            // keyUp(game, releasedKey)  
             //player keys
             if(releasedKey ===  "w" || releasedKey ===  "s" || releasedKey ===  "d" ||releasedKey ===  "a" || releasedKey ===  "g"){
                 this.keys.splice(this.keys.indexOf(releasedKey, 1))
@@ -59,7 +55,6 @@ class InputHandler{
             if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
                 return
             }
-            // const key = e.keyCode;
             switch(releasedKey){
                 case " ": //spacebar (spaceship shoot laser)
                 case "Spacebar": // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
