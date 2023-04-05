@@ -3,6 +3,7 @@ import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
+import Background from "./classes/background.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -33,11 +34,12 @@ addEventListener("load",()=>{
             this.width = width;
             this.height = height;
             this.data = data;
+            this.background = new Background(this)
             this.spaceship = new Spaceship(this);
             this.input = new InputHandler(this);
             this.player = new Player(this, 5)
             this.gameFrames = 0;
-
+            
            
             // this.lives = this.data.GAME_LIVES;
             this.meteorTimer = 0;
@@ -61,6 +63,7 @@ addEventListener("load",()=>{
         }
         render(context, deltaTime){
             this.gameFrames++;
+            this.background.update(context, deltaTime);
             //create meteor periodically
             if(this.meteorTimer > this.meteorInterval){
                 //add a new meteor to be rendered from the meteorpool
@@ -93,6 +96,7 @@ addEventListener("load",()=>{
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         ctx.fillStyle = "rgba(0,0,0,0.5)"
         ctx.fillRect(0,0,canvas.width, canvas.height);
+
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
 

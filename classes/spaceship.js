@@ -203,14 +203,15 @@ class Spaceship{
         if(this.lives === 0){ // if dead return and don't rotate the ship
             return
         }
-        this.angle += this.rotation;  //rotation the ship 
+
         //keep the ship angle between 0 and 360 (two pie)
         if(this.angle < 0){
             this.angle +=(degToRad(360))
         }
         else if(this.angle >= degToRad(360)){
             this.angle -=(degToRad(360))
-        }    
+        }   
+        this.angle += this.rotation;  //rotation the ship  
     }
     drawExplodingShip(context){
         context.beginPath()

@@ -30,7 +30,6 @@ class Player{
             this.frameNum = 7;
         }
         //horizontal movement
-        this.x += this.velocityX;
         if(input.keys.includes("d")){ //set an action for the keyboard input
             this.playerImg.src = "./images/player/run.png";
             this.frameNum = 7;
@@ -47,6 +46,7 @@ class Player{
         else{
             this.velocityX = 0
         }
+        this.x += this.velocityX;
 
         //vertical movement
         if(input.keys.includes("w") && this.onGround()){
@@ -65,6 +65,12 @@ class Player{
         else{
             this.velocityY = 0;   
         }
+        //used to reset the player height to the ground in the event that the player ends up under the ground level
+        if(this.y >this.game.height - this.height){ 
+            this.y = this.game.height - this.height
+
+        }
+        this.handleScreen()
     }
     onGround(){
         return this.y >= this.game.height - this.height;

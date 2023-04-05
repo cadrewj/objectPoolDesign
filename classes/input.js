@@ -14,7 +14,6 @@ class InputHandler{
                     && this.keys.indexOf(pressedKey)=== -1){
                     this.keys.push(pressedKey)
             }
-            console.log(this.keys)
             //spaceship keys
             if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
                 return

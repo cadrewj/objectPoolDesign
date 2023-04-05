@@ -93,9 +93,9 @@
     "SPACESHIP_LASER_EXPLODING_SIZE": 0.55,
     "SPACESHIP_RATE_OF_FIRE": 5,
 
+    "SPACE_COLOR":"rgba(0,0,0,0.8)",
 
     "STAR_COLOR": "white",
-    "SPACE_COLOR":"rgba(0,0,0,0.8)",
     "STAR_NUM": 500,
     "STAR_SIZE": 0.005,
     "STAR_SPEED": 0.05,
