@@ -21,8 +21,8 @@ class Player{
         this.flip = false;
         this.staggerFrames = 5; // used to slow down the speed of the animation
     }
-    update(context, input){
-        this.draw(context)
+    update(context, input, gameFrames){
+        this.draw(context, gameFrames)
         this.playerImg.src = "./images/player/idle.png";
         this.frameNum = 3;
 
@@ -76,9 +76,9 @@ class Player{
     onGround(){
         return this.y >= this.game.height - this.height;
     }
-    draw(context){
+    draw(context, gameFrames){
         if(this.playerImg.complete){
-            if(this.game.gameFrames % this.staggerFrames === 0){
+            if(gameFrames % this.staggerFrames === 0){
                 if(this.frameX < this.frameNum){
                     this.frameX++;
                 }

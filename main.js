@@ -65,12 +65,12 @@ addEventListener("load",()=>{
             this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
             console.log(this.enemyTimer, " etime")
             //draw the spaceship
-            this.spaceship.update(context)
+            this.spaceship.update(context, this.gameFrames)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
 
             //draw player 
             if(this.player.onPlanet){
-                this.player.update(context, this.input)
+                this.player.update(context, this.input, this.gameFrames)
             } 
         }
     }
