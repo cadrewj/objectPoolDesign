@@ -14,7 +14,7 @@ class Meteor {
         }
         this.x = randomNum(this.radius, this.game.width - this.radius)
         this.y = 0 -  this.radius;
-        this.speed = Math.random() * 0.15 + 0.01;
+        this.speed = Math.random() * 1.5 + 0.1;
         this.free = true; // boolean used to represent whether a meteor is active or not. 
         this.angle = 0;
         this.velocityAngle = Math.random() * 0.02 - 0.01 // random number between -0.01 and 0.01

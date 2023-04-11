@@ -81,12 +81,11 @@ export function drawStatusText(ctx, input){
     ctx.fillText("Last input: " + input.lastKey, 10, 20);
 }
 
-export function createPool( arrayPool, maxNumElements, newInstanceOfClass){
+export function createPool( arrayPool, maxNumElements, objectClass, width, height){
     for(let i = 0; i < maxNumElements; i++){
-        arrayPool.push(newInstanceOfClass); //this is used to pass the entire game class to the Meteor class
+        arrayPool.push(new objectClass(width, height)); //this is used to pass the entire game class to the Meteor class
     } 
 } 
-
 
 export function getElement(arrayPool,){
     for(let i =0; i < arrayPool.length; i++){
@@ -111,6 +110,7 @@ export function periodicInterval(timer, interval, deltaTime, arrayPool, context,
        timer += deltaTime; // increase the value of the timer 
    }
    //update the pool
+   console.log(arrayPool)
    arrayPool.forEach(p => {
        p.update(context, gameFrames)
    });

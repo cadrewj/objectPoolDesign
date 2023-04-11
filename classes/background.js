@@ -18,7 +18,6 @@ class Background{
             let newStar = this.init()
             this.stars.push(newStar);
         }
-
     }
 
     update(context, deltaTime){
@@ -28,8 +27,6 @@ class Background{
         }
         this.drawSpace(context);
         this.updateStar(context, deltaTime);
-
-        // console.log(this.stars)
 
     }
     updateStar(context, deltaTime){
@@ -88,7 +85,6 @@ class Background{
         context.fillRect(this.x, this.y, this.game.width, this.game.height)
         context.fillRect(this.x + this.game.width - this.speed, this.y, this.game.width, this.game.height) // make a second screen parallel to screen to make it look endless
     }
-
     init(){
         const speedMult =  randomNum(this.game.data.STAR_SPEED_MULT_MIN, this.game.data.STAR_SPEED_MULT_MAX) //set the speed of the star to a number between 0.2 - 1.2
         const starVelocityX = this.starSpeed * randomSign() * Math.random();
@@ -104,7 +100,6 @@ class Background{
         }
         return this.star;
     }
-
 }
 
 export default Background;

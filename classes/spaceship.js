@@ -5,8 +5,8 @@ import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 class Spaceship{
     constructor(game){
         this.game = game;
-        this.x = this.game.width / 2;
-        this.y = this.game.height / 2;
+        this.x = this.game.width / 2; //position the ship at the center of x axis
+        this.y = this.game.height / 2;  //position the ship at the center of y axis
         this.ship = {
             image:  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
             width : this.game.data.SPACESHIP_SIZE,

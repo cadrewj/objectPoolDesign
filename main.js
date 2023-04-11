@@ -5,7 +5,7 @@ import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
 import Background from "./classes/background.js";
 import Enemy from "./classes/enemy.js";
-import { randomNum, periodicInterval, createPool } from "./utilityFunctions/utilityFunctions.js";
+import { periodicInterval, createPool} from "./utilityFunctions/utilityFunctions.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -41,7 +41,7 @@ addEventListener("load",()=>{
             this.background = new Background(this.width, this.height, this.data)
             this.input = new InputHandler(this.spaceship, this.player, this.data);
             this.enemyPool =[];
-            this.maxEnemies = 1;
+            this.maxEnemies = 3;
             this.enemyTimer = 0;
             this.enemyInterval = 3000
         
@@ -53,17 +53,17 @@ addEventListener("load",()=>{
             this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created.
         }
         createGamePools(){ //create an object pool of meteors  all at once for faster allocation
-            createPool(this.meteorPool, this.maxMeteors, new Meteor(this.width, this.height)) //this is used to pass the entire game class to the Meteor class
-            createPool(this.enemyPool, this.maxEnemies, new Enemy(this.width, this.height)) //this is used to pass the entire game class to the enemies class   
+            createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height) //this is used to pass the game width and height  to the Meteor class
+            createPool(this.enemyPool, this.maxEnemies, Enemy, this.width, this.height) //this is used to pass the game width and height to the enemies class   
         }
         render(context, deltaTime){
             this.gameFrames++;
             this.background.update(context, deltaTime);
-            //render a new meteror periodically if it's free;
+            //render a new meteor periodically if it's free;
             this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
             //render a new enemy periodically if it's free;
             this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
-            console.log(this.enemyTimer, " etime")
+           
             //draw the spaceship
             this.spaceship.update(context, this.gameFrames)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
