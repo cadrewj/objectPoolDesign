@@ -1,8 +1,11 @@
 import { randomNum } from "../utilityFunctions/utilityFunctions.js";
 
 class Enemy{
-    constructor(game){
-        this.game = game;
+    constructor(width, height){
+        this.game = {
+            width: width,
+            height: height,
+        };
         this.enemy = {
             image: document.querySelector("#fox"),
             width: Math.floor(this.game.width * 0.12),
@@ -19,44 +22,40 @@ class Enemy{
         this.framesNum = 7
         this.y = this.game.height - this.enemy.height;
         this.x = this.game.width;
-        this.speed = randomNum(2, 8);
-        this.staggerFrames = 4;
+        this.speed = randomNum(1, 3) //Math.random() * 0.15 + 0.01;
+        this.staggerFrames = 5;
         this.free =true;
     }
-    update(context){
+    update(context, gameFrames){
         if(!this.free){
             if(this.enemy.image.complete){
-                if(this.game.gameFrames % this.staggerFrames === 0){
+                if(gameFrames % this.staggerFrames === 0){ // slow down the transitions between the animation frames
                     if(this.frames.x < this.framesNum){
                         
-                        this.frames.x++;
+                        this.frames.x++; // move through the different frames in the animation 
                     }
                     else{
-                        this.frames.x = 0
+                        this.frames.x = 0 //return to the first frame in the animation
                     }
-                    this.draw(context)
+                    this.draw(context) 
                 }
-                this.x--;
+                this.x -=this.speed; // change the position of the enemy on the x axis
             
             }
              //check if colliding with screen bounds
              if(this.x < 0 -this.enemy.width){ 
                 this.x = this.game.width + this.enemy.width; //reset the position of enemt to offscreen x axis
                 this.reset() //remove meteor from the screen by setting its value to free
-            }
-            // else if(this.y > this.game.height  + this.enemy.width/2){
-            //     this.y = -this.enemy.height;  //reset the position of enemy to offscreen on y axis
-            //     this.reset() //remove meteor from the screen by setting its value to free
-            // }    
+            }  
         }
     } 
-    reset(){
+    reset(){ //make an enemy available for use in the enemy pool 
         this.free = true; 
     }
-    start(){
+    start(){ //reset the position of the enemy to off screen.
         this.free = false;
         this.x = this.game.width;
-        this.y = this.game.height - this.enemy.height
+        this.y = this.game.height - this.enemy.height 
     }
 
     draw(context){

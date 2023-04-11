@@ -81,7 +81,40 @@ export function drawStatusText(ctx, input){
     ctx.fillText("Last input: " + input.lastKey, 10, 20);
 }
 
+export function createPool( arrayPool, maxNumElements, newInstanceOfClass){
+    for(let i = 0; i < maxNumElements; i++){
+        arrayPool.push(newInstanceOfClass); //this is used to pass the entire game class to the Meteor class
+    } 
+} 
 
 
+export function getElement(arrayPool,){
+    for(let i =0; i < arrayPool.length; i++){
+        if(arrayPool[i].free){
+            return arrayPool[i]; //return the free object
+        }
+    }
+}
+
+export function periodicInterval(timer, interval, deltaTime, arrayPool, context, gameFrames){
+    //create element periodically
+    if(timer > interval){
+       //add a new element to be rendered from the pool
+       const pool = getElement(arrayPool);
+       if(pool){ // if it return a free element then call start
+           pool.start()
+       }
+       //reset the timer
+       timer = 0;
+   }
+   else{
+       timer += deltaTime; // increase the value of the timer 
+   }
+   //update the pool
+   arrayPool.forEach(p => {
+       p.update(context, gameFrames)
+   });
+   return timer;
+}
 
 

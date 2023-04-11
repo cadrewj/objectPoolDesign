@@ -1,15 +1,17 @@
 import { randomNum, randomRGB, randomSign, degToRad , handleEdgeOfScreen} from "../utilityFunctions/utilityFunctions.js";
 class Background{
-    constructor(game){
-        this.game = game;
+    constructor(width, height, data){
+        this.game = {
+            width: width,
+            height: height,
+            data: data,
+        };
         this.x = 0;
         this.y = 0;
         this.speed = 20; //this.game.player.maxSpeed;
-        this.width = this.game.width
-        this.height = this.game.height
         this.stars = []; // define the stars array here
         this.star; // define a single star
-        this.starSpeed = this.game.data.STAR_SPEED * this.width; // set the speed of the stars
+        this.starSpeed = this.game.data.STAR_SPEED * this.game.width; // set the speed of the stars
       
         //initialize all the startw
         for (let i = 0; i < this.game.data.STAR_NUM; i++) {
@@ -21,7 +23,7 @@ class Background{
 
     update(context, deltaTime){
         this.x -= this.speed; //constantly move the background
-        if (this.x < 0 - this.width){ // reset the background to zero
+        if (this.x < 0 - this.game.width){ // reset the background to zero
             this.x = 0
         }
         this.drawSpace(context);
@@ -39,7 +41,7 @@ class Background{
             //update the position of the star
             this.stars[i].x += this.stars[i].velocityX * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
             this.stars[i].y += this.stars[i].velocityY * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
-            handleEdgeOfScreen(this.stars[i], this.width, this.height);
+            handleEdgeOfScreen(this.stars[i], this.game.width, this.game.height);
         }
     }
 
@@ -83,8 +85,8 @@ class Background{
     drawSpace(context){
         // console.log("drawing")
         context.fillStyle = this.game.data.SPACE_COLOR;
-        context.fillRect(this.x, this.y, this.width, this.height)
-        context.fillRect(this.x + this.width - this.speed, this.y, this.width, this.height) // make a second screen parallel to screen to make it look endless
+        context.fillRect(this.x, this.y, this.game.width, this.game.height)
+        context.fillRect(this.x + this.game.width - this.speed, this.y, this.game.width, this.game.height) // make a second screen parallel to screen to make it look endless
     }
 
     init(){
@@ -93,9 +95,9 @@ class Background{
         const starVelocityY =  Math.sqrt(Math.pow(this.starSpeed, 2) - Math.pow(starVelocityX, 2) * randomSign()); //using pythagoras theorem yv = sqrt(starspeed^2 - xv^2)
 
         this.star={
-            radius: this.game.data.STAR_SIZE * Math.random() * this.width / 2, 
-            x: Math.floor(Math.random() * this.width), // assign a random number in the x direction
-            y: Math.floor(Math.random() * this.width), // assign a random number in the y direction
+            radius: this.game.data.STAR_SIZE * Math.random() * this.game.width / 2, 
+            x: Math.floor(Math.random() * this.game.width), // assign a random number in the x direction
+            y: Math.floor(Math.random() * this.game.width), // assign a random number in the y direction
             velocityX: starVelocityX * speedMult /this.game.data.FPS,
             velocityY: starVelocityY * speedMult  /this.game.data.FPS, 
             

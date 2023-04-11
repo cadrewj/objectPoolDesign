@@ -1,6 +1,6 @@
 
 class Player{
-    constructor(game, staggerFrames = 5){
+    constructor(game){
         this.game = game;
         this.width = 128 // width of one frame in the sprite 
         this.height = 96 // height of the sprite
@@ -19,7 +19,7 @@ class Player{
         this.frameY = 0;
         this.frameNum = 0;
         this.flip = false;
-        this.staggerFrames = staggerFrames; // used to slow down the speed of the animation
+        this.staggerFrames = 5; // used to slow down the speed of the animation
     }
     update(context, input){
         this.draw(context)

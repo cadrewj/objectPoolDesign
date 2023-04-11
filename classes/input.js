@@ -1,6 +1,10 @@
 class InputHandler{
-    constructor(game){
-        this.game = game;
+    constructor(spaceship, player, data){
+        this.game = {
+            spaceship: spaceship,
+            player: player,
+            data: data
+        };
         this.keys = [];
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;

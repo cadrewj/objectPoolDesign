@@ -1,8 +1,11 @@
-import { randomNum } from "../utilityFunctions/utilityFunctions.js";
-import { degToRad } from "../utilityFunctions/utilityFunctions.js";
+import { randomNum, degToRad } from "../utilityFunctions/utilityFunctions.js";
+
 class Meteor {
-    constructor(game){
-        this.game = game;
+    constructor(width, height){
+        this.game = {
+            width: width,
+            height: height
+        }
         this.radius = this.game.width * 0.05;
         this.meteor = {
             image: document.querySelector("#meteor"),
@@ -11,7 +14,7 @@ class Meteor {
         }
         this.x = randomNum(this.radius, this.game.width - this.radius)
         this.y = 0 -  this.radius;
-        this.speed = Math.random() * 1.5 + 0.1;
+        this.speed = Math.random() * 0.15 + 0.01;
         this.free = true; // boolean used to represent whether a meteor is active or not. 
         this.angle = 0;
         this.velocityAngle = Math.random() * 0.02 - 0.01 // random number between -0.01 and 0.01
