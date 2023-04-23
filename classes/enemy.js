@@ -36,6 +36,8 @@ export class Enemy{
     update(context, gameFrames){
         
         if(!this.free){
+            testBoundsOfObject(this.x + this.radius, this.y + this.radius, this.radius, this.game.data, context, true, this.enemy.width, this.enemy.height)
+            this.draw(context) 
             if(this.enemy.image.complete){
                 // draw the image
                 if(gameFrames % this.staggerFrames === 0){ // slow down the transitions between the animation frames
@@ -44,8 +46,7 @@ export class Enemy{
                     }
                     else{
                         this.frames.x = 0 //return to the first frame in the animation
-                    }
-                     this.draw(context) 
+                    }  
                 }
                 this.x -=this.speed; // change the position of the enemy on the x axis
             
@@ -56,7 +57,7 @@ export class Enemy{
                 this.reset() //remove meteor from the screen by setting its value to free
             }  
         }
-        testBoundsOfObject(this.x + this.radius, this.y + this.radius, this.radius, this.game.data, context, true, this.enemy.width, this.enemy.height)
+        
 
     } 
     reset(){ //make an enemy available for use in the enemy pool 
@@ -69,19 +70,15 @@ export class Enemy{
     }
 
     draw(context){
-        context.fillStyle = this.game.data.SPACE_COLOR;
-        // context.fillRect(this.x, this.y, this.game.width, this.game.height)
         //flip the direction the enemy is facing
         context.save(); // save the current state of the context
         context.translate(this.x + this.enemy.width, this.y); // move the context to the right edge of the image
         context.scale(-1, 1); // flip the x-axis
-        // Set image smoothing
-        context.imageSmoothingEnabled = true;
+
         
         context.drawImage(this.enemy.image, this.enemy.sw * this.frames.x, this.enemy.sy, this.enemy.sw, this.enemy.sh,
             0, 0, this.enemy.width, this.enemy.height)
         context.restore()
-        // context.fill();
     }
 }
 
