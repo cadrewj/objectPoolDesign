@@ -1,10 +1,11 @@
-import { randomNum, degToRad } from "../utilityFunctions/utilityFunctions.js";
+import { randomNum, degToRad, testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
 
 class Meteor {
-    constructor(width, height){
+    constructor(width, height, data){
         this.game = {
             width: width,
-            height: height
+            height: height,
+            data: data
         }
         this.radius = this.game.width * 0.05;
         this.meteor = {
@@ -12,9 +13,14 @@ class Meteor {
             width: this.radius * 2,
             height: this.radius * 2,
         }
+        this.allowBounceOff = true;
         this.x = randomNum(this.radius, this.game.width - this.radius)
         this.y = 0 -  this.radius;
-        this.speed = Math.random() * 1.5 + 0.1;
+        this.velocity ={
+            x: Math.random() * 1.5 + 0.1,
+            y: Math.random() * 1.5 + 0.1,
+
+        } 
         this.free = true; // boolean used to represent whether a meteor is active or not. 
         this.angle = 0;
         this.velocityAngle = Math.random() * 0.02 - 0.01 // random number between -0.01 and 0.01
@@ -29,20 +35,15 @@ class Meteor {
             context.restore()
         }
     }
-    testBound(context){
-        context.beginPath();  
-        context.strokeStyle = "white";
-        context.lineWidth = 3;
-        context.arc(this.x,this.y,this.radius, 0, degToRad(360), false);
-        context.stroke();
-    }
     update(context){
         //used to update only the active meteors position
         if(!this.free){ 
-            this.testBound(context);
+            // this.testBound(context);
+            testBoundsOfObject(this.x, this.y, this.radius, this.game.data, context)
+
             this.draw(context);
-            this.y += this.speed;
-            this.x += this.speed;
+            this.y += this.velocity.x;
+            this.x += this.velocity.y;
             this.angle += this.velocityAngle;
 
             //check if colliding with screen bounds
@@ -63,6 +64,11 @@ class Meteor {
         this.free = false;
         this.x = randomNum(this.radius, this.game.width - this.radius)
         this.y = 0  - this.radius * 2; 
+        this.velocity ={
+            x: Math.random() * 1.5 + 0.1,
+            y: Math.random() * 1.5 + 0.1,
+
+        } 
     }
 }
 

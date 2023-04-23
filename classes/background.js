@@ -21,10 +21,10 @@ class Background{
     }
 
     update(context, deltaTime){
-        this.x -= this.speed; //constantly move the background
-        if (this.x < 0 - this.game.width){ // reset the background to zero
-            this.x = 0
-        }
+        // this.x -= this.speed; //constantly move the background
+        // if (this.x < 0 - this.game.width){ // reset the background to zero
+        //     this.x = 0
+        // }
         this.drawSpace(context);
         this.updateStar(context, deltaTime);
 
@@ -83,7 +83,7 @@ class Background{
         // console.log("drawing")
         context.fillStyle = this.game.data.SPACE_COLOR;
         context.fillRect(this.x, this.y, this.game.width, this.game.height)
-        context.fillRect(this.x + this.game.width - this.speed, this.y, this.game.width, this.game.height) // make a second screen parallel to screen to make it look endless
+        // context.fillRect(this.x + this.game.width - this.speed, this.y, this.game.width, this.game.height) // make a second screen parallel to screen to make it look endless
     }
     init(){
         const speedMult =  randomNum(this.game.data.STAR_SPEED_MULT_MIN, this.game.data.STAR_SPEED_MULT_MAX) //set the speed of the star to a number between 0.2 - 1.2

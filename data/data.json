@@ -25,6 +25,22 @@
     "FOOD_JAG": 0.4,
     "FOOD_COLOR": "green",
 
+   
+    
+    "FONT_BODY_TEXT": "Pacifico",
+    "FONT_BODY_TEXT_SIZE": "18px",
+    "FONT_HEADING_TEXT": "Pacifico",
+    "FONT_HEADING_TEXT_SIZE": "36px",
+    "FONT_TITLE_TEXT": "Pacifico",
+    "FONT_TITLE_TEXT_SIZE": "54px", 
+    "FONT_CAPTION_TEXT": "VT323",
+    "FONT_CAPTION_TEXT_SIZE":"10px",
+    "FONT_DISPLAY_TEXT": "Chalkboard SE",
+    "FONT_DISPLAY_TEXT_SIZE": "72px",
+    "FONT_DISPLAY_SUBTEXT": "Comic Sans MS",
+    "FONT_DISPLAY_SUBTEXT_SIZE": "36px",
+
+
 
     "FPS" : 60, 
     "FRICTION" : 0.7, 

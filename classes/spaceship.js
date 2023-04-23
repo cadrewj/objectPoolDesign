@@ -1,10 +1,14 @@
-import { degToRad } from "../utilityFunctions/utilityFunctions.js";
+import { degToRad, testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
 
 // later you need to add all the ship images into one spritesheet for optimisation
 
 class Spaceship{
-    constructor(game){
-        this.game = game;
+    constructor(width, height, data){
+        this.game = {
+            width: width,
+            height: height,
+            data: data,
+        }
         this.x = this.game.width / 2; //position the ship at the center of x axis
         this.y = this.game.height / 2;  //position the ship at the center of y axis
         this.ship = {
@@ -83,6 +87,7 @@ class Spaceship{
                 this.shootLaser(context);
              
             }
+            testBoundsOfObject(this.x, this.y, this.ship.radius, this.game.data, context)
             this.thrustWithFriction(context, gameFrames);
             this.moveSpaceship();
             this.changeSpaceshipDirection();

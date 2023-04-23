@@ -1,17 +1,25 @@
+import { testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
 
 class Player{
-    constructor(game){
-        this.game = game;
+    constructor(width, height, data, gameOver){
+        this.game = {
+            width: width,
+            height: height,
+            data: data,
+            gameOver: gameOver,
+        };
         this.width = 128 // width of one frame in the sprite 
         this.height = 96 // height of the sprite
-        this.x = this.game.width * 0.20; //position of the player on the x axis
+        this.x = this.game.width * 0.30; //position of the player on the x axis
         this.y = this.game.height - this.height; //position of the player on the y axis
         this.inSpace = true;
         this.onPlanet = true;
         this.playerImg = document.querySelector("#run")//new Image(); // sprite image of the player;
-        this.velocityX = 0;
+        this.velocity ={
+            x: 0,
+            y: 0
+        }
         this.maxSpeed = 2; 
-        this.velocityY = 0;
         this.jumpHeight = 20;
         this.friction = 0.99;
         this.weight = 1;
@@ -20,51 +28,55 @@ class Player{
         this.frameNum = 0;
         this.flip = false;
         this.staggerFrames = 5; // used to slow down the speed of the animation
+        this.jump = false;
+        this.runLeft =false;
+        this.runRight =false;
+        this.sheild = false;
+        this.attack =false;
     }
-    update(context, input, gameFrames){
+    update(context, gameFrames, enemyPool){
         this.draw(context, gameFrames)
         this.playerImg.src = "./images/player/idle.png";
         this.frameNum = 3;
 
-        if(input.keys.includes("g")){
+        if(this.attack){
             this.playerImg.src = "./images/player/attack.png";
             this.frameNum = 7;
         }
         //horizontal movement
-        if(input.keys.includes("d")){ //set an action for the keyboard input
+        else if(this.runRight){
             this.playerImg.src = "./images/player/run.png";
             this.frameNum = 7;
-            this.velocityX = this.maxSpeed;
+            this.velocity.x = this.maxSpeed;
             this.flip = false;
         }
-        else if(input.keys.includes("a")){
+        else if(this.runLeft){
             this.playerImg.src = "./images/player/run.png";
             this.frameNum = 7;
-            this.velocityX = -this.maxSpeed;
+            this.velocity.x = -this.maxSpeed;
             this.flip = true;
-            // this.frameX = 0;
         }
         else{
-            this.velocityX = 0
+            this.velocity.x = 0
         }
-        this.x += this.velocityX;
+        this.x += this.velocity.x;
 
         //vertical movement
-        if(input.keys.includes("w") && this.onGround()){
+        if(this.jump && this.onGround()){
             this.playerImg.src = "./images/player/jump.png";
             this.frameNum = 2;
-            this.velocityY -= this.jumpHeight * this.friction;
+            this.velocity.y -= this.jumpHeight * this.friction;
             console.log("jump")
         }
-        this.y += this.velocityY //this must be after the input includes for the code to work.
+        this.y += this.velocity.y //this must be after the input includes for the code to work.
         if(!this.onGround()){
             this.playerImg.src = "./images/player/fall.png";
             this.frameNum = 1;
-            this.velocityY += this.weight;
+            this.velocity.y += this.weight;
             console.log("falling")
         }
         else{
-            this.velocityY = 0;   
+            this.velocity.y = 0;   
         }
         //used to reset the player height to the ground in the event that the player ends up under the ground level
         if(this.y >this.game.height - this.height){ 
@@ -72,6 +84,23 @@ class Player{
 
         }
         this.handleScreen()
+
+
+        //set up collision with player
+        enemyPool.forEach(e => {
+            // const enemy = e.enemy
+            const dx = e.x - this.x;
+            const dy = e.y - this.y;
+            // const dx = (e.x + e.enemy.width/2 ) - (this.x + this.width/4);
+            // const dy = (e.y  + e.enemy.height/2) - (this.y  + this.height/2);
+            const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+            if(distance < e.enemy.width/2 + this.width/4){
+                console.log("gameover")
+                this.game.gameOver = true;
+            }
+            // console.log(e.enemy)
+            
+        });
     }
     onGround(){
         return this.y >= this.game.height - this.height;
@@ -97,16 +126,17 @@ class Player{
                  //drawImage(image, sx = x position on spritesheet, sy = y position on spritesheet, sWidth = spriteWidth, sHeight = spriteHeight, dx, dy, dWidth= draw Width, dHeight = draw height)
                  context.drawImage(this.playerImg, this.frameX * this.width , this.frameY , this.width, this.height, this.x, this.y, this.width, this.height);
             }
-        } 
+        }
+        testBoundsOfObject(this.x+this.width/3, this.y +this.height/2, 0, this.game.data, context, false, this.width/4, this.height/2) 
     }
     handleScreen(){
-        if(this.x + this.width > this.game.width ){
+        if(this.x + this.width/2 > this.game.width ){
             this.x = this.game.width - this.width
         }
-        else if(this.x < 0){
-            this.x = 0;
+        else if(this.x < 0 -this.width/2){
+            this.x = 0 -this.width/2;
         }
-        else if(this.y + this.height > this.game.height){
+        else if(this.y + this.height/2 > this.game.height){
             this.y = this.game.height - this.height
         }
         else if(this.y < 0){
