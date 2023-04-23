@@ -1,0 +1,121 @@
+import { randomNum, testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
+
+export class Enemy{
+    constructor(width, height, data){
+        this.game = {
+            width: width,
+            height: height,
+            data: data
+        };
+        
+        this.enemy = {
+            image: document.querySelector("#fox"),
+            width: Math.floor(this.game.width * 0.1),
+            height: Math.floor(this.game.height * 0.08),
+            sx:0,
+            sy:0,
+            sw: 80,
+            sh: 48,
+        }
+        this.radius = this.enemy.width/2
+        this.frames = {
+            x:0,
+            y:0
+        }
+        this.allowBounceOff = false;
+        this.framesNum = 7
+        this.originalX = this.game.width;
+        this.originalY = this.game.height - this.enemy.height;
+        this.x = this.game.width;
+        this.y = this.game.height - this.enemy.height;
+        
+        this.speed = randomNum(1, 3) //Math.random() * 0.15 + 0.01;
+        this.staggerFrames = 5;
+        this.free = true;
+    }
+    update(context, gameFrames){
+        
+        if(!this.free){
+            if(this.enemy.image.complete){
+                // draw the image
+                if(gameFrames % this.staggerFrames === 0){ // slow down the transitions between the animation frames
+                    if(this.frames.x < this.framesNum){
+                        this.frames.x++; // move through the different frames in the animation 
+                    }
+                    else{
+                        this.frames.x = 0 //return to the first frame in the animation
+                    }
+                     this.draw(context) 
+                }
+                this.x -=this.speed; // change the position of the enemy on the x axis
+            
+            }
+             //check if colliding with screen bounds
+             if(this.x < 0 -this.enemy.width){ 
+                this.x = this.game.width + this.enemy.width; //reset the position of enemt to offscreen x axis
+                this.reset() //remove meteor from the screen by setting its value to free
+            }  
+        }
+        testBoundsOfObject(this.x + this.radius, this.y + this.radius, this.radius, this.game.data, context, true, this.enemy.width, this.enemy.height)
+
+    } 
+    reset(){ //make an enemy available for use in the enemy pool 
+        this.free = true; 
+    }
+    start(){ //reset the position of the enemy to off screen.
+        this.free = false;
+        this.x = this.originalX
+        this.y = this.originalY
+    }
+
+    draw(context){
+        context.fillStyle = this.game.data.SPACE_COLOR;
+        // context.fillRect(this.x, this.y, this.game.width, this.game.height)
+        //flip the direction the enemy is facing
+        context.save(); // save the current state of the context
+        context.translate(this.x + this.enemy.width, this.y); // move the context to the right edge of the image
+        context.scale(-1, 1); // flip the x-axis
+        // Set image smoothing
+        context.imageSmoothingEnabled = true;
+        
+        context.drawImage(this.enemy.image, this.enemy.sw * this.frames.x, this.enemy.sy, this.enemy.sw, this.enemy.sh,
+            0, 0, this.enemy.width, this.enemy.height)
+        context.restore()
+        // context.fill();
+    }
+}
+
+export class FlyingEnemy extends Enemy{
+    constructor(width, height, data){
+        super();
+        this.game = {
+            width: width,
+            height: height,
+            data: data
+        };
+    
+        this.enemy ={
+            image: document.querySelector("#jelly"),
+            width: Math.floor(this.game.width * 0.1),
+            height: Math.floor(this.game.height * 0.1),
+            sx:0,
+            sy:0,
+            sw: 39,
+            sh: 27,
+
+        }
+        this.radius = this.enemy.width/2;
+        this.originalX = this.game.width;
+        this.originalY = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
+        this.x = this.game.width;
+        this.y = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
+        
+        this.speed = randomNum(1, 4) //Math.random() * 0.15 + 0.01;
+        this.staggerFrames = 5;
+        this.framesNum = 0
+    }
+    
+
+}
+
+// export default Enemy;

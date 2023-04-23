@@ -8,8 +8,8 @@ body{
     overflow: hidden;
 }
 #main{
-    border: 5px solid black;
-    background: url("./images/bg3.png");
+    border: 5px solid red;
+    /* background: url("./images/bg3.png"); */
     position: absolute;
     top: 50%; /* offset top an left from the edge of the image*/
     left: 50%;

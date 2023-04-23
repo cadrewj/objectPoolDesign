@@ -2,12 +2,27 @@ import gameData from "./data/data.json" assert { type: "json" }
 import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
+import Player from "./classes/player.js";
+import Background from "./classes/background.js";
+import {Enemy, FlyingEnemy} from "./classes/enemy.js";
+import Coins from "./classes/coins.js";
+import Particles from "./asteroid2.js";
+import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+ // note he optimised for 500 px in his styling for background;
+
+/*This property is useful for games and other apps that use pixel art. 
+When enlarging images, the default resizing algorithm will blur the pixels. 
+Set this property to false to retain the pixels' sharpness.*/
+// ctx.mozImageSmoothingEnabled = false;
+// ctx.webkitImageSmoothingEnabled = false;
+// ctx.msImageSmoothingEnabled = false;
+// ctx.imageSmoothingEnabled = false;
 
 //define the loading screen area and set it value to zero since the screen is already loaded
 const loading = document.querySelector("#loading")
@@ -19,75 +34,83 @@ addEventListener("load",()=>{
 
     class Game{
         constructor(width, height, data){
+            this.gameOver = false;
             this.width = width;
             this.height = height;
             this.data = data;
-            this.spaceship = new Spaceship(this);
-            this.input = new InputHandler(this);
+            this.spaceship = new Spaceship(this.width, this.height, this.data);
+            this.player = new Player(this.width, this.height, this.data, this.gameOver);
+            this.background = new Background(this.width, this.height, this.data)
+            this.input = new InputHandler(this.spaceship, this.player, this.data);
 
+            this.gameFrames = 0;
+            // this.asteroids = new Particles(this.width, this.height, this.data);
+            this.enemyPool =[];
+            this.maxEnemies = 9;
+            this.enemyTimer = 0;
+            this.enemyInterval = 3000;
            
-            // this.lives = this.data.GAME_LIVES;
+            this.coins = new Coins(this.width, this.height, this.data);
+           
+        
+            this.lives = this.data.GAME_LIVES;
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
-            this.max = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
-            this.createMeteorPool(); // automatically creating the pool as soon as an instance of the game class is created.
+            this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
+            this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created.
+            
         }
-
-        createMeteorPool(){ //create an object pool of meteors  all at once for faster allocation
-            for(let i = 0; i < this.max; i++){
-                this.meteorPool.push(new Meteor(this)); //this is used to pass the entire game class to the Meteor class
-            }         
+        createGamePools(){ //create an object pool of meteors  all at once for faster allocation
+            const  enemyTypes = [Enemy, FlyingEnemy];
+            createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height, this.data) //this is used to pass the game width and height  to the Meteor class
+            createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
-        getElement(){ //used to find the first available or free object in the array
-            for(let i =0; i < this.meteorPool.length; i++){
-                if(this.meteorPool[i].free){
-                    return this.meteorPool[i]; //return the free object
-                }
-            }
-        }
+      
         render(context, deltaTime){
-            //create meteor periodically
-            if(this.meteorTimer > this.meteorInterval){
-                //add a new meteor to be rendered from the meteorpool
-                const meteor = this.getElement();
-                if(meteor){ // if it return a free meteor then call start
-                    meteor.start()
-                }
-                //reset the timer
-                this.meteorTimer = 0;
-            }
-            else{
-                this.meteorTimer += deltaTime; // increase the value of the timer 
-            }
-            //update the meteors
-            this.meteorPool.forEach(meteor => {
-                meteor.update(context)
-            });
+            this.gameFrames++;
+            this.background.update(context, deltaTime);
+            this.coins.update(context)
+            
+            //render a new meteor periodically if it's free;
+            this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
+           
             //draw the spaceship
-            this.spaceship.update(context)
+            this.spaceship.update(context, this.gameFrames)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
-            console.log(this.input.lastKey, "lastkey")
-        }
 
+            //draw player 
+            if(this.player.onPlanet){
+                this.player.update(context, this.gameFrames, this.enemyPool)
+            } 
+            //render a new enemy periodically if it's free;
+            this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
+           
+             // this.asteroids.updateParticles(context);    
+          
+        }
     }
 
     let lastTime = 0;
+    
+
     const game = new Game(canvas.width, canvas.height, gameData);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
-        ctx.fillStyle = "rgba(0,0,0,0.5)"
-        ctx.fillRect(0,0,canvas.width, canvas.height);
+        // ctx.clearRect(0,0,canvas.width, canvas.height)
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
-
-        game.render(ctx, deltaTime)
+        game.render(ctx, deltaTime);
         const stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
+     
+        if(game.player.game.gameOver === true){
+            drawStatusText(ctx, canvas.width, canvas.height, gameData, game.player.game.gameOver)
+            cancelAnimationFrame(stopGame);
+        }
         // console.log("delta: ", deltaTime, " Frames Per Sec: ", framesPerSecond)
     }
     animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.
-
 })
 
 addEventListener("resize",()=>{
@@ -95,3 +118,8 @@ addEventListener("resize",()=>{
     canvas.height = innerHeight;
 
 })
+
+
+
+
+           
