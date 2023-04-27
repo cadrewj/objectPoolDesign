@@ -34,15 +34,25 @@ addEventListener("load",()=>{
 
     class Game{
         constructor(width, height, data){
+            this.camera = {
+                position: {
+                    x: 0,
+                    y: 0,
+                }
+            }
             this.gameOver = false;
             this.width = width;
             this.height = height;
             this.data = data;
-            this.spaceship = new Spaceship(this.width, this.height, this.data);
-            this.player = new Player(this.width, this.height, this.data, this.gameOver);
+            this.scaled = {
+                width: this.width/4,
+                height: this.height/4,
+            }
+            this.spaceship = new Spaceship(this);
+            this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
             this.input = new InputHandler(this.spaceship, this.player, this.data);
-
+         
             this.gameFrames = 0;
             // this.asteroids = new Particles(this.width, this.height, this.data);
             this.enemyPool =[];
@@ -51,6 +61,7 @@ addEventListener("load",()=>{
             this.enemyInterval = 3000;
            
             this.coins = new Coins(this.width, this.height, this.data);
+          
            
         
             this.lives = this.data.GAME_LIVES;
@@ -69,23 +80,32 @@ addEventListener("load",()=>{
       
         render(context, deltaTime){
             this.gameFrames++;
+            context.save()
+            context.scale(4,4) //used to max the background 4x bigger.
+            context.translate(this.camera.position.x, -this.height + this.scaled.height)
             this.background.update(context, deltaTime);
-            this.coins.update(context)
-            
-            //render a new meteor periodically if it's free;
-            this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
-           
-            //draw the spaceship
-            this.spaceship.update(context, this.gameFrames)
-            console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
 
+            //draw the spaceship
+            this.spaceship.update(context, this.gameFrames, this.camera)
+            console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
+       
             //draw player 
             if(this.player.onPlanet){
-                this.player.update(context, this.gameFrames, this.enemyPool)
+                this.player.update(context, this.gameFrames, this.enemyPool, this.camera)
             } 
+          
             //render a new enemy periodically if it's free;
             this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
+
+            context.restore();
+            //render a new meteor periodically if it's free;
+            this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
+
+            // this.coins.update(context)
+            
+          
+
              // this.asteroids.updateParticles(context);    
           
         }

@@ -1,9 +1,10 @@
 class InputHandler{
-    constructor(spaceship, player, data){
+    constructor(spaceship, player, data, camera){
         this.game = {
             spaceship: spaceship,
             player: player,
-            data: data
+            data: data,
+            // camera: camera
         };
         this.keys = [];
         window.addEventListener("keydown", (e)=>{      
@@ -48,6 +49,7 @@ class InputHandler{
                 case "d": //right arrow (rotate spaceship right )
                     // rotateSpaceShip(true)
                     this.game.player.runRight = true; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
+                    // this.game.player.shouldPanCameraToLeft(this.game.camera);
                 break;
                 case "s": //down arrow (thrust backward spaceship left)
                     this.game.player.sheild = true;
@@ -101,6 +103,7 @@ class InputHandler{
                 case "d": //right arrow (rotate spaceship right )
                     // rotateSpaceShip(true)
                     this.game.player.runRight = false; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
+                    
                 break;
                 case "s": //down arrow (thrust backward spaceship left)
                     this.game.player.sheild = false;

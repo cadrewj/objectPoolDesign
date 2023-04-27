@@ -14,8 +14,10 @@ class Meteor {
             height: this.radius * 2,
         }
         this.allowBounceOff = true;
-        this.x = randomNum(this.radius, this.game.width - this.radius)
-        this.y = 0 -  this.radius;
+        this.position ={
+            x: randomNum(this.radius, this.game.width - this.radius),
+            y: 0 -  this.radius,
+        } 
         this.velocity ={
             x: Math.random() * 1.5 + 0.1,
             y: Math.random() * 1.5 + 0.1,
@@ -28,7 +30,7 @@ class Meteor {
     draw(context){
         if(!this.free){ //used to draw only the active meteors
             context.save() //make Meteor rotate from absolute center 
-            context.translate(this.x, this.y) //used to select the center point for rotation
+            context.translate(this.position.x, this.position.y) //used to select the center point for rotation
             context.rotate(this.angle);
             // -this.radius is used to update the x, y coordinate so that the can be align from the center just like the testbound circles
             context.drawImage(this.meteor.image, -this.radius,-this.radius, this.meteor.width, this.meteor.height) //since we translated the image to position x,y, we only need to offest the image by the radius to get the center 
@@ -39,20 +41,20 @@ class Meteor {
         //used to update only the active meteors position
         if(!this.free){ 
             // this.testBound(context);
-            testBoundsOfObject(this.x, this.y, this.radius, this.game.data, context)
+            testBoundsOfObject(this.position.x, this.position.y, this.radius, this.game.data, context)
 
             this.draw(context);
-            this.y += this.velocity.x;
-            this.x += this.velocity.y;
+            this.position.x += this.velocity.y;
+            this.position.y += this.velocity.x;
             this.angle += this.velocityAngle;
 
             //check if colliding with screen bounds
-            if(this.x > this.game.width + this.radius){ 
-                this.x = -this.meteor.width; //reset the position of meteor to offscreen x axis
+            if(this.position.x > this.game.width + this.radius){ 
+                this.position.x = -this.meteor.width; //reset the position of meteor to offscreen x axis
                 this.reset() //remove meteor from the screen by setting its value to free
             }
-            else if(this.y > this.game.width  + this.radius){
-                this.y = -this.meteor.height;  //reset the position of meteor to offscreen on y axis
+            else if(this.position.y > this.game.width  + this.radius){
+                this.position.y = -this.meteor.height;  //reset the position of meteor to offscreen on y axis
                 this.reset() //remove meteor from the screen by setting its value to free
             }    
         }
@@ -62,8 +64,8 @@ class Meteor {
     }
     start(){
         this.free = false;
-        this.x = randomNum(this.radius, this.game.width - this.radius)
-        this.y = 0  - this.radius * 2; 
+        this.position.x = randomNum(this.radius, this.game.width - this.radius)
+        this.position.y = 0  - this.radius * 2; 
         this.velocity ={
             x: Math.random() * 1.5 + 0.1,
             y: Math.random() * 1.5 + 0.1,

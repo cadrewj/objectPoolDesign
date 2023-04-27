@@ -9,26 +9,35 @@ export function distanceBetweenPoints(x1, y1, x2, y2){
 
 }
 export function collision(object1, object2){
-    const dist = distanceBetweenPoints(object1.x, object1.y, object2.x, object2.y)  
+    const dist = distanceBetweenPoints(object1.position.x, object1.position.y, object2.position.x, object2.position.y)  
     const value = object1.radius + object2.radius;
     const sign = dist <= value ? (true) : (false);
     return sign
 }
+export function collisionBlockDectection({object1, object2}){
+    return (
+        object1.position.y + object1.height  >= object2.position.y && 
+        object1.position.y <= object2.position.y + object2.height &&
+        object1.position.x <= object2.position.x + object2.width &&
+        object1.position.x + object1.width  >= object2.position.x  
+    );
+
+}
 
 export function handleEdgeOfScreen(movingObject, width, height){
     //x axis bounds
-    if(movingObject.x < 0 - movingObject.radius){  //if the object's x position is less than 0 - the size of the object meaning it of the screen (right)
-        movingObject.x = movingObject.radius + width; //then place it at the left of the screen
+    if(movingObject.position.x < 0 - movingObject.radius){  //if the object's x position is less than 0 - the size of the object meaning it of the screen (right)
+        movingObject.position.x = movingObject.radius + width; //then place it at the left of the screen
     }
-    else if(movingObject.x > width + movingObject.radius){
-        movingObject.x = 0 - movingObject.radius //opposite of the above
+    else if(movingObject.position.x > width + movingObject.radius){
+        movingObject.position.x = 0 - movingObject.radius //opposite of the above
     }
 // y axis bounds
-    if(movingObject.y < 0 - movingObject.radius){ //if the object's y position is less than 0 - the size of the object meaning it of the screen (top)
-        movingObject.y = movingObject.radius + height; //then place it at the bottom of the screen
+    if(movingObject.position.y < 0 - movingObject.radius){ //if the object's y position is less than 0 - the size of the object meaning it of the screen (top)
+        movingObject.position.y = movingObject.radius + height; //then place it at the bottom of the screen
     }
-    else if(movingObject.y > height + movingObject.radius){
-        movingObject.y = 0 - movingObject.radius //opposite of the above
+    else if(movingObject.position.y > height + movingObject.radius){
+        movingObject.position.y = 0 - movingObject.radius //opposite of the above
     }
 
 }
@@ -118,7 +127,7 @@ export function bounceOff(object1, object2){
         console.log("crashed")
         const speed = 4
         // Calculate angle of collision
-        const angle = Math.atan2(object1.y - object1.y, object2.x - object2.x);
+        const angle = Math.atan2(object1.position.y - object1.position.y, object2.position.x - object2.position.x);
         
         // Update velocities of both particles
         object1.velocity.x = -speed * Math.cos(angle); // send object1 in the opposite direction
