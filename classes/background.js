@@ -10,8 +10,8 @@ class Background{
             x: 0, 
             y:0
         }
-        this.image = new Image();
-        this.image.src = "/images/bg3.png"
+        // this.image = new Image();
+        this.image = document.querySelector("#bg")
         this.speed = 20; //this.game.player.maxSpeed;
         this.stars = []; // define the stars array here
         this.star; // define a single star
@@ -89,8 +89,9 @@ class Background{
     } 
     drawSpace(context){
         // console.log("drawing")
-        // context.fillStyle = this.game.data.SPACE_COLOR;
-        // context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
+        context.beginPath()
+        context.fillStyle = this.game.data.SPACE_COLOR;
+        context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
         context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
     }
     init(){
