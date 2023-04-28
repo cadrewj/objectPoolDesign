@@ -10,8 +10,8 @@ export class Enemy{
         
         this.enemy = {
             image: document.querySelector("#fox"),
-            width: Math.floor(this.game.width * 0.1),
-            height: Math.floor(this.game.height * 0.08),
+            width: Math.floor(this.game.width * 0.03),//Math.floor(this.game.width * 0.1),
+            height: Math.floor(this.game.height * 0.02),//Math.floor(this.game.height * 0.08),
             sx:0,
             sy:0,
             sw: 80,
@@ -24,10 +24,14 @@ export class Enemy{
         }
         this.allowBounceOff = false;
         this.framesNum = 7
-        this.originalX = this.game.width;
-        this.originalY = this.game.height - this.enemy.height;
-        this.x = this.game.width;
-        this.y = this.game.height - this.enemy.height;
+        this.originalPosition ={
+            x: this.game.width,
+            y: this.game.height - this.enemy.height,
+        } 
+        this.position = {
+            x: this.game.width,
+            y: this.game.height - this.enemy.height,
+        }
         
         this.speed = randomNum(1, 3) //Math.random() * 0.15 + 0.01;
         this.staggerFrames = 5;
@@ -36,6 +40,8 @@ export class Enemy{
     update(context, gameFrames){
         
         if(!this.free){
+            testBoundsOfObject(this.position.x + this.radius, this.position.y + this.radius, this.radius, this.game.data, context, true, this.enemy.width, this.enemy.height)
+            this.draw(context) 
             if(this.enemy.image.complete){
                 // draw the image
                 if(gameFrames % this.staggerFrames === 0){ // slow down the transitions between the animation frames
@@ -44,19 +50,18 @@ export class Enemy{
                     }
                     else{
                         this.frames.x = 0 //return to the first frame in the animation
-                    }
-                     this.draw(context) 
+                    }  
                 }
-                this.x -=this.speed; // change the position of the enemy on the x axis
+                this.position.x -=this.speed; // change the position of the enemy on the x axis
             
             }
              //check if colliding with screen bounds
-             if(this.x < 0 -this.enemy.width){ 
-                this.x = this.game.width + this.enemy.width; //reset the position of enemt to offscreen x axis
+             if(this.position.x < 0 -this.enemy.width){ 
+                this.position.x = this.game.width + this.enemy.width; //reset the position of enemt to offscreen x axis
                 this.reset() //remove meteor from the screen by setting its value to free
             }  
         }
-        testBoundsOfObject(this.x + this.radius, this.y + this.radius, this.radius, this.game.data, context, true, this.enemy.width, this.enemy.height)
+        
 
     } 
     reset(){ //make an enemy available for use in the enemy pool 
@@ -64,24 +69,20 @@ export class Enemy{
     }
     start(){ //reset the position of the enemy to off screen.
         this.free = false;
-        this.x = this.originalX
-        this.y = this.originalY
+        this.position.x = this.originalPosition.x
+        this.position.y = this.originalPosition.y
     }
 
     draw(context){
-        context.fillStyle = this.game.data.SPACE_COLOR;
-        // context.fillRect(this.x, this.y, this.game.width, this.game.height)
         //flip the direction the enemy is facing
         context.save(); // save the current state of the context
-        context.translate(this.x + this.enemy.width, this.y); // move the context to the right edge of the image
+        context.translate(this.position.x + this.enemy.width, this.position.y); // move the context to the right edge of the image
         context.scale(-1, 1); // flip the x-axis
-        // Set image smoothing
-        context.imageSmoothingEnabled = true;
+
         
         context.drawImage(this.enemy.image, this.enemy.sw * this.frames.x, this.enemy.sy, this.enemy.sw, this.enemy.sh,
             0, 0, this.enemy.width, this.enemy.height)
         context.restore()
-        // context.fill();
     }
 }
 
@@ -105,17 +106,13 @@ export class FlyingEnemy extends Enemy{
 
         }
         this.radius = this.enemy.width/2;
-        this.originalX = this.game.width;
-        this.originalY = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
-        this.x = this.game.width;
-        this.y = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
+        this.originalPosition.x = this.game.width;
+        this.originalPosition.y = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
+        this.position.x = this.game.width;
+        this.position.y = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
         
         this.speed = randomNum(1, 4) //Math.random() * 0.15 + 0.01;
         this.staggerFrames = 5;
         this.framesNum = 0
     }
-    
-
 }
-
-// export default Enemy;

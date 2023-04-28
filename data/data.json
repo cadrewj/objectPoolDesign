@@ -56,6 +56,7 @@
     "NN_OUTPUT_THRESHOLD": 0.05,
     "NN_LOG_ON": false,
     "NN_LOG_FREQ":10000,
+    "PLAYER_SIZE": 30,
 
     "PLANET_SIZE": 0.10,
     "PLANET_NUM": 5,
@@ -119,9 +120,15 @@
     "STAR_SPEED_MULT_MIN":0.2,
     "STAR_VELOCITY_RATIO": 0.01,
 
-    "SHOW_BOUNDING": true,
-    "SHOW_CENTER_DOT": true
-  
+    "SHOW_BOUNDING": false,
+    "SHOW_CENTER_DOT": true,
+
+    "jump":  "./images/player/jump.png",
+    "idle":  "./images/player/idle.png",
+    "run":  "./images/player/run.png",
+    "attack":  "./images/player/attack.png",
+    "fall": "./images/player/fall.png"
+    
 
 
 }

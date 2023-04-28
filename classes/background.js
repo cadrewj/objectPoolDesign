@@ -6,12 +6,17 @@ class Background{
             height: height,
             data: data,
         };
-        this.x = 0;
-        this.y = 0;
+        this.position ={
+            x: 0, 
+            y:0
+        }
+        this.image = new Image();
+        this.image.src = "/images/bg3.png"
         this.speed = 20; //this.game.player.maxSpeed;
         this.stars = []; // define the stars array here
         this.star; // define a single star
         this.starSpeed = this.game.data.STAR_SPEED * this.game.width; // set the speed of the stars
+   
       
         //initialize all the startw
         for (let i = 0; i < this.game.data.STAR_NUM; i++) {
@@ -21,23 +26,26 @@ class Background{
     }
 
     update(context, deltaTime){
-        // this.x -= this.speed; //constantly move the background
-        // if (this.x < 0 - this.game.width){ // reset the background to zero
-        //     this.x = 0
+        // this.position.x -= this.speed; //constantly move the background
+        // if (this.position.x < 0 - this.game.width){ // reset the background to zero
+        //     this.position.x = 0
         // }
+
         this.drawSpace(context);
+        // context.restore();
         this.updateStar(context, deltaTime);
+        
 
     }
     updateStar(context, deltaTime){
         // ctx.fillStyle = data.STAR_COLOR;
         for(let i = 0; i < this.stars.length; i++){
-            //draw all the stars in the array
-            this.drawStar(context, this.stars[i].x, this.stars[i].y, this.stars[i].radius / degToRad(100))
+            //draw all the stars in the array position.
+            this.drawStar(context, this.stars[i].position.x, this.stars[i].position.y, this.stars[i].radius / degToRad(100))
             
             //update the position of the star
-            this.stars[i].x += this.stars[i].velocityX * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
-            this.stars[i].y += this.stars[i].velocityY * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
+            this.stars[i].position.x += this.stars[i].velocity.x * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
+            this.stars[i].position.y += this.stars[i].velocity.y * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
             handleEdgeOfScreen(this.stars[i], this.game.width, this.game.height);
         }
     }
@@ -81,9 +89,9 @@ class Background{
     } 
     drawSpace(context){
         // console.log("drawing")
-        context.fillStyle = this.game.data.SPACE_COLOR;
-        context.fillRect(this.x, this.y, this.game.width, this.game.height)
-        // context.fillRect(this.x + this.game.width - this.speed, this.y, this.game.width, this.game.height) // make a second screen parallel to screen to make it look endless
+        // context.fillStyle = this.game.data.SPACE_COLOR;
+        // context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
+        context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
     }
     init(){
         const speedMult =  randomNum(this.game.data.STAR_SPEED_MULT_MIN, this.game.data.STAR_SPEED_MULT_MAX) //set the speed of the star to a number between 0.2 - 1.2
@@ -92,11 +100,14 @@ class Background{
 
         this.star={
             radius: this.game.data.STAR_SIZE * Math.random() * this.game.width / 2, 
-            x: Math.floor(Math.random() * this.game.width), // assign a random number in the x direction
-            y: Math.floor(Math.random() * this.game.width), // assign a random number in the y direction
-            velocityX: starVelocityX * speedMult /this.game.data.FPS,
-            velocityY: starVelocityY * speedMult  /this.game.data.FPS, 
-            
+            position:{
+                x: Math.floor(Math.random() * this.game.width), // assign a random number in the x direction
+                y: Math.floor(Math.random() * this.game.width), // assign a random number in the y direction
+            },
+            velocity:{
+                x: starVelocityX * speedMult /this.game.data.FPS,
+                y: starVelocityY * speedMult  /this.game.data.FPS, 
+            }    
         }
         return this.star;
     }
