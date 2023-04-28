@@ -12,8 +12,8 @@ class Spaceship{
             scaled: game.scaled,
         }
         this.position ={
-            x: this.game.width / (2 *4),//this.game.width / 2, //position the ship at the center of x axis
-            y: this.game.height - (this.game.height/(4*2)),//this.game.height / 2, //position the ship at the center of y axis
+            x: this.game.scaled.width * 0.5,//this.game.width / 2, //position the ship at the center of x axis
+            y: this.game.height - this.game.scaled.height * 0.5,//this.game.height / 2, //position the ship at the center of y axis
         }  
         this.ship = {
             image:  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
@@ -82,25 +82,24 @@ class Spaceship{
                 x: this.position.x ,//- this.game.width * (0.4/4)/2,
                 y: this.position.y,
             },
-            radius: this.game.height * (0.5/6),
+            radius: this.game.scaled.height * 0.35,
         } 
 
     }
   
     update(context, gameFrames, camera){
-        //draw cameraCircle
-        context.beginPath()
-        context.fillStyle = "orange";
-        context.arc(this.cameraCircle.position.x, this.cameraCircle.position.y, this.cameraCircle.radius,0, degToRad(360), false);
-        context.fill()
-        //draw hit circle for spaceship
-        context.beginPath()
-        context.strokeStyle = "black";
-        context.arc(this.hitCircle.position.x, this.hitCircle.position.y, this.hitCircle.radius, 0, degToRad(360), false);
-        context.stroke();
-
-
-
+        if(this.game.data.SHOW_BOUNDING){ //used for testing
+            //draw cameraCircle
+            context.beginPath()
+            context.fillStyle = "orange";
+            context.arc(this.cameraCircle.position.x, this.cameraCircle.position.y, this.cameraCircle.radius,0, degToRad(360), false);
+            context.fill()
+            //draw hit circle for spaceship
+            context.beginPath()
+            context.strokeStyle = "black";
+            context.arc(this.hitCircle.position.x, this.hitCircle.position.y, this.hitCircle.radius, 0, degToRad(360), false);
+            context.stroke();
+        }
 
         let exploding = this.explodeTime > 0;
         let blinkOn = this.blinkNum % 2 == 0;
@@ -166,7 +165,9 @@ class Spaceship{
     thrustWithFriction(context, gameFrames, camera){
         if(this.fuel > 0 && this.lives !== 0){
             this.shouldPanCameraToRight(camera)
+            this.shouldPanCameraUp(camera)
             this.shouldPanCameraToLeft(camera)
+            this.shouldPanCameraDown(camera)
             if(this.thrusting){ // add thrust and friction
                 // acceleration of the ship in pixels per second per second 
                 const thrustAngle = this.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
@@ -375,49 +376,69 @@ class Spaceship{
                 x: this.position.x ,//- this.game.width * (0.4/4)/2,
                 y: this.position.y,
             },
-            radius: this.game.height * (0.5/6),
+            radius: this.game.scaled.height * 0.35,
         } 
     }
     shouldPanCameraToLeft(camera){
-        const cameraBoxRightSide = this.cameraCircle.position.x + this.cameraCircle.radius;
-        if(cameraBoxRightSide + this.thrust.x >= this.game.width){ //prevent panning beyond width of background
+        const cameraCircleRightSide = this.cameraCircle.position.x + this.cameraCircle.radius;
+        if(cameraCircleRightSide + this.thrust.x >= this.game.width){ //prevent panning beyond width of background
             return
         }
-        if(cameraBoxRightSide >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraCircleRightSide + this.thrust.x >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
         }
 
     }
     shouldPanCameraToRight(camera){
-        const cameraBoxLeftSide = this.cameraCircle.position.x;
-        if(cameraBoxLeftSide + this.thrust.x <= 0){ //prevent panning beyond 0
+        const cameraCircleLeftSide = this.cameraCircle.position.x;
+        if(cameraCircleLeftSide + this.thrust.x <= 0){ //prevent panning beyond 0
             return
         }
-        if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
+        if(cameraCircleLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
         }
 
     }
-    handleScreen(){
+    shouldPanCameraUp(camera){
+        const cameraCircleBottom = this.cameraCircle.position.y + this.cameraCircle.radius;
+        if(cameraCircleBottom + this.thrust.y >= this.game.height){ //prevent panning beyond width of background
+            return
+        }
+        if(cameraCircleBottom >= this.game.scaled.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+            camera.position.y -= this.thrust.y  //translate up
+        }
+
+    }
+    shouldPanCameraDown(camera){
+        const cameraCircleTop = this.cameraCircle.position.y;
+        if(cameraCircleTop + this.thrust.y <= 0){ //prevent panning beyond 0
+            return
+        }
+        if(cameraCircleTop + this.thrust.y <= Math.abs(camera.position.y)){
+            camera.position.y -= this.thrust.y  // translate down;  note: this.velocity is negative, so two negatives = positive
+        }
+        
+    }
+    handleScreen(){ //has small bug
         if(this.position.x + this.hitCircle.radius  + this.thrust.x >= this.game.width ){
             this.thrust.x =0;
             this.revThruster.x =0;
             this.position.x = this.game.width - this.hitCircle.radius
         }
-        else if(this.position.x + this.thrust.x <= 0  - this.hitCircle.radius){
-            this.thrust.x =0;
-            this.revThruster.x =0;
+        else if(this.position.x + this.thrust.x <= 0  ){
+            this.thrust.x = 0;
+            this.revThruster.x = 0;
             this.position.x = 0 - this.hitCircle.radius;
         }
-        else if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.height){
+        if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.height){
             this.thrust.y = 0;
-            this.revThruster.y =0;
+            this.revThruster.y = 0;
             this.position.y = this.game.height - this.hitCircle.radius
             
         }
-        else if(this.position.y + this.thrust.y <= 0  - this.hitCircle.radius){
+        else if(this.position.y + this.thrust.y <= 0){
             this.thrust.y = 0;
-            this.revThruster.y =0;
+            this.revThruster.y = 0;
             this.position.y = 0;
         }
     }   

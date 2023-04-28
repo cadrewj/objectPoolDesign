@@ -34,12 +34,6 @@ addEventListener("load",()=>{
 
     class Game{
         constructor(width, height, data){
-            this.camera = {
-                position: {
-                    x: 0,
-                    y: 0,
-                }
-            }
             this.gameOver = false;
             this.width = width;
             this.height = height;
@@ -47,6 +41,12 @@ addEventListener("load",()=>{
             this.scaled = {
                 width: this.width/4,
                 height: this.height/4,
+            }
+            this.camera = {
+                position: {
+                    x: 0,
+                    y: -this.height + this.scaled.height,
+                }
             }
             this.spaceship = new Spaceship(this);
             this.player = new Player(this);
@@ -82,7 +82,7 @@ addEventListener("load",()=>{
             this.gameFrames++;
             context.save()
             context.scale(4,4) //used to max the background 4x bigger.
-            context.translate(this.camera.position.x, -this.height + this.scaled.height)
+            context.translate(this.camera.position.x, this.camera.position.y)
             this.background.update(context, deltaTime);
 
             //draw the spaceship

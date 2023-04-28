@@ -23,7 +23,7 @@ class Player{
      
   
         this.position = {
-            x: this.game.width * 0.20, //position of the player on the x axis
+            x: this.game.width * 0.02, //position of the player on the x axis
             y: this.game.height - this.playerInfo.height, //position of the player on the y axis
 
         }; 
@@ -37,11 +37,11 @@ class Player{
         } 
         this.camerabox = {
             position:{
-                x: this.position.x - this.game.width * (0.4/4)/2,
-                y: this.position.y - this.game.height * (0.4/4)/5,
+                x: this.position.x - this.game.scaled.width * 0.2,
+                y: this.position.y - this.game.scaled.height * 0.08
             },
-            width: this.game.width * (0.5/4),
-            height: this.game.height * (0.4/4),
+            width: this.game.scaled.width * 0.5,
+            height: this.game.scaled.height * 0.4,
         } 
         this.inSpace = true;
         this.onPlanet = true;
@@ -67,9 +67,11 @@ class Player{
         this.attack =false;
     }
     update(context, gameFrames, enemyPool, camera){
+        this.handleScreen()  //used to ensure the player doesn't fall off the screen
         this.updateHitBox();
         this.updateCameraBox();
         // this.shouldPanCameraToLeft();
+        
         this.draw(context, gameFrames)
 
         //set the default motion and the default number of frames for the player
@@ -105,6 +107,8 @@ class Player{
             this.playerInfo.image.src = this.game.data.jump
             this.frameNum = 2;
             this.velocity.y -= this.jumpHeight * this.friction;
+            this.shouldPanCameraUp(camera)
+            // this.shouldPanCameraDown(camera)
             console.log("jump")
         }
         this.position.y += this.velocity.y //this must be after the input includes for the code to work.
@@ -112,6 +116,7 @@ class Player{
             this.playerInfo.image.src =this.game.data.fall;
             this.frameNum = 1;
             this.velocity.y += this.weight;
+            this.shouldPanCameraDown(camera)
             console.log("falling")
         }
         else{
@@ -119,11 +124,9 @@ class Player{
         }
         //used to reset the player height to the ground in the event that the player ends up under the ground level
         if(this.position.y > this.game.height - this.playerInfo.height){ 
-            this.position.y = this.game.height - this.playerInfo.height
-
+            this.position.y = this.game.height - this.playerInfo.height;
         }
-        this.handleScreen()
-
+        
 
         //set up collision with player
         enemyPool.forEach(e => {
@@ -138,20 +141,23 @@ class Player{
             // console.log(e.enemy)
             
         });
+        this.handleScreen()  //used to ensure the player doesn't fall off the screen
     }
     onGround(){
         return this.position.y >= this.game.height - this.playerInfo.height;
     }
     draw(context, gameFrames){
-        //draw cameraBox
-        context.beginPath()
-        context.fillStyle = "yellow";
-        context.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height);
+        if(this.game.data.SHOW_BOUNDING){ //used for testing
+            //draw cameraBox
+            context.beginPath()
+            context.fillStyle = "yellow";
+            context.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height);
 
-        //draw hitbox
-        context.beginPath()
-        context.strokeStyle = "red";
-        context.strokeRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+            //draw hitbox
+            context.beginPath()
+            context.strokeStyle = "red";
+            context.strokeRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+        }
 
         if(this.playerInfo.image.complete){
             if(gameFrames % this.staggerFrames === 0){
@@ -176,24 +182,23 @@ class Player{
                      this.position.x, this.position.y, this.playerInfo.width, this.playerInfo.height);
             }
         }
-
-
-        // testBoundsOfObject(this.position.x + this.playerInfo.width/4, this.position.y + this.playerInfo.height/2, 0, this.game.data, context, false, this.playerInfo.width/2, this.playerInfo.height/2) 
     }
-    handleScreen(){
-        if(this.position.x + this.hitbox.width +this.velocity.x>= this.game.width ){
-            
+    handleScreen(){ //has small bug
+        if(this.position.x + this.hitbox.width + this.velocity.x >= this.game.width){   
             this.position.x = this.game.width - this.hitbox.width
-            this.velocity.x =0;
+            this.velocity.x = 0;
         }
-        else if(this.position.x < 0 - this.hitbox.width){
+        else if(this.position.x + this.velocity.x <= 0 - this.hitbox.width){
             this.position.x = 0 - this.hitbox.width;
+            this.velocity.x = 0;
         }
-        else if(this.position.y + this.hitbox.height > this.game.height){
+        if(this.position.y + this.hitbox.height + this.velocity.y >= this.game.height){
             this.position.y = this.game.height - this.hitbox.height
+            this.velocity.y = 0;
         }
-        else if(this.position.y < 0){
-            this.position.y = 0;
+        else if(this.position.y + this.velocity.y <= 0  - this.hitbox.height){
+            this.position.y = 0 - this.hitbox.height;
+            this.velocity.y = 0;
         }
     }
     updateHitBox(){
@@ -209,11 +214,11 @@ class Player{
     updateCameraBox(){
         this.camerabox = {
             position:{
-                x: this.position.x - this.game.width * (0.4/4)/2,
-                y: this.position.y - this.game.height * (0.4/4)/5,
+                x: this.position.x - this.game.scaled.width * 0.2,//this.game.width * (0.4/4)/2,
+                y: this.position.y - this.game.scaled.height * 0.08//this.game.height * (0.4/4)/5,
             },
-            width: this.game.width * (0.5/4),
-            height: this.game.height * (0.4/4),
+            width: this.game.scaled.width * 0.5,
+            height: this.game.scaled.height * 0.4,
         } 
     }
     shouldPanCameraToLeft(camera){
@@ -221,7 +226,7 @@ class Player{
         if(cameraBoxRightSide + this.velocity.x >= this.game.width){ //prevent panning beyond width of background
             return
         }
-        if(cameraBoxRightSide >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.velocity.x >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.velocity.x  //translate left
         }
 
@@ -236,10 +241,24 @@ class Player{
         }
 
     }
-    shouldPanCameraToTop(){
+    shouldPanCameraUp(camera){
+        const cameraBoxBottom = this.camerabox.position.y + this.camerabox.height;
+        if(cameraBoxBottom + this.velocity.y >= this.game.height){ //prevent panning beyond width of background
+            return
+        }
+        if(cameraBoxBottom >= this.game.scaled.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+            camera.position.y -= this.velocity.y  //translate up
+        }
 
     }
-    shouldPanCameraToBottom(){
+    shouldPanCameraDown(camera){
+        const cameraBoxTop = this.camerabox.position.y;
+        if(cameraBoxTop + this.velocity.y <= 0){ //prevent panning beyond 0
+            return
+        }
+        if(cameraBoxTop + this.velocity.y <= Math.abs(camera.position.y)){
+            camera.position.y -= this.velocity.y  // translate down;  note: this.velocity is negative, so two negatives = positive
+        }
         
     }
 }
