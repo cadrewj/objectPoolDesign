@@ -419,16 +419,17 @@ class Spaceship{
         }
         
     }
-    handleScreen(){ //has small bug
+    handleScreen(){ 
         if(this.position.x + this.hitCircle.radius  + this.thrust.x >= this.game.width ){
             this.thrust.x =0;
             this.revThruster.x =0;
             this.position.x = this.game.width - this.hitCircle.radius
         }
         else if(this.position.x + this.thrust.x <= 0  ){
+            this.position.x = 0 + this.thrust.x;
             this.thrust.x = 0;
             this.revThruster.x = 0;
-            this.position.x = 0 - this.hitCircle.radius;
+            
         }
         if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.height){
             this.thrust.y = 0;
@@ -437,9 +438,10 @@ class Spaceship{
             
         }
         else if(this.position.y + this.thrust.y <= 0){
+            this.position.y = 0  + this.thrust.y; //has small bug
             this.thrust.y = 0;
             this.revThruster.y = 0;
-            this.position.y = 0;
+            
         }
     }   
 }
