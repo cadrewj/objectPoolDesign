@@ -138,7 +138,6 @@ class Player{
                 console.log("gameover")
                 // this.game.gameOver = true;a
             }
-            // console.log(e.enemy)
             
         });
         this.handleScreen()  //used to ensure the player doesn't fall off the screen
@@ -150,7 +149,7 @@ class Player{
         if(this.game.data.SHOW_BOUNDING){ //used for testing
             //draw cameraBox
             context.beginPath()
-            context.fillStyle = "yellow";
+            context.fillStyle = "rgba(211,12,100,0.1)";
             context.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height);
 
             //draw hitbox

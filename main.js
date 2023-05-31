@@ -35,9 +35,10 @@ addEventListener("load",()=>{
             this.width = width;
             this.height = height;
             this.data = data;
+            this.zoomedUp = 4;
             this.scaled = {
-                width: this.width/4,
-                height: this.height/4,
+                width: this.width/this.zoomedUp,
+                height: this.height/this.zoomedUp,
             }
             this.camera = {
                 position: {
@@ -78,11 +79,11 @@ addEventListener("load",()=>{
         render(context, deltaTime){
             this.gameFrames++;
             context.save()
-            context.scale(4,4) //used to max the background 4x bigger.
+            context.scale(this.zoomedUp,this.zoomedUp) //used to max the background 4x bigger.
             context.translate(this.camera.position.x, this.camera.position.y)
+            
             this.background.update(context);
             
-
             //draw the spaceship
             this.spaceship.update(context, this.gameFrames, this.camera)
             console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
@@ -106,11 +107,9 @@ addEventListener("load",()=>{
 
     let lastTime = 0;
     
-
     const game = new Game(canvas.width, canvas.height, gameData);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
-        
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
         game.render(ctx, deltaTime);

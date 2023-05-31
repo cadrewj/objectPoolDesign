@@ -10,7 +10,7 @@ export class Background{
             x: 0, 
             y:0
         }
-        // this.image = document.querySelector("#bg")
+        this.image = document.querySelector("#bg")
       
     }
 
@@ -28,8 +28,8 @@ export class Background{
         // console.log("drawing")
         context.beginPath()
         context.fillStyle = this.game.data.SPACE_COLOR;
-        context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
-        // context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
+        // context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
+        context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
     }
 
 }
@@ -125,6 +125,3 @@ export class Stars extends Background{
         return this.star;
     }
 }
-
-
-// export default Background;
