@@ -3,10 +3,8 @@ import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
-import Background from "./classes/background.js";
+import {Background, Stars} from "./classes/background.js";
 import {Enemy, FlyingEnemy} from "./classes/enemy.js";
-import Coins from "./classes/coins.js";
-import Particles from "./asteroid2.js";
 import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
 
 //define the canvas and it's dimensions
@@ -14,7 +12,6 @@ const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
- // note he optimised for 500 px in his styling for background;
 
 /*This property is useful for games and other apps that use pixel art. 
 When enlarging images, the default resizing algorithm will blur the pixels. 
@@ -51,6 +48,8 @@ addEventListener("load",()=>{
             this.spaceship = new Spaceship(this);
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
+            this.stars = new Stars(this.width, this.height, this.data);
+
             this.input = new InputHandler(this.spaceship, this.player, this.data);
          
             this.gameFrames = 0;
@@ -60,9 +59,7 @@ addEventListener("load",()=>{
             this.enemyTimer = 0;
             this.enemyInterval = 3000;
            
-            this.coins = new Coins(this.width, this.height, this.data);
-          
-           
+            // this.coins = new Coins(this.width, this.height, this.data);
         
             this.lives = this.data.GAME_LIVES;
             this.meteorTimer = 0;
@@ -83,7 +80,8 @@ addEventListener("load",()=>{
             context.save()
             context.scale(4,4) //used to max the background 4x bigger.
             context.translate(this.camera.position.x, this.camera.position.y)
-            this.background.update(context, deltaTime);
+            this.background.update(context);
+            
 
             //draw the spaceship
             this.spaceship.update(context, this.gameFrames, this.camera)
@@ -99,14 +97,9 @@ addEventListener("load",()=>{
            
 
             context.restore();
+            this.stars.update(context, deltaTime);
             //render a new meteor periodically if it's free;
             this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
-
-            // this.coins.update(context)
-            
-          
-
-             // this.asteroids.updateParticles(context);    
           
         }
     }
@@ -117,7 +110,7 @@ addEventListener("load",()=>{
     const game = new Game(canvas.width, canvas.height, gameData);
     
     function animate(timeStamp){ //note: timeStamp is automatically generated.
-        // ctx.clearRect(0,0,canvas.width, canvas.height)
+        
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
         game.render(ctx, deltaTime);

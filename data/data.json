@@ -120,7 +120,7 @@
     "STAR_SPEED_MULT_MIN":0.2,
     "STAR_VELOCITY_RATIO": 0.01,
 
-    "SHOW_BOUNDING": false,
+    "SHOW_BOUNDING": true,
     "SHOW_CENTER_DOT": true,
 
     "jump":  "./images/player/jump.png",

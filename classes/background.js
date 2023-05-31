@@ -1,5 +1,5 @@
 import { randomNum, randomRGB, randomSign, degToRad , handleEdgeOfScreen} from "../utilityFunctions/utilityFunctions.js";
-class Background{
+export class Background{
     constructor(width, height, data){
         this.game = {
             width: width,
@@ -10,8 +10,38 @@ class Background{
             x: 0, 
             y:0
         }
-        // this.image = new Image();
-        this.image = document.querySelector("#bg")
+        // this.image = document.querySelector("#bg")
+      
+    }
+
+    update(context){
+        // this.position.x -= this.speed; //constantly move the background
+        // if (this.position.x < 0 - this.game.width){ // reset the background to zero
+        //     this.position.x = 0
+        // }
+
+        this.draw(context);
+        // context.restore();    
+
+    }
+    draw(context){
+        // console.log("drawing")
+        context.beginPath()
+        context.fillStyle = this.game.data.SPACE_COLOR;
+        context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
+        // context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
+    }
+
+}
+
+export class Stars extends Background{
+    constructor(width, height, data){
+        super();
+        this.game = {
+            width: width,
+            height: height,
+            data: data,
+        };
         this.speed = 20; //this.game.player.maxSpeed;
         this.stars = []; // define the stars array here
         this.star; // define a single star
@@ -24,76 +54,58 @@ class Background{
             this.stars.push(newStar);
         }
     }
-
     update(context, deltaTime){
-        // this.position.x -= this.speed; //constantly move the background
-        // if (this.position.x < 0 - this.game.width){ // reset the background to zero
-        //     this.position.x = 0
-        // }
-
-        this.drawSpace(context);
-        // context.restore();
-        this.updateStar(context, deltaTime);
-        
-
-    }
-    updateStar(context, deltaTime){
-        // ctx.fillStyle = data.STAR_COLOR;
-        for(let i = 0; i < this.stars.length; i++){
-            //draw all the stars in the array position.
-            this.drawStar(context, this.stars[i].position.x, this.stars[i].position.y, this.stars[i].radius / degToRad(100))
-            
-            //update the position of the star
-            this.stars[i].position.x += this.stars[i].velocity.x * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
-            this.stars[i].position.y += this.stars[i].velocity.y * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
-            handleEdgeOfScreen(this.stars[i], this.game.width, this.game.height);
+            // ctx.fillStyle = data.STAR_COLOR;
+            for(let i = 0; i < this.stars.length; i++){
+                //draw all the stars in the array position.
+                this.draw(context, this.stars[i].position.x, this.stars[i].position.y, this.stars[i].radius / degToRad(100))
+                
+                //update the position of the star
+                this.stars[i].position.x += this.stars[i].velocity.x * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
+                this.stars[i].position.y += this.stars[i].velocity.y * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
+                handleEdgeOfScreen(this.stars[i], this.game.width, this.game.height);
+            }
         }
-    }
+    
+    draw(context, x,y,radius){ // First star with radius size of 0.005  // size = 500 * 0.018
+            // Top triangle
+            context.beginPath();
+            context.moveTo(x, y - radius);
+            context.lineTo(x + radius * Math.sqrt(3) / 2, y + radius / 2);
+            context.lineTo(x - radius * Math.sqrt(3) / 2, y + radius / 2);
+            context.closePath();
+            context.fillStyle = randomRGB();
+            context.fill();
+            
+            // Right triangle
+            context.beginPath();
+            context.moveTo(x + radius, y);
+            context.lineTo(x - radius / 2, y + radius * Math.sqrt(3) / 2);
+            context.lineTo(x - radius / 2, y - radius * Math.sqrt(3) / 2);
+            context.closePath();
+            context.fillStyle = randomRGB();//"white";
+            context.fill();
+            
+            // Bottom triangle
+            context.beginPath();
+            context.moveTo(x, y + radius);
+            context.lineTo(x - radius * Math.sqrt(3) / 2, y - radius / 2);
+            context.lineTo(x + radius * Math.sqrt(3) / 2, y - radius / 2);
+            context.closePath();
+            context.fillStyle = randomRGB();//"white";
+            context.fill();
+            
+            // Left triangle
+            context.beginPath();
+            context.moveTo(x - radius, y);
+            context.lineTo(x + radius / 2, y - radius * Math.sqrt(3) / 2);
+            context.lineTo(x + radius / 2, y + radius * Math.sqrt(3) / 2);
+            context.closePath();
+            context.fillStyle = randomRGB();//"white";
+            context.fill();
+        } 
 
-    drawStar(context, x,y,radius){ // First star with radius size of 0.005  // size = 500 * 0.018
-        // Top triangle
-        context.beginPath();
-        context.moveTo(x, y - radius);
-        context.lineTo(x + radius * Math.sqrt(3) / 2, y + radius / 2);
-        context.lineTo(x - radius * Math.sqrt(3) / 2, y + radius / 2);
-        context.closePath();
-        context.fillStyle = randomRGB();
-        context.fill();
-        
-        // Right triangle
-        context.beginPath();
-        context.moveTo(x + radius, y);
-        context.lineTo(x - radius / 2, y + radius * Math.sqrt(3) / 2);
-        context.lineTo(x - radius / 2, y - radius * Math.sqrt(3) / 2);
-        context.closePath();
-        context.fillStyle = randomRGB();//"white";
-        context.fill();
-        
-        // Bottom triangle
-        context.beginPath();
-        context.moveTo(x, y + radius);
-        context.lineTo(x - radius * Math.sqrt(3) / 2, y - radius / 2);
-        context.lineTo(x + radius * Math.sqrt(3) / 2, y - radius / 2);
-        context.closePath();
-        context.fillStyle = randomRGB();//"white";
-        context.fill();
-        
-        // Left triangle
-        context.beginPath();
-        context.moveTo(x - radius, y);
-        context.lineTo(x + radius / 2, y - radius * Math.sqrt(3) / 2);
-        context.lineTo(x + radius / 2, y + radius * Math.sqrt(3) / 2);
-        context.closePath();
-        context.fillStyle = randomRGB();//"white";
-        context.fill();
-    } 
-    drawSpace(context){
-        // console.log("drawing")
-        context.beginPath()
-        context.fillStyle = this.game.data.SPACE_COLOR;
-        context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
-        context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
-    }
+    
     init(){
         const speedMult =  randomNum(this.game.data.STAR_SPEED_MULT_MIN, this.game.data.STAR_SPEED_MULT_MAX) //set the speed of the star to a number between 0.2 - 1.2
         const starVelocityX = this.starSpeed * randomSign() * Math.random();
@@ -114,4 +126,5 @@ class Background{
     }
 }
 
-export default Background;
+
+// export default Background;
