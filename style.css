@@ -6,6 +6,7 @@
 }
 body{
     overflow: hidden;
+    background-color: white;
 }
 #main{
     border: 5px solid red;
