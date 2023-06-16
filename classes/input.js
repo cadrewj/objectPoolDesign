@@ -1,12 +1,10 @@
 class InputHandler{
-    constructor(spaceship, player, data, camera){
+    constructor(spaceship, data){
         this.game = {
             spaceship: spaceship,
-            player: player,
             data: data,
-            // camera: camera
         };
-        this.keys = [];
+        this.lastKey ="";
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
             //spaceship keys
@@ -39,23 +37,19 @@ class InputHandler{
                 break;
 
                 //player keys
-                case "a": //left arrow (rotate spaceship left)
-                // rotateSpaceShip(false)
-                this.game.player.runLeft = true; ;//data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30
+                case "w":
+                    this.lastKey = `PRESS w`;
                 break;
-                case "w": //up arrow (thrust forward spaceship up)
-                    this.game.player.jump = true;
+                case "a":
+                    this.lastKey = `PRESS a`;
                 break;
-                case "d": //right arrow (rotate spaceship right )
-                    // rotateSpaceShip(true)
-                    this.game.player.runRight = true; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
+                case "s":
+                    this.lastKey = `PRESS s`;
                 break;
-                case "s": //down arrow (thrust backward spaceship left)
-                    this.game.player.sheild = true;
+                case "d":
+                    this.lastKey = `PRESS d`;
                 break;
-                case "g": //down arrow (thrust backward spaceship left)
-                this.game.player.attack = true;
-                break;
+
             }
         })
         window.addEventListener("keyup", (e)=>{
@@ -92,23 +86,20 @@ class InputHandler{
                 break;
 
                 //player keys
-                case "a": //left arrow (rotate spaceship left)
-                // rotateSpaceShip(false)
-                this.game.player.runLeft = false; //data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30
+                case "w":
+                    this.lastKey = `RELEASE w`;
                 break;
-                case "w": //up arrow (thrust forward spaceship up)
-                    this.game.player.jump = false;
+                case "a":
+                    this.lastKey = `RELEASE a`;
                 break;
-                case "d": //right arrow (rotate spaceship right )
-                    // rotateSpaceShip(true)
-                    this.game.player.runRight = false; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
-                    
+                case "s":
+                    this.lastKey = `RELEASE s`;
                 break;
-                case "s": //down arrow (thrust backward spaceship left)
-                    this.game.player.sheild = false;
+                case "d":
+                    this.lastKey = `RELEASE d`;
                 break;
-                case "g": //down arrow (thrust backward spaceship left)
-                this.game.player.attack = false;
+                case "Enter":
+                    this.lastKey = `RELEASE Enter`;
                 break;
             }
         });

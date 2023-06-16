@@ -9,18 +9,17 @@ class Spaceship{
             height: game.height,
             data: game.data,
             gameOver: game.gameOver,
-            scaled: game.scaled,
-            zoomedUp : game.zoomedUp,
+
         }
         this.position ={
-            x: this.game.scaled.width * 0.5,//this.game.width / 2, //position the ship at the center of x axis
-            y: this.game.height - this.game.scaled.height * 0.5,//this.game.height / 2, //position the ship at the center of y axis
+            x: this.game.width / 2, //position the ship at the center of x axis
+            y: this.game.height / 2, //position the ship at the center of y axis
         }  
         this.ship = {
             image:  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
-            width : 30,//this.game.data.SPACESHIP_SIZE,
-            height: 30,//this.game.data.SPACESHIP_SIZE,
-            radius: 15,//this.game.data.SPACESHIP_SIZE / 2,
+            width : this.game.data.SPACESHIP_SIZE,
+            height: this.game.data.SPACESHIP_SIZE,
+            radius: this.game.data.SPACESHIP_SIZE / 2,
             sw: this.game.data.SPACESHIP_SPRITEWIDTH, //width of each frame
             sh: this.game.data.SPACESHIP_SPRITEHEIGHT, //height of each frame
             frame:{
@@ -32,17 +31,17 @@ class Spaceship{
         
         this.thruster = {
             image: document.querySelector("#thrust1"),
-            width : 30,//this.game.data.SPACESHIP_SIZE,
-            height: 30,//this.game.data.SPACESHIP_SIZE,
-            offset: 45 * 0.3//45,
+            width : this.game.data.SPACESHIP_SIZE,
+            height: this.game.data.SPACESHIP_SIZE,
+            offset: 45,
         }
         this.revThruster = {
             image: document.querySelector("#rthrust"),
-            width :30/(this.game.zoomedUp * 2), //this.game.data.SPACESHIP_SIZE / 8,
-            height: 30/this.game.zoomedUp,//this.game.data.SPACESHIP_SIZE / 4,
+            width :this.game.data.SPACESHIP_SIZE / 8,
+            height:this.game.data.SPACESHIP_SIZE / 4,
             offset:{
-                x: 20 * 0.3, //20,
-                y: 5 *0.3//5,
+                x: 20,
+                y: 5,
             }, //use to place the reverse thruster in the desired location from the ship's position
         }
         this.rotation = 0;
@@ -74,7 +73,7 @@ class Spaceship{
             radius: this.ship.width/2.4,
  
         } 
-        this.camRadius = this.game.scaled.height * 0.25,
+        this.camRadius = this.game.height * 0.25,
         this.cameraBox = {
             position:{
                 x: this.position.x - (this.camRadius * 1.5),//- this.game.width * (0.4/4)/2,
@@ -386,7 +385,7 @@ class Spaceship{
         const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.width;
         const cameraBoxTop = this.cameraBox.position.y;
         //right
-        if(cameraBoxRightSide + this.thrust.x >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
             console.log("Rgo")
         }
@@ -396,7 +395,7 @@ class Spaceship{
             console.log("Lgo")
         }     
         //bottom
-        if(cameraBoxBottom + this.thrust.y >= this.game.scaled.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+        if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
                 camera.position.y -= this.thrust.y  //translate up
                 console.log("Bgo")
         }
@@ -456,7 +455,7 @@ class Spaceship{
         if(cameraBoxRightSide + this.thrust.x >= this.game.width){ //prevent panning beyond width of background
             return
         }
-        if(cameraBoxRightSide + this.thrust.x >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
             // console.log("Rgo")
         }
@@ -480,7 +479,7 @@ class Spaceship{
         if(cameraBoxBottom + this.thrust.y >= this.game.height){ //prevent panning beyond width of background
             return
         }
-        if(cameraBoxBottom + this.thrust.y >= this.game.scaled.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+        if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.thrust.y  //translate up
             // console.log("Bgo")
         }        

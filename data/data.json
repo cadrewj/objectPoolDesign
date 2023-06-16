@@ -123,6 +123,8 @@
     "SHOW_BOUNDING": true,
     "SHOW_CENTER_DOT": true,
 
+    "TESTING_CONSOLE_LOGS": true,
+
     "jump":  "./images/player/jump.png",
     "idle":  "./images/player/idle.png",
     "run":  "./images/player/run.png",
