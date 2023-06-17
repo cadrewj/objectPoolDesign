@@ -1,4 +1,4 @@
-import { State, states } from "./state.js";
+import { State, states } from  "../state.js";
 
 export class Player_Shell_Smash_Left extends State{
     constructor(player){
@@ -18,10 +18,9 @@ export class Player_Shell_Smash_Left extends State{
         else if(this.player.onGround()  && input === "PRESS a"){ // switch state when player touch the ground
             this.player.setState(states.PLAYER_RUNNING_LEFT);  //set the player current state to standing left
         }
-        else if(this.player.onGround() && input === "RELEASE a"){ // switch state when player touch the ground
+        else if(this.player.onGround()){ // switch state when player touch the ground
             this.player.setState(states.PLAYER_STANDING_LEFT); //set the player current state to standing right
         }
-    
     }
 }
 
@@ -44,9 +43,8 @@ export class Player_Shell_Smash_Right extends State{
         else if(this.player.onGround() && input === "PRESS d"){
             this.player.setState(states.PLAYER_RUNNING_RIGHT);
         }
-        else if(this.player.onGround() && input === "RELEASE d"){ // switch state when player touch the ground
+        else if(this.player.onGround()){ // switch state when player touch the ground
             this.player.setState(states.PLAYER_STANDING_RIGHT); //set the player current state to standing right
         }
-
     }
 }

@@ -56,7 +56,7 @@
     "NN_OUTPUT_THRESHOLD": 0.05,
     "NN_LOG_ON": false,
     "NN_LOG_FREQ":10000,
-    "PLAYER_SIZE": 30,
+    "PLAYER_SIZE": 80,
 
     "PLANET_SIZE": 0.10,
     "PLANET_NUM": 5,
@@ -113,7 +113,7 @@
     "SPACE_COLOR":"rgba(0,0,0,0.5)",
 
     "STAR_COLOR": "white",
-    "STAR_NUM": 300,
+    "STAR_NUM": 100,
     "STAR_SIZE": 0.005,
     "STAR_SPEED": 0.05,
     "STAR_SPEED_MULT_MAX": 1.2,
@@ -123,14 +123,6 @@
     "SHOW_BOUNDING": true,
     "SHOW_CENTER_DOT": true,
 
-    "TESTING_CONSOLE_LOGS": true,
-
-    "jump":  "./images/player/jump.png",
-    "idle":  "./images/player/idle.png",
-    "run":  "./images/player/run.png",
-    "attack":  "./images/player/attack.png",
-    "fall": "./images/player/fall.png"
+    "TESTING_CONSOLE_LOGS": true
     
-
-
 }

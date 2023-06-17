@@ -10,16 +10,9 @@ export class Background{
             x: 0, 
             y: 0
         }
-        // this.image = document.querySelector("#bg")
-      
+        // this.image = document.querySelector("#bg")  
     }
-
     update(context){
-        // this.position.x -= this.speed; //constantly move the background
-        // if (this.position.x < 0 - this.game.width){ // reset the background to zero
-        //     this.position.x = 0
-        // }
-
         this.draw(context);
         // context.restore();    
 

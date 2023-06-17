@@ -1,4 +1,4 @@
-import { State, states } from "./state.js";
+import { State, states } from  "../state.js";
 
 export class Player_Jumping_Left extends State{
     constructor(player){
@@ -15,7 +15,7 @@ export class Player_Jumping_Left extends State{
        
     }
     handleInput(input, camera){
-        this.player.shouldPanCameraUp(camera)
+        // this.player.shouldPanCameraUp(camera)
         this.player.shouldPanCameraToRight(camera)
         if(input === "PRESS d"){ // note: "d" = right
             this.player.setState(states.PLAYER_JUMPING_RIGHT); //set the player current state to standing right
@@ -50,7 +50,7 @@ export class Player_Jumping_Right extends State{
       
     }
     handleInput(input, camera){
-        this.player.shouldPanCameraUp(camera)
+        // this.player.shouldPanCameraUp(camera)
         this.player.shouldPanCameraToLeft(camera);
         if(input === "PRESS a" ){ // note: "a" = left 
             this.player.setState(states.PLAYER_JUMPING_LEFT); //set the player current state to Running left

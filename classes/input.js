@@ -5,8 +5,10 @@ class InputHandler{
             data: data,
         };
         this.lastKey ="";
+        this.shipLastKey=""
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
+            console.log(pressedKey)
             //spaceship keys
             if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
                 return
@@ -27,6 +29,7 @@ class InputHandler{
                 break;
                 case "ArrowUp": //up arrow (thrust forward spaceship up)
                     this.game.spaceship.thrusting = true;
+                    this.shipLastKey="PRESS ArrowUp"
                 break;
                 case "ArrowRight": //right arrow (rotate spaceship right )
                     // rotateSpaceShip(true)
@@ -34,6 +37,7 @@ class InputHandler{
                 break;
                 case "ArrowDown": //down arrow (thrust backward spaceship left)
                     this.game.spaceship.reversing = true;
+                    this.shipLastKey="PRESS ArrowDown"
                 break;
 
                 //player keys
@@ -74,6 +78,7 @@ class InputHandler{
                 case "ArrowUp": //up arrow (stop thrust forward spaceship up)
                     this.game.spaceship.thrusting = false;
                     this.game.spaceship.accelartionTime = 0;
+                    this.shipLastKey="RELEASE ArrowUp"
                 break;
                 case "ArrowRight": //right arrow (stop rotate spaceship right )
                     this.game.spaceship.rotation = 0;  // add the frame rate to slow down the speed of the rotation;
@@ -83,6 +88,7 @@ class InputHandler{
                 case "ArrowDown": //down arrow (stop thrust backward spaceship left)
                     this.game.spaceship.reversing = false;
                     this.game.spaceship.decelerationTime = 0;
+                    this.shipLastKey="RELEASE ArrowDown"
                 break;
 
                 //player keys

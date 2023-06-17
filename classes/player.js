@@ -1,10 +1,10 @@
 // import { testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
-import {Player_Standing_Left, Player_Standing_Right }from "../states/PlayerStanding.js";
-import {Player_Running_Left, Player_Running_Right} from "../states/PlayerRunning.js";
-import {Player_Jumping_Left, Player_Jumping_Right}from "../states/PlayerJumping.js";
-import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerFalling.js";
-import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerSheild.js";
-import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerShellSmash.js";
+import {Player_Standing_Left, Player_Standing_Right }from "../states/PlayerBehavior/PlayerStanding.js";
+import {Player_Running_Left, Player_Running_Right} from "../states/PlayerBehavior/PlayerRunning.js";
+import {Player_Jumping_Left, Player_Jumping_Right}from "../states/PlayerBehavior/PlayerJumping.js";
+import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerBehavior/PlayerFalling.js";
+import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
+import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
 
 
 class Player{
@@ -21,7 +21,7 @@ class Player{
         }
         this.maxFrames = 6; //set initial max to six cuz the default image is 6 frames long
         this.isOnPlanet = true;
-        this.FPS = 60;
+        this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
         
@@ -53,21 +53,20 @@ class Player{
         }
         this.hitbox = {
             position:{
-                x: this.position.x + this.playerInfo.width/9,
-                y: this.position.y + this.playerInfo.height/2,
+                x: this.position.x,
+                y: this.position.y,
             },
-            width: this.playerInfo.width/4,
-            height: this.playerInfo.height/2,
+            width: this.playerInfo.width,
+            height: this.playerInfo.height,
         } 
         this.camerabox = {
             position:{
-                x: this.position.x,
-                y: this.position.y,
+                x: this.position.x - this.game.width * 0.22,
+                y: this.position.y - this.playerInfo.height
             },
             width: this.game.width * 0.5,
             height: this.game.height * 0.4,
         } 
-        // this.inSpace = true;
         this.velocity = {
             x: 0,
             y: 0
@@ -82,7 +81,7 @@ class Player{
         if(this.game.data.SHOW_BOUNDING){ //used for testing
             //draw cameraBox
             context.beginPath()
-            context.fillStyle = "rgba(211,232,100,0.1)";
+            context.fillStyle = "rgba(211,232,200,0.1)";
             context.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height);
 
             //draw hitbox
@@ -165,28 +164,28 @@ class Player{
         }
     }
     handleScreen(){ //has small bug
-        if(this.hitbox.position.x >= this.game.width - this.hitbox.width){   
+        if(this.hitbox.position.x + this.velocity.x>= this.game.width - this.hitbox.width){   //add the velocity to check a few pixels in advance
             this.position.x = this.game.width - this.hitbox.width
         }
-        else if(this.hitbox.position.x <= 0){
+        else if(this.hitbox.position.x + this.velocity.x <= 0){ //add the velocity to check a few pixels in advance
             this.position.x = 0;
         }
     }
     updateHitBox(){
         this.hitbox = {
             position:{
-                x: this.position.x + this.playerInfo.width/9,
-                y: this.position.y + this.playerInfo.height/2,
+                x: this.position.x,
+                y: this.position.y,
             },
-            width: this.playerInfo.width/4,
-            height: this.playerInfo.height/2,
+            width: this.playerInfo.width,
+            height: this.playerInfo.height,
         } 
     }
     updateCameraBox(){
         this.camerabox = {
             position:{
-                x: this.position.x - this.game.width * 0.2,//this.game.width * (0.4/4)/2,
-                y: this.position.y - this.game.height * 0.08//this.game.height * (0.4/4)/5,
+                x: this.position.x - this.game.width * 0.22,
+                y: this.position.y - this.playerInfo.height
             },
             width: this.game.width * 0.5,
             height: this.game.height * 0.4,

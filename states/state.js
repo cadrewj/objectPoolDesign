@@ -17,3 +17,14 @@ export class State{
         this.state = state; // used to keep track of the state name
     }
 }
+
+export const shipStates = {
+    SPACESHIP_IDLE: 0,
+    SPACESHIP_THRUST: 1,
+    SPACESHIP_REVERSE_THRUST: 2,
+    SPACESHIP_ROTATE: 3,
+    SPACESHIP_SHOOT: 4,
+    SPACESHIP_EXPLODING: 5,
+    SPACESHIP_BLINKING: 6,
+    SPACESHIP_AUTOPILOT: 7,
+}

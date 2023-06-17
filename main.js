@@ -6,6 +6,7 @@ import Player from "./classes/player.js";
 import {Background, Stars} from "./classes/background.js";
 import {Enemy, FlyingEnemy} from "./classes/enemy.js";
 import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
+import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -13,13 +14,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-const playerInfo = {
-    image: document.getElementById("player"),
-    width: 100,
-    height: 100,
-    sw: 200, //72
-    sh: 181.83, //72
-}
+
 
 /*This property is useful for games and other apps that use pixel art. 
 When enlarging images, the default resizing algorithm will blur the pixels. 
@@ -36,6 +31,13 @@ loading.style.display = "none";
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
     canvas.height = innerHeight;
+    const playerInfo = {
+        image: document.getElementById("player"),
+        width: gameData.PLAYER_SIZE,
+        height: gameData.PLAYER_SIZE,
+        sw: 200, //72
+        sh: 181.83, //72
+    }
 
     class Game{
         constructor(width, height, data){
@@ -47,7 +49,7 @@ addEventListener("load",()=>{
             this.camera = {
                 position: {
                     x: 0,
-                    y: -this.height,
+                    y: -0,
                 }
             }
             this.spaceship = new Spaceship(this);
@@ -57,7 +59,7 @@ addEventListener("load",()=>{
 
             this.input = new InputHandler(this.spaceship, this.data);
          
-            this.gameFrames = 0;
+            // this.gameFrames = 0;
             // this.asteroids = new Particles(this.width, this.height, this.data);
             this.enemyPool =[];
             this.maxEnemies = 9;
@@ -80,17 +82,17 @@ addEventListener("load",()=>{
             createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
       
-        render(context, deltaTime, input){
-            this.gameFrames++;
+        render(context, deltaTime, input, shipLastKey){
+            // this.gameFrames++;
             context.save()
             // context.scale(this.zoomedUp,this.zoomedUp) //used to max the background 4x bigger.
-            // context.translate(this.camera.position.x, this.camera.position.y)
+            context.translate(this.camera.position.x, this.camera.position.y)
             
             this.background.update(context);
             
             //draw the spaceship
-            this.spaceship.update(context, this.gameFrames, this.camera)
-            console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
+            this.spaceship.update(shipLastKey, context, this.camera, deltaTime)
+            // console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
        
             
             //draw player 
@@ -99,14 +101,15 @@ addEventListener("load",()=>{
                 this.player.update(input, this.enemyPool, this.camera)
             } 
             //render a new enemy periodically if it's free;
-            this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
+            // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
 
             context.restore();
             this.stars.update(context, deltaTime);
+            drawInputKeys(context, input, shipLastKey, this.player, this.spaceship)
             //render a new meteor periodically if it's free;
           
-            this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
+            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
           
         }
     }
@@ -115,13 +118,16 @@ addEventListener("load",()=>{
     
     const game = new Game(canvas.width, canvas.height, gameData);
     
+    
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
-        game.render(ctx, deltaTime, game.input.lastKey);
+        
+        game.render(ctx, deltaTime, game.input.lastKey, game.input.shipLastKey);
+        // console.log(game.input.shipLastKey)
         const stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
-     
+        
         // if(game.player.game.gameOver === true){
         //     drawStatusText(ctx, canvas.width, canvas.height, gameData)
         //     cancelAnimationFrame(stopGame);
