@@ -110,8 +110,6 @@ class Player{
         this.updateHitBox();
         this.updateCameraBox();
 
-
-
         ////////horizontal movement////////////////
         this.position.x += this.velocity.x;
 

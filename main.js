@@ -7,6 +7,7 @@ import {Background, Stars} from "./classes/background.js";
 import {Enemy, FlyingEnemy} from "./classes/enemy.js";
 import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
+import { gameKeys } from "./data/gameKeys.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -82,7 +83,7 @@ addEventListener("load",()=>{
             createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
       
-        render(context, deltaTime, input, shipLastKey){
+        render(context, deltaTime, input){
             // this.gameFrames++;
             context.save()
             // context.scale(this.zoomedUp,this.zoomedUp) //used to max the background 4x bigger.
@@ -91,7 +92,7 @@ addEventListener("load",()=>{
             this.background.update(context);
             
             //draw the spaceship
-            this.spaceship.update(shipLastKey, context, this.camera, deltaTime)
+            this.spaceship.update(input, context, this.camera, deltaTime)
             // console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
        
             
@@ -103,27 +104,26 @@ addEventListener("load",()=>{
             //render a new enemy periodically if it's free;
             // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
-
-            context.restore();
             this.stars.update(context, deltaTime);
-            drawInputKeys(context, input, shipLastKey, this.player, this.spaceship)
+            drawInputKeys(context, input, this.player, this.spaceship)
+            context.restore();
+                 
             //render a new meteor periodically if it's free;
           
-            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);
-          
+            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);       
         }
     }
 
     let lastTime = 0;
     
-    const game = new Game(canvas.width, canvas.height, gameData);
-    
-    
+    const game = new Game(canvas.width, canvas.height, {...gameData, gameKeys});
+      
     function animate(timeStamp){ //note: timeStamp is automatically generated.
+        canvas.focus();
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
         
-        game.render(ctx, deltaTime, game.input.lastKey, game.input.shipLastKey);
+        game.render(ctx, deltaTime, game.input);
         // console.log(game.input.shipLastKey)
         const stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
