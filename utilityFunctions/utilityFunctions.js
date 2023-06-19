@@ -92,7 +92,7 @@ export function drawStatusText(context, width, height, data, gameOver){
 }
 
 export function createPool(arrayPool, maxNumElements, objectClass, width, height, data){
-   console.log(typeof(objectClass))
+//    console.log(typeof(objectClass))
    if(Array.isArray(objectClass)) {
         const numOfTypes = objectClass.length
         
@@ -108,7 +108,7 @@ export function createPool(arrayPool, maxNumElements, objectClass, width, height
         } 
     }
     else{
-        console.log("error in the createPool function of utilities",arrayPool)
+        // console.log("error in the createPool function of utilities",arrayPool)
     }
     
   
@@ -124,7 +124,7 @@ export function getElement(arrayPool){
 export function bounceOff(object1, object2){
     const result = collision(object1, object2)
     if (result === true) {
-        console.log("crashed")
+        // console.log("crashed")
         const speed = 4
         // Calculate angle of collision
         const angle = Math.atan2(object1.position.y - object1.position.y, object2.position.x - object2.position.x);

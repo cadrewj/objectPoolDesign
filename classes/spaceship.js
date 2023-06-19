@@ -1,4 +1,8 @@
-import { degToRad, testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
+import { degToRad } from "../utilityFunctions/utilityFunctions.js";
+import SpaceshipIDLE from "../states/SpacehipBehavior/SpaceshipIDLE.js";
+import { SpaceshipReverseThrust, SpaceshipThrust } from "../states/SpacehipBehavior/SpaceshipThrusting.js";
+import SpaceshipChangeDirection from "../states/SpacehipBehavior/SpaceshipChangeDirection.js";
+import SpaceshipShootLaser from "../states/SpacehipBehavior/SpaceshipShootLaser.js";
 //note: set SHOW_BOUNDING to true for testing
 // later you need to add all the ship images into one spritesheet for optimisation
 
@@ -8,41 +12,48 @@ class Spaceship{
             width: game.width,
             height: game.height,
             data: game.data,
-            gameOver: game.gameOver,
-            scaled: game.scaled,
-            zoomedUp : game.zoomedUp,
         }
         this.position ={
-            x: this.game.scaled.width * 0.5,//this.game.width / 2, //position the ship at the center of x axis
-            y: this.game.height - this.game.scaled.height * 0.5,//this.game.height / 2, //position the ship at the center of y axis
+            x: this.game.width / 2, //position the ship at the center of x axis
+            y: this.game.height / 2, //position the ship at the center of y axis
         }  
         this.ship = {
             image:  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
-            width : 30,//this.game.data.SPACESHIP_SIZE,
-            height: 30,//this.game.data.SPACESHIP_SIZE,
-            radius: 15,//this.game.data.SPACESHIP_SIZE / 2,
+            width : this.game.data.SPACESHIP_SIZE,
+            height: this.game.data.SPACESHIP_SIZE,
+            radius: this.game.data.SPACESHIP_SIZE / 2,
             sw: this.game.data.SPACESHIP_SPRITEWIDTH, //width of each frame
             sh: this.game.data.SPACESHIP_SPRITEHEIGHT, //height of each frame
             frame:{
                 x: 0, //note: max x frame for the ship = 60; // sx: 0, //frame position on x axis
-                y:0, //only one y frame for the ship  // sy: 0, // frame position on y axis
+                y: 0, //only one y frame for the ship  // sy: 0, // frame position on y axis
             } 
         }
-        this.staggerFrames = 2; // used to slowdown the animation lower faster, higher slower
-        
+        this.FPS = this.game.data.FPS;
+        this.frameTimer = 0;
+        this.frameInterval = 1000/this.FPS;
+        this.maxFrames = 59;
+        this.states =[ new SpaceshipIDLE(this), 
+            new SpaceshipThrust(this),
+            new SpaceshipReverseThrust(this),
+            new SpaceshipChangeDirection(this),
+            new SpaceshipShootLaser(this),
+        ]
+        this.currentState = this.states[0]; //state idle
+
         this.thruster = {
             image: document.querySelector("#thrust1"),
-            width : 30,//this.game.data.SPACESHIP_SIZE,
-            height: 30,//this.game.data.SPACESHIP_SIZE,
-            offset: 45 * 0.3//45,
+            width : this.game.data.SPACESHIP_SIZE,
+            height: this.game.data.SPACESHIP_SIZE,
+            offset: 45,
         }
         this.revThruster = {
             image: document.querySelector("#rthrust"),
-            width :30/(this.game.zoomedUp * 2), //this.game.data.SPACESHIP_SIZE / 8,
-            height: 30/this.game.zoomedUp,//this.game.data.SPACESHIP_SIZE / 4,
+            width :this.game.data.SPACESHIP_SIZE / 8,
+            height:this.game.data.SPACESHIP_SIZE / 4,
             offset:{
-                x: 20 * 0.3, //20,
-                y: 5 *0.3//5,
+                x: 20,
+                y: 5,
             }, //use to place the reverse thruster in the desired location from the ship's position
         }
         this.rotation = 0;
@@ -62,9 +73,6 @@ class Spaceship{
         this.canShoot = true;
         this.lasers = [];
         this.shooting = false;
-        this.shots = 0;
-        
-        this.inSpace = true;
 
         this.hitCircle = {
             position:{
@@ -72,21 +80,22 @@ class Spaceship{
                 y: this.position.y,
             },
             radius: this.ship.width/2.4,
- 
         } 
-        this.camRadius = this.game.scaled.height * 0.25,
+        this.camRadius = this.game.height * 0.25,
         this.cameraBox = {
             position:{
-                x: this.position.x - (this.camRadius * 1.5),//- this.game.width * (0.4/4)/2,
+                x: this.position.x - (this.camRadius * 1.5),
                 y: this.position.y - this.camRadius,
-            },
-            
+            }, 
             width: this.camRadius * 3,
             height: this.camRadius * 2,
-        } 
+        }
+        this.initLasers();
+        // console.log(this.lasers) 
     }
-  
-    update(context, gameFrames, camera){
+    update(input, context, camera, deltaTime){
+        this.currentState.handleInput(input, context); 
+        this.animateFrames(deltaTime)
         if(this.game.data.SHOW_BOUNDING){ //used for testing
 
             context.beginPath()
@@ -106,13 +115,14 @@ class Spaceship{
         if(!exploding){
             if (blinkOn) {
                 context.save();
-                context.translate(this.position.x, this.position.y);
-                context.rotate(this.angle);
-                //draw the ship //w: 15360 frame: 60  sh:256 sw:256 
-                context.drawImage(this.ship.image, this.ship.sw * this.ship.frame.x, this.ship.sh * this.ship.frame.y, 
+                context.translate(this.position.x, this.position.y); //rotate the direction of the ship to face up
+                context.rotate(this.angle); // set the rotatio angle
+                
+                context.drawImage(this.ship.image, 
+                    this.ship.sw * this.ship.frame.x, this.ship.sh * this.ship.frame.y, 
                     this.ship.sw, this.ship.sh,
-                -this.ship.radius, -this.ship.radius, this.ship.width, this.ship.height);
-                // context.drawImage(this.ship.image, -this.ship.radius, -this.ship.radius, this.ship.width, this.ship.height);
+                -this.ship.radius, -this.ship.radius, 
+                this.ship.width, this.ship.height); 
                 context.restore();
             }
             if (this.blinkNum > 0) {
@@ -122,19 +132,17 @@ class Spaceship{
                     this.blinkNum--;
                 }
             }
-             // draw lasers shooting
-            if(this.shooting){
-                this.shootLaser(context);
-             
-            }
-           
-            this.thrustWithFriction(context, gameFrames,camera);
-            this.moveSpaceship();
-            this.changeSpaceshipDirection();
+  
+            // move the ship
+            this.position.x += this.thrust.x;
+            this.position.y += this.thrust.y; 
+            //draw laser on the screen
+            this.drawLaser(context);
+
+            this.pan(camera) //note should only pan when thrusting
             this.updateHitCircle();
             this.updateCameraBox();
-            this.handleScreen(camera)
-            
+            this.handleScreen(camera) 
         }
         else {
             this.drawExplodingShip(context);
@@ -155,71 +163,50 @@ class Spaceship{
             }
         }
     }
-    moveSpaceship(){ // move ship
-        if(this.fuel > 0 && this.lives !== 0){
-            this.position.x += this.thrust.x;
-            this.position.y += this.thrust.y; 
-        }    
-    }
-    thrustWithFriction(context, gameFrames, camera){
-        if(this.fuel > 0 && this.lives !== 0){
-            // this.shouldPanCameraToRight(camera)
-            // this.shouldPanCameraUp(camera)
-            // this.shouldPanCameraToLeft(camera)
-            // this.shouldPanCameraDown(camera)
-            this.pan(camera)
-            if(this.thrusting){ // add thrust and friction
-                // acceleration of the ship in pixels per second per second 
-                const thrustAngle = this.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
-                this.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle) / this.game.data.FPS;
-                this.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle) / this.game.data.FPS;
-
-                //go through an animation frame to make the ship look like it is spiraling while thrusting
-                if(gameFrames% this.staggerFrames === 0){ //used to slow down the speed of the animation between frames
-                    if(this.ship.frame.x < 59){
+    animateFrames(deltaTime){
+        if (this.thrusting){
+            if(this.ship.image.complete){//go through an animation frame to make the ship look like it is spiraling while thrusting
+                if(this.frameTimer > this.frameInterval){ // animate player sprite //used to slow down the speed of the animation between frames
+                    if(this.ship.frame.x < this.maxFrames){
                         this.ship.frame.x++;
                     }
                     else{
-                        this.ship.frame.x = 0
+                        this.ship.frame.x = 0;
                     }
+                    this.frameTimer = 0;
+                }
+                else{
+                    this.frameTimer += deltaTime;
                 }
             }
-            else if(this.reversing){ // reverse thrust
-                const thrustAngle = this.angle + Math.PI / 2; // adjust for the image facing upwards
-                this.thrust.x += this.game.data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) / this.game.data.FPS; 
-                this.thrust.y += this.game.data.SPACESHIP_THRUST_REV * Math.sin(thrustAngle) / this.game.data.FPS;
-            }
-            else{ //to make the ship come to a slow stop
-                // friction coefficient of space (0 = no friction, 1 = lots of friciton) note: friction in physic is a value from 0 -  1 
-                this.thrust.x -= this.game.data.FRICTION * this.thrust.x / this.game.data.FPS;  // FPS = frames per second
-                this.thrust.y -= this.game.data.FRICTION * this.thrust.y / this.game.data.FPS;
-                
-                //go reverse through an animation frame to make the ship look like it is reverse spiraling when not thrusting
-                if(gameFrames % this.staggerFrames === 0){ //used to slow down the speed of the animation between frames
-                    if(this.ship.frame.x !==0){
-                        this.ship.frame.x--;
-                    }
+        }
+        else{
+            //go reverse through an animation frame to make the ship look like it is reverse spiraling when not thrusting
+            if(this.frameTimer > this.frameInterval){//used to slow down the speed of the animation between frames
+                if(this.ship.frame.x !==0){
+                    this.ship.frame.x--;
                 }
+                // this.frameTimer = 0; 
             }
-            this.drawThruster(context)   
+            else{
+                this.frameTimer += deltaTime;
+            }
         }
     }
+    setState(state){ //the passed state is an index number
+        this.currentState = this.states[state]; //set the current state
+        this.currentState.enter(); // calls the enter method on the current state you are on 
+    }
     drawThruster(context){
-        if(this.thrusting){
-            context.save();
-            // Translate context to center of image
-            context.translate(this.position.x , this.position.y);
-            context.rotate(this.angle);
-            // Translate context to bottom of image
-            context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the spaceship
-            // Draw thruster
-            context.drawImage(this.thruster.image, -this.thruster.width / 2, -this.thruster.height / 2, this.thruster.width, this.thruster.height);
-            context.restore();
-        }
-        else if(this.reversing){ // draw thrusters
-            // draw the revThruster image
-            this.drawRevThruster(context);
-        }
+        context.save();
+        // Translate context to center of image
+        context.translate(this.position.x , this.position.y);
+        context.rotate(this.angle);
+        // Translate context to bottom of image
+        context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the spaceship
+        // Draw thruster
+        context.drawImage(this.thruster.image, -this.thruster.width / 2, -this.thruster.height / 2, this.thruster.width, this.thruster.height);
+        context.restore();
     }
     drawRevThruster(context) {  
         // save the current context state right revthrust
@@ -247,20 +234,6 @@ class Spaceship{
         context.drawImage(this.revThruster.image, -this.revThruster.width / 2, -this.revThruster.height / 2, this.revThruster.width, this.revThruster.height);
         // restore the context state
         context.restore();
-      }
-      
-    changeSpaceshipDirection(){ 
-        if(this.lives === 0){ // if dead return and don't rotate the ship
-            return
-        } 
-        //keep the ship angle between 0 and 360 (two pie)
-        if(this.angle < 0){
-            this.angle +=(degToRad(360))
-        }
-        else if(this.angle >= degToRad(360)){
-            this.angle -=(degToRad(360))
-        }   
-        this.angle += this.rotation;  //rotation the ship  
     }
     drawExplodingShip(context){
         context.beginPath()
@@ -283,80 +256,61 @@ class Spaceship{
         context.arc(this.position.x,this.position.y,this.ship.radius * 0.5, 0 ,degToRad(360))
         context.fill()
     }
-    shootLaser(context){
-        //create the laser object
-        if(this.canShoot && this.lasers.length < this.game.data.SPACESHIP_LASER_MAX){
-         let angle = this.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
-         const laser = { //the location you are shooting from is the nose of the ship
-             x: this.position.x + this.ship.radius * Math.cos(angle), // from center of the ship draw a line
-             y: this.position.y + this.ship.radius * Math.sin(angle),
-             velocityX: this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
-             velocityY: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,
-             dist: 0,
-             explodeTime: 0,
-             // free: true
-         }
-         this.lasers.push(laser)   
-     }
-     this.drawLaser(context);    
-     //prevent  shooting
-     this.canShoot = false;
-     }
-     
-     drawLaser(context){
-       
-         for(let i = 0; i < this.lasers.length; i++){
-
-            if(this.lasers[i].explodeTime ===  0){
-                context.fillStyle =  "rgba(250,128,114, 1)"//"salmon"
-                context.beginPath()
-                context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_SIZE, 0, degToRad(360), false)
-                context.fill();
-            }
-            else{
-                // draw expploding laser
-                context.fillStyle ="rgba(255, 69, 0, 1)"// "orangered"
-                context.beginPath()
-                context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_EXPLODING_SIZE, 0, degToRad(360), false)
-                context.fill();
-                context.fillStyle = "rgba(250,128,114, 1)"//"salmon"
-                context.beginPath()
-                context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_EXPLODING_SIZE/1.5, 0, degToRad(360), false)
-                context.fill();
-                context.fillStyle = "rgba(255, 192, 203, 1)"// "pink"
-                context.beginPath()
-                context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_EXPLODING_SIZE/2.5, 0, degToRad(360), false)
-                context.fill();
-            }  
-    
-            if(this.lasers[i].dist > this.game.data.SPACESHIP_LASER_MAX_DIST * this.game.height){  
-                this.lasers.splice(i, 1);             //delete the laser from the array 
-                continue; 
-            }
-            //handle explosion
-            if(this.lasers[i].explodeTime > 0){
-                //decrease the explosion time
-                this.lasers[i].explodeTime --;
-    
-                //destroy laser after duration is up
-                if(this.lasers[i].explodeTime === 0){
-                    this.lasers.splice(i, 1); 
-                    continue;
+    drawLaser(context){
+        for(let i = 0; i < this.lasers.length; i++){
+            if(!this.lasers[i].free){
+                if(this.lasers[i].explodeTime ===  0){
+                    context.fillStyle =  "rgba(250,128,114, 1)"//"salmon"
+                    context.beginPath()
+                    context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_SIZE, 0, degToRad(360), false)
+                    context.fill();
                 }
-            }
-            else{
-                //move lasers
-                this.lasers[i].x += this.lasers[i].velocityX
-                this.lasers[i].y += this.lasers[i].velocityY
-    
-                //calculate the distance travelled by laser (C^2 = A^2 + B^2)
-                this.lasers[i].dist += Math.sqrt(Math.pow(this.lasers[i].velocityX, 2) + Math.pow(this.lasers[i].velocityY, 2)); 
-            }
-            //detect laser and asteroid collision
-            //  hitAsteroid();
+                else{
+                    // draw exploding laser
+                    context.fillStyle ="rgba(255, 69, 0, 1)"// "orangered"
+                    context.beginPath()
+                    context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_EXPLODING_SIZE, 0, degToRad(360), false)
+                    context.fill();
+                    context.fillStyle = "rgba(250,128,114, 1)"//"salmon"
+                    context.beginPath()
+                    context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_EXPLODING_SIZE/1.5, 0, degToRad(360), false)
+                    context.fill();
+                    context.fillStyle = "rgba(255, 192, 203, 1)"// "pink"
+                    context.beginPath()
+                    context.arc(this.lasers[i].x, this.lasers[i].y, this.game.data.SPACESHIP_SIZE/2 * this.game.data.SPACESHIP_LASER_EXPLODING_SIZE/2.5, 0, degToRad(360), false)
+                    context.fill();
+                }  
         
-        } 
-            
+                if(this.lasers[i].dist > this.game.data.SPACESHIP_LASER_MAX_DIST * this.game.height){  
+                    // this.lasers.splice(i, 1);//delete the laser from the array 
+                    // console.log("distance met, laser set to free")
+                    this.lasers[i].free = true; //use and object model to remove the laser instead of deleting
+                    continue; 
+                }
+                //handle explosion
+                if(this.lasers[i].explodeTime > 0){
+                    //decrease the explosion time
+                    this.lasers[i].explodeTime --;
+        
+                    //destroy laser after duration is up
+                    if(this.lasers[i].explodeTime === 0){
+                        // this.lasers.splice(i, 1); 
+                        this.lasers[i].free = true;
+                        continue;
+                    }
+                }
+                else{
+                    //move lasers
+                    this.lasers[i].x += this.lasers[i].velocity.x
+                    this.lasers[i].y += this.lasers[i].velocity.y
+        
+                    //calculate the distance travelled by laser (C^2 = A^2 + B^2)
+                    this.lasers[i].dist += Math.sqrt(Math.pow(this.lasers[i].velocity.x, 2) + Math.pow(this.lasers[i].velocity.y, 2)); 
+                }
+                //detect laser and asteroid collision
+                //  hitAsteroid();
+            }
+        }      
     }
     updateHitCircle(){
         this.hitCircle = {
@@ -365,8 +319,7 @@ class Spaceship{
                 y: this.position.y,
             },
             radius: this.ship.width/2.4,
-        } 
-         
+        }     
     }
     updateCameraBox(){
         this.cameraBox = {
@@ -374,19 +327,17 @@ class Spaceship{
                 x: this.position.x - (this.camRadius * 1.5),//- this.game.width * (0.4/4)/2,
                 y: this.position.y - this.camRadius,
             },
-
             width: this.camRadius * 3,
             height: this.camRadius * 2,
         } 
     }
-
     pan(camera){
         const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
         const cameraBoxLeftSide = this.cameraBox.position.x;
         const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.width;
         const cameraBoxTop = this.cameraBox.position.y;
         //right
-        if(cameraBoxRightSide + this.thrust.x >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
             console.log("Rgo")
         }
@@ -396,7 +347,7 @@ class Spaceship{
             console.log("Lgo")
         }     
         //bottom
-        if(cameraBoxBottom + this.thrust.y >= this.game.scaled.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+        if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
                 camera.position.y -= this.thrust.y  //translate up
                 console.log("Bgo")
         }
@@ -456,7 +407,7 @@ class Spaceship{
         if(cameraBoxRightSide + this.thrust.x >= this.game.width){ //prevent panning beyond width of background
             return
         }
-        if(cameraBoxRightSide + this.thrust.x >= this.game.scaled.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
             // console.log("Rgo")
         }
@@ -480,11 +431,28 @@ class Spaceship{
         if(cameraBoxBottom + this.thrust.y >= this.game.height){ //prevent panning beyond width of background
             return
         }
-        if(cameraBoxBottom + this.thrust.y >= this.game.scaled.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+        if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.thrust.y  //translate up
             // console.log("Bgo")
         }        
-    }   
+    } 
+    initLasers(){
+        for(let i = 0; i < this.game.data.SPACESHIP_LASER_MAX; i++){
+            let angle = this.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
+            const laser = { //the location you are shooting from is the nose of the ship
+                x: this.position.x + this.ship.radius * Math.cos(angle), // from center of the ship draw a line
+                y: this.position.y + this.ship.radius * Math.sin(angle),
+                velocity: {
+                    x: this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
+                    y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,
+                },
+                dist: 0,
+                explodeTime: 0,
+                free: true
+            }
+            this.lasers.push(laser)
+        }
+    }  
 }
 
 export default Spaceship;

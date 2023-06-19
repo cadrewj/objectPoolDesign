@@ -8,18 +8,11 @@ export class Background{
         };
         this.position ={
             x: 0, 
-            y:0
+            y: 0
         }
-        this.image = document.querySelector("#bg")
-      
+        // this.image = document.querySelector("#bg")  
     }
-
     update(context){
-        // this.position.x -= this.speed; //constantly move the background
-        // if (this.position.x < 0 - this.game.width){ // reset the background to zero
-        //     this.position.x = 0
-        // }
-
         this.draw(context);
         // context.restore();    
 
@@ -27,16 +20,16 @@ export class Background{
     draw(context){
         // console.log("drawing")
         context.beginPath()
-        context.fillStyle = this.game.data.SPACE_COLOR;
-        // context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
-        context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
+        context.fillStyle = "black"//this.game.data.SPACE_COLOR;
+        context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
+        // context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
     }
 
 }
 
 export class Stars extends Background{
     constructor(width, height, data){
-        super();
+        super(width, height, data);
         this.game = {
             width: width,
             height: height,
