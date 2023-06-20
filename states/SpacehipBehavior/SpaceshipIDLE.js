@@ -29,7 +29,6 @@ export default class SpaceshipIDLE extends State{
         else if (input.isMouseDown){
             this.spaceship.setState(shipStates.SPACESHIP_SHOOT);
         }
-
     }
 }
 

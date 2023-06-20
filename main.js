@@ -8,6 +8,7 @@ import {Enemy, FlyingEnemy} from "./classes/enemy.js";
 import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 import { gameKeys } from "./data/gameKeys.js";
+import { Asteroid } from "./classes/asteroids.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -53,15 +54,17 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
+         
             this.spaceship = new Spaceship(this);
+            this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
             this.background = new Background(this.width, this.height, this.data)
             this.stars = new Stars(this.width, this.height, this.data);
+         
 
             this.input = new InputHandler(this.spaceship, this.data);
          
             // this.gameFrames = 0;
-            // this.asteroids = new Particles(this.width, this.height, this.data);
             this.enemyPool =[];
             this.maxEnemies = 9;
             this.enemyTimer = 0;
@@ -84,12 +87,16 @@ addEventListener("load",()=>{
         }
       
         render(context, deltaTime, input){
+            
             // this.gameFrames++;
             context.save()
             // context.scale(this.zoomedUp,this.zoomedUp) //used to max the background 4x bigger.
             context.translate(this.camera.position.x, this.camera.position.y)
             
             this.background.update(context);
+
+            this.asteroid.draw(context);
+            this.asteroid.update(this.spaceship);
             
             //draw the spaceship
             this.spaceship.update(input, context, this.camera, deltaTime)
@@ -107,6 +114,8 @@ addEventListener("load",()=>{
             this.stars.update(context, deltaTime);
             drawInputKeys(context, input, this.player, this.spaceship)
             context.restore();
+
+            
                  
             //render a new meteor periodically if it's free;
           

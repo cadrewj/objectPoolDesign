@@ -12,7 +12,7 @@ export class Player_Jumping_Left extends State{
         this.player.frame.y = 3; //the row position of the player image you want to use
         this.player.maxFrames = 6;  //the max number of columns for the player image
         if(this.player.onGround()){ // only jump when on the ground
-            this.player.velocity.y =-20 * this.player.friction;
+            this.player.velocity.y = -20 * this.player.friction;
         }
         this.player.velocity.x = -this.player.maxSpeed * 0.5;
        
@@ -53,7 +53,7 @@ export class Player_Jumping_Right extends State{
         this.player.frame.y = 2;  //the row position of the player image you want to use
         this.player.maxFrames = 6;   //the max number of columns for the player image
         if(this.player.onGround()){ // only jump when on the ground
-            this.player.velocity.y =-20 * this.player.friction;
+            this.player.velocity.y = -20 * this.player.friction;
         }
         this.player.velocity.x = this.player.maxSpeed * 0.5;
       

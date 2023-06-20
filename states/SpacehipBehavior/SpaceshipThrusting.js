@@ -12,7 +12,7 @@ export class SpaceshipThrust extends State{
     enter(){
         this.spaceship.thrusting = true;
         if(this.spaceship.fuel > 0 && this.spaceship.lives !== 0){    
-            console.log("entered thrusting state")
+            // console.log("entered thrusting state")
             // add thrust and friction
             // acceleration of the ship in pixels per second per second 
             const thrustAngle = this.spaceship.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
@@ -48,7 +48,7 @@ export class SpaceshipReverseThrust  extends State{
     enter(){
         this.spaceship.thrusting = false;
         if(this.spaceship.fuel > 0 && this.spaceship.lives !== 0){
-            console.log("entered  rev thrusting state")
+            // console.log("entered  rev thrusting state")
             // this.spaceship.thrust.x = 0;
             const thrustAngle = this.spaceship.angle + Math.PI / 2; // adjust for the image facing upwards
             this.spaceship.thrust.x += this.game.data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) // this.game.data.FPS; 

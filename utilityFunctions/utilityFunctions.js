@@ -48,6 +48,14 @@ export function handleEdgeOfScreen(movingObject, width, height){
     return result
 
 }
+//function that return true or false at a rate determined by the number passed in;
+export function probability(decimal){
+    const result =  Math.random() < decimal ?(true): (false);
+    // console.log(result)
+    return result
+
+}
+
 // function to generate random number
 export function randomNum(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

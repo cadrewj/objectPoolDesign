@@ -18,7 +18,7 @@ export class Player_Running_Left extends State{
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
             this.player.setState(states.PLAYER_RUNNING_RIGHT); //set the player current state to standing right   
         }
-        else if(input.lastKey ===this.game.data.gameKeys.PLAYER_RELEASE_LEFT){ // note: 'a" = left 
+        else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_LEFT){ // note: 'a" = left 
             this.player.setState(states.PLAYER_STANDING_LEFT); //set the player current state to standing right
         }
         else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ // note: "s" = down 

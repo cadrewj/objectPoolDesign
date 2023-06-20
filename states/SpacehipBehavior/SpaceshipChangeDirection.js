@@ -10,7 +10,7 @@ export default class SpaceshipChangeDirection extends State{
         }
     }
     enter(){
-       console.log("changing direction");
+    //    console.log("changing direction");
     }
     handleInput(input, context){
         this.changeDirection();

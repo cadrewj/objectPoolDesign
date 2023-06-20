@@ -12,6 +12,7 @@ class Spaceship{
             width: game.width,
             height: game.height,
             data: game.data,
+            
         }
         this.position ={
             x: this.game.width / 2, //position the ship at the center of x axis
@@ -65,6 +66,7 @@ class Spaceship{
         this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); 
         this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR);
         this.explodeTime = 0;
+        this.exploding = false;
 
         this.lives = this.game.data.GAME_LIVES;
         this.health = 100;
@@ -109,10 +111,10 @@ class Spaceship{
             context.stroke();
         }
 
-        let exploding = this.explodeTime > 0;
+         this.exploding = this.explodeTime > 0;
         let blinkOn = this.blinkNum % 2 == 0;
 
-        if(!exploding){
+        if(!this.exploding){
             if (blinkOn) {
                 context.save();
                 context.translate(this.position.x, this.position.y); //rotate the direction of the ship to face up
@@ -132,7 +134,6 @@ class Spaceship{
                     this.blinkNum--;
                 }
             }
-  
             // move the ship
             this.position.x += this.thrust.x;
             this.position.y += this.thrust.y; 
@@ -150,15 +151,17 @@ class Spaceship{
             this.explodeTime--;
             if (this.explodeTime === 0) {
                 this.lives--;
+                console.log("lives", this.lives)
                 if (this.lives === 0) {
                     console.log("GAME OVER");
                     setTimeout(() => {
                         console.log("NEW GAME");
-                        exploding = false;
+                        this.exploding = true;
+                        this.lives = 3;
                     },1600)
                 }
                 else{
-                    exploding = false;
+                    this.exploding = false;
                 }
             }
         }
@@ -339,22 +342,22 @@ class Spaceship{
         //right
         if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
-            console.log("Rgo")
+            // console.log("Rgo")
         }
        //left
         if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
-            console.log("Lgo")
+            // console.log("Lgo")
         }     
         //bottom
         if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
                 camera.position.y -= this.thrust.y  //translate up
-                console.log("Bgo")
+                // console.log("Bgo")
         }
         //top
         if(cameraBoxTop + this.thrust.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.thrust.y  // translate down;  note: this.velocity is negative, so two negatives = positive
-            console.log("Tgo")
+            // console.log("Tgo")
         }
 
         ////////////////////////////////////// temporary fix /////////////////////////////////////
@@ -437,6 +440,7 @@ class Spaceship{
         }        
     } 
     initLasers(){
+        this.lasers =[];
         for(let i = 0; i < this.game.data.SPACESHIP_LASER_MAX; i++){
             let angle = this.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
             const laser = { //the location you are shooting from is the nose of the ship

@@ -10,7 +10,6 @@ class InputHandler{
         this.isMouseDown = false;
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
-            console.log(pressedKey)
             //spaceship keys
             if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
                 return

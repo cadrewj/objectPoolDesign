@@ -1,7 +1,6 @@
 import { State, shipStates } from "../state.js"
 import { degToRad } from "../../utilityFunctions/utilityFunctions.js";
 
-
 export default class SpaceshipShootLaser extends State{
     constructor(spaceship){
         super("SPACESHIP SHOOT LASER"); // used to access and call method on object's parent. meaning everything in their constructor; 
@@ -11,8 +10,6 @@ export default class SpaceshipShootLaser extends State{
         }
     }
     enter(){
-        console.log("entered shootlaser", this.spaceship.lasers)
-        
         for(let i = 0; i < this.spaceship.lasers.length; i++){
             const canShoot = this.spaceship.fuel > 0;
             let laser = this.spaceship.lasers[i]
@@ -31,17 +28,11 @@ export default class SpaceshipShootLaser extends State{
                     free: false
                 }
                 this.spaceship.lasers[i] = laser;
-                console.log(laser)
                 return;
-                
-                // this.spaceship.lasers.push(laser)
             }
-
-        }
-        
-        
+        }     
     }
-    handleInput(input, context){
+    handleInput(input){
         if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT 
             || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){ 
             this.spaceship.setState(shipStates.SPACESHIP_CHANGE_DIRECTION)   

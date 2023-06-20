@@ -13,6 +13,7 @@ class Player{
             width: game.width,
             height: game.height,
             data: game.data,
+            spaceship: game.spaceship,
         };
         this.playerInfo = {...playerInfo};
         this.frame = {
@@ -48,8 +49,8 @@ class Player{
             y: 0
         }
         this.position = {
-            x: this.game.width * 0.1,
-            y: this.game.height - this.playerInfo.height, // place the player at the bottom of the canvas
+            x: this.game.spaceship.position.x,// this.game.width * 0.1,
+            y: this.game.spaceship.position.y//this.game.height - this.playerInfo.height, // place the player at the bottom of the canvas
         }
         this.hitbox = {
             position:{
