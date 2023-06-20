@@ -44,7 +44,7 @@ export class Asteroid{
         //create the vertex offset array, (note: 0 = none, 1 = alot)
         for (let i = 0; i < asteroid.vertices; i++){
             asteroid.offsets.push(Math.random() * this.game.data.ASTEROID_JAG * 2 + 1 - this.game.data.ASTEROID_JAG) //give a number between  0.5 and 1.5
-            // asteroid.offsets.push(Math.random() * randomNum(data.ASTEROID_JAG, data.ASTEROID_JAG * 2))//
+            // asteroid.offsets.push(Math.random() * randomNum(this.game.data.ASTEROID_JAG, this.game.data.ASTEROID_JAG * 2))//
         }
         return asteroid;
     }

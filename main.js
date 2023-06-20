@@ -9,14 +9,14 @@ import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 import { gameKeys } from "./data/gameKeys.js";
 import { Asteroid } from "./classes/asteroids.js";
+import StartNewGame from "./states/GameBehavior/NewGame.js";
+import GameOver from "./states/GameBehavior/gameOver.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
-
-
 
 /*This property is useful for games and other apps that use pixel art. 
 When enlarging images, the default resizing algorithm will blur the pixels. 
@@ -40,29 +40,30 @@ addEventListener("load",()=>{
         sw: 200, //72
         sh: 181.83, //72
     }
-
     class Game{
         constructor(width, height, data){
             this.gameOver = false;
             this.width = width;
             this.height = height;
             this.data = data;
-          
             this.camera = {
                 position: {
                     x: 0,
                     y: -0,
                 }
             }
+            this.states =[ new StartNewGame(this), 
+                new GameOver(this)
+            ]
+            this.currentState = this.states[0]; //state newgame
          
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
             this.background = new Background(this.width, this.height, this.data)
             this.stars = new Stars(this.width, this.height, this.data);
-         
-
             this.input = new InputHandler(this.spaceship, this.data);
+
          
             // this.gameFrames = 0;
             this.enemyPool =[];
@@ -77,32 +78,30 @@ addEventListener("load",()=>{
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
-            this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created.
-            
+            this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
+        }
+        setState(state){ //the passed state is an index number
+            this.currentState = this.states[state]; //set the current state
+            this.currentState.enter(); // calls the enter method on the current state you are on 
         }
         createGamePools(){ //create an object pool of meteors  all at once for faster allocation
             const  enemyTypes = [Enemy, FlyingEnemy];
             createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height, this.data) //this is used to pass the game width and height  to the Meteor class
             createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
-      
         render(context, deltaTime, input){
             
             // this.gameFrames++;
             context.save()
-            // context.scale(this.zoomedUp,this.zoomedUp) //used to max the background 4x bigger.
-            context.translate(this.camera.position.x, this.camera.position.y)
-            
+            context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
             this.background.update(context);
-
+            
             this.asteroid.draw(context);
             this.asteroid.update(this.spaceship);
             
             //draw the spaceship
             this.spaceship.update(input, context, this.camera, deltaTime)
-            // console.log(this.spaceship.shooting, "need to change shooting to false, to improve memory useage")
        
-            
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
@@ -114,11 +113,9 @@ addEventListener("load",()=>{
             this.stars.update(context, deltaTime);
             drawInputKeys(context, input, this.player, this.spaceship)
             context.restore();
-
-            
-                 
+    
             //render a new meteor periodically if it's free;
-          
+            this.currentState.handleInput(input, context); 
             // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);       
         }
     }

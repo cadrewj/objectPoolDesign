@@ -10,6 +10,8 @@ class InputHandler{
         this.isMouseDown = false;
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
+            console.log(pressedKey);
+
             //spaceship keys
             if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
                 return
@@ -43,18 +45,29 @@ class InputHandler{
                 break;
                 case " ": //player attack
                 case "Spacebar": // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
-                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_SPACEBAR
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_SPACEBAR;
                 break;
 
+
+                //Game Control keys
+                case "Enter":
+                    this.lastKey = this.game.data.gameKeys.GAME_PRESS_ENTER;
+                break;
             }
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
-            //spaceship keys released
+       
             if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
                 return
             }
             switch(releasedKey){
+                 //Game Control keys
+                 case "Enter":
+                    this.lastKey = this.game.data.gameKeys.GAME_RELEASE_ENTER;
+                break;
+
+                //spaceship keys released
                 case "w": //up arrow (stop thrust forward spaceship up)
                     this.shipLastKey= this.game.data.gameKeys.SPACESHIP_RELEASE_UP;
                 break;

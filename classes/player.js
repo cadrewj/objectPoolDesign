@@ -6,7 +6,6 @@ import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerBehavior
 import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
 import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
 
-
 class Player{
     constructor(game, playerInfo){
         this.game = {
@@ -73,7 +72,6 @@ class Player{
             y: 0
         }
     }
-
     onGround(){
         return(this.position.y >= this.game.height - this.playerInfo.height)
     }
@@ -82,18 +80,16 @@ class Player{
         if(this.game.data.SHOW_BOUNDING){ //used for testing
             //draw cameraBox
             context.beginPath()
-            context.fillStyle = "rgba(211,232,200,0.1)";
+            context.fillStyle = "rgba(211, 232, 200, 0.1)";
             context.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height);
 
             //draw hitbox
             context.beginPath()
-            context.strokeStyle = "red";
+            context.strokeStyle = "rgba(255, 0, 0, 1)";
             context.strokeRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
         }
 
         this.animateFrames(deltaTime)
-        context.fillStyle = "rgba(255, 0, 0, 1)"
-        // context.fillRect(this.position.x, this.position.y, this.player.width, this.player.height);
         context.drawImage(this.playerInfo.image, 
             this.frame.x * this.playerInfo.sw, 
             this.frame.y * this.playerInfo.sh,
@@ -198,7 +194,6 @@ class Player{
         if(cameraBoxRightSide + this.velocity.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.velocity.x  //translate left
         }
-
     }
     shouldPanCameraToRight(camera){
         const cameraBoxLeftSide = this.camerabox.position.x;
@@ -208,7 +203,6 @@ class Player{
         if(cameraBoxLeftSide + this.velocity.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.velocity.x  // translate right
         }
-
     }
     shouldPanCameraUp(camera){
         const cameraBoxBottom = this.camerabox.position.y + this.camerabox.height;
@@ -218,7 +212,6 @@ class Player{
         if(cameraBoxBottom >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.velocity.y  //translate up
         }
-
     }
     shouldPanCameraDown(camera){
         const cameraBoxTop = this.camerabox.position.y;
@@ -227,8 +220,7 @@ class Player{
         }
         if(cameraBoxTop + this.velocity.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.velocity.y  // translate down;  note: this.velocity is negative, so two negatives = positive
-        }
-        
+        } 
     }
 }
 

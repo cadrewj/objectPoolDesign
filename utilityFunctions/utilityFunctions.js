@@ -80,11 +80,11 @@ export function testBoundsOfObject(x,y,radius, data, context, isCircle=true, wid
     }
 }
 
-export function drawStatusText(context, width, height, data, gameOver){
+export function drawStatusText(context, width, height, data){
     // context.font = "10px Helvetica";
     // context.fillStyle = "green"
     // context.fillText("Last input: " + input.lastKey, 10, 20);
-    if(gameOver){
+    // if(gameOver){
         context.beginPath()
         context.font = `${data.FONT_DISPLAY_TEXT_SIZE} ${data.FONT_DISPLAY_TEXT}`;
         context.fillStyle = "white"
@@ -96,7 +96,7 @@ export function drawStatusText(context, width, height, data, gameOver){
         context.textAlign = "center"
         context.fillText("Try Again", width/2 , height/2 + data.FONT_DISPLAY_SUBTEXT_SIZE)
 
-    }
+    // }
 }
 
 export function createPool(arrayPool, maxNumElements, objectClass, width, height, data){

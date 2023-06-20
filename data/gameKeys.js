@@ -24,5 +24,8 @@ export const gameKeys ={
     PLAYER_RELEASE_DOWN: "RELEASE ArrowDown",
     PLAYER_RELEASE_SPACEBAR:"RELEASE Spacebar",
 
+    GAME_PRESS_ENTER: "PRESS Enter",
+    GAME_RELEASE_ENTER: "RELEASE Enter",
+
 
 }
