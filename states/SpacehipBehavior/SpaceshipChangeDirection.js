@@ -13,7 +13,10 @@ export default class SpaceshipChangeDirection extends State{
     //    console.log("changing direction");
     }
     handleInput(input, context){
-        this.changeDirection();
+        if(!this.spaceship.exploding){
+            this.changeDirection();
+        }
+        
         if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){ // rotate right
             this.spaceship.rotation = 0.05; 
         }
@@ -34,6 +37,9 @@ export default class SpaceshipChangeDirection extends State{
         }
         else if (input.isMouseDown){
             this.spaceship.setState(shipStates.SPACESHIP_SHOOT);
+        }
+        else if(this.spaceship.exploding){
+            this.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
         }
     }
     changeDirection(){ 

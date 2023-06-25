@@ -1,4 +1,5 @@
 import { State, gameStates } from "../state.js"
+import { stopGame } from "../../main.js";
 
 export default class GameOver extends State{
     constructor(game){
@@ -7,19 +8,28 @@ export default class GameOver extends State{
             data: game.data,
             width: game.width,
             height: game.height,
+            gameOver: game.gameOver
         }
         this.state = game;
+        this.alpha = 8; 
        
     }
     enter(){
-        console.log("enter gameover state")
+        this.alpha = 8; 
+        this.game.gameOver = true;
 
-
+        console.log("enter gameover state", this.game.gameOver)
     }
-    handleInput(input, context){
-        this.displayMessage(context)
-        if(input.lastKey === this.game.data.GAME_PRESS_ENTER || input.isMouseDown){ 
-            this.state.setState(gameStates.START_NEW_GAME); //set the player current state to standing right
+    handleInput(input, context, game){
+        if(game.gameOver){
+            do{
+                this.displayMessage(context)
+                this.alpha -= 0.1
+            }while(!this.alpha === 0);
+            cancelAnimationFrame(stopGame);
+        }
+        else if (game.gameOver && input.gameLastKey === game.data.gameKeys.PRESS_ENTER){
+            this.state.setState(gameStates.START_NEW_GAME);
         }
     }
     displayMessage(context){
@@ -32,7 +42,7 @@ export default class GameOver extends State{
         context.font = `${this.game.data.FONT_DISPLAY_SUBTEXT_SIZE} ${this.game.data.FONT_DISPLAY_SUBTEXT}`;
         context.fillStyle = "white"
         context.textAlign = "center"
-        context.fillText("Try Again", this.game.width/2 , this.game.height/2 + this.game.data.FONT_DISPLAY_SUBTEXT_SIZE)
+        context.fillText("To Try Again Press Enter", this.game.width/2 , this.game.height/2 + 72)
     }
 }
 

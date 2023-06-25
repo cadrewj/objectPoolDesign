@@ -3,12 +3,16 @@
     margin: 0;
     padding: 0;
     font-family: Helvetica, sans-serif, cursive;
+    box-sizing: border-box;
+
 }
 body{
     overflow: hidden;
     background-color: white;
 }
-#main{
+#main{ 
+    max-width: 100%; /* this make you game sreen or border fix accross devices*/
+    max-height: 100%;/* this make you game sreen or border fix accross devices*/
     border: 5px solid red;
     /* background: url("./images/bg3.png"); */
     position: absolute;

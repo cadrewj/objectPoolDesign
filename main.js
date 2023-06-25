@@ -7,6 +7,7 @@ import {Background, Stars} from "./classes/background.js";
 import {Enemy, FlyingEnemy} from "./classes/enemy.js";
 import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
+import { drawFuelGauge } from "./userInterface/guage.js";
 import { gameKeys } from "./data/gameKeys.js";
 import { Asteroid } from "./classes/asteroids.js";
 import StartNewGame from "./states/GameBehavior/NewGame.js";
@@ -29,6 +30,8 @@ Set this property to false to retain the pixels' sharpness.*/
 //define the loading screen area and set it value to zero since the screen is already loaded
 const loading = document.querySelector("#loading")
 loading.style.display = "none";
+export let stopGame;
+export let game;
 
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
@@ -41,7 +44,79 @@ addEventListener("load",()=>{
         sh: 181.83, //72
     }
     class Game{
-        constructor(width, height, data){
+        constructor(){
+            this.gameOver= false;
+            this.width;
+            this.height;
+            this.data;
+            this.camera;
+            this.spaceship;
+            this.asteroid;
+            this.player;
+            this.background;
+            this.stars;
+            this.input;
+            this.states =[ new StartNewGame(this), 
+                new GameOver(this)
+            ]
+            this.currentState = this.states[0]; //state newgame
+         
+            // this.gameFrames = 0;
+            this.enemyPool;
+            this.maxEnemies;
+            this.enemyTimer;
+            this.enemyInterval;
+           
+            // this.coins = new Coins(this.width, this.height, this.data);
+            this.lives;
+            this.meteorTimer;
+            this.meteorInterval; 
+            this.meteorPool; // used to store meteors created in the game wether they are active or inactive.
+            this.maxMeteors;// set the max value of meteors to be stored in the pool.
+      
+            
+        }
+        setState(state){ //the passed state is an index number
+            this.currentState = this.states[state]; //set the current state
+            this.currentState.enter(); // calls the enter method on the current state you are on 
+        }
+        createGamePools(){ //create an object pool of meteors  all at once for faster allocation
+            const  enemyTypes = [Enemy, FlyingEnemy];
+            createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height, this.data) //this is used to pass the game width and height  to the Meteor class
+            createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
+        }
+        render(context, deltaTime, input){
+            this.currentState.handleInput(input, context, this); 
+            // this.gameFrames++;
+            context.save()
+            context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
+            this.background.update(context);
+            
+            //draw asteroid
+            this.asteroid.draw(context);
+            this.asteroid.update(this.spaceship);
+            
+            //draw the spaceship
+            this.spaceship.update(input, context, this.camera, deltaTime)
+       
+            //draw player 
+            if(this.player.isOnPlanet){
+                this.player.draw(context, deltaTime);
+                this.player.update(input, this.enemyPool, this.camera)
+            } 
+            //render a new enemy periodically if it's free;
+            // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
+           
+            this.stars.update(context, deltaTime);
+            drawInputKeys(context, input, this.player, this.spaceship, this.currentState, this.state)
+            const fuelPercentage = this.spaceship.fuel / 100;
+            drawFuelGauge(ctx, fuelPercentage, this.width - this.player.playerInfo.width*2, this.height - 20);
+            context.restore();
+    
+            //render a new meteor periodically if it's free;
+            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);       
+        }
+        init(width, height, data){
             this.gameOver = false;
             this.width = width;
             this.height = height;
@@ -52,11 +127,6 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
-            this.states =[ new StartNewGame(this), 
-                new GameOver(this)
-            ]
-            this.currentState = this.states[0]; //state newgame
-         
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
@@ -64,6 +134,10 @@ addEventListener("load",()=>{
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this.spaceship, this.data);
 
+            this.states =[ new StartNewGame(this), 
+                new GameOver(this)
+            ]
+            this.currentState = this.states[0]; //state new game
          
             // this.gameFrames = 0;
             this.enemyPool =[];
@@ -80,49 +154,10 @@ addEventListener("load",()=>{
             this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
             this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
         }
-        setState(state){ //the passed state is an index number
-            this.currentState = this.states[state]; //set the current state
-            this.currentState.enter(); // calls the enter method on the current state you are on 
-        }
-        createGamePools(){ //create an object pool of meteors  all at once for faster allocation
-            const  enemyTypes = [Enemy, FlyingEnemy];
-            createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height, this.data) //this is used to pass the game width and height  to the Meteor class
-            createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
-        }
-        render(context, deltaTime, input){
-            
-            // this.gameFrames++;
-            context.save()
-            context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
-            this.background.update(context);
-            
-            this.asteroid.draw(context);
-            this.asteroid.update(this.spaceship);
-            
-            //draw the spaceship
-            this.spaceship.update(input, context, this.camera, deltaTime)
-       
-            //draw player 
-            if(this.player.isOnPlanet){
-                this.player.draw(context, deltaTime);
-                this.player.update(input, this.enemyPool, this.camera)
-            } 
-            //render a new enemy periodically if it's free;
-            // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
-           
-            this.stars.update(context, deltaTime);
-            drawInputKeys(context, input, this.player, this.spaceship)
-            context.restore();
-    
-            //render a new meteor periodically if it's free;
-            this.currentState.handleInput(input, context); 
-            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context);       
-        }
     }
-
-    let lastTime = 0;
     
-    const game = new Game(canvas.width, canvas.height, {...gameData, gameKeys});
+    game = new Game();
+    let lastTime = 0;
       
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         canvas.focus();
@@ -131,15 +166,16 @@ addEventListener("load",()=>{
         
         game.render(ctx, deltaTime, game.input);
         // console.log(game.input.shipLastKey)
-        const stopGame = requestAnimationFrame(animate)
-        const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
+        if(!game.gameOver){
+            stopGame = requestAnimationFrame(animate)
+        }
         
-        // if(game.player.game.gameOver === true){
-        //     drawStatusText(ctx, canvas.width, canvas.height, gameData)
-        //     cancelAnimationFrame(stopGame);
-        // }
+        const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
     }
+    game.init(canvas.width, canvas.height, {...gameData, gameKeys});
     animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.
+    
+  
 })
 
 addEventListener("resize",()=>{
@@ -147,6 +183,7 @@ addEventListener("resize",()=>{
     canvas.height = innerHeight;
 
 })
+
 
 
 

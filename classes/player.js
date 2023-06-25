@@ -5,6 +5,7 @@ import {Player_Jumping_Left, Player_Jumping_Right}from "../states/PlayerBehavior
 import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerBehavior/PlayerFalling.js";
 import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
 import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
+import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 
 class Player{
     constructor(game, playerInfo){
@@ -87,6 +88,8 @@ class Player{
             context.beginPath()
             context.strokeStyle = "rgba(255, 0, 0, 1)";
             context.strokeRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+            context.arc(this.position.x + this.hitbox.width/2, this.position.y + this.hitbox.width/3 + 20, this.hitbox.height/3, 0, degToRad(360), false);
+            context.stroke();
         }
 
         this.animateFrames(deltaTime)

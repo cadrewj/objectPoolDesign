@@ -82,7 +82,7 @@ export class Asteroid{
             // console.log("check")
         }
             
-        //move the asteriod
+        //move the asteriods
         for(let i = 0; i < this.asteroids.length; i++){
             if(!this.asteroids.free){
                 this.asteroids[i].position.x += this.asteroids[i].velocity.x;
@@ -102,8 +102,8 @@ export class Asteroid{
             if(spaceship.blinkNum == 0){ //handle collisions if ship isn't blinking
                 let damage = 0;
                 if(distanceBetweenPoints(spaceship.position.x, spaceship.position.y, asteroids.position.x, asteroids.position.y) 
-                    < spaceship.ship.radius + asteroids.radius){
-                    if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /2)){
+                    < spaceship.hitCircle.radius + asteroids.radius){
+                    if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /2)){ //asign damage based on asteroid size
                         damage = data.ASTEROID_DAMAGE_IMPACT;
                         console.log("original: ",damage);
                     }
@@ -150,7 +150,7 @@ export class Asteroid{
         }
         this.asteroids.splice(index,1);
 
-        console.log(this.asteroids)
+        // console.log(this.asteroids)
     }
 
     laserHitAsteroid(spaceship){ 
