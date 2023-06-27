@@ -1,4 +1,5 @@
-import { State, shipStates } from "../state.js"
+import { State, shipStates, gameStates } from "../state.js"
+import { game } from "../../main.js";
 
 export default class SpaceshipExploding extends State{
     constructor(spaceship){
@@ -17,13 +18,12 @@ export default class SpaceshipExploding extends State{
             this.spaceship.explodeTime--;
             if (this.spaceship.explodeTime === 0) {
                 this.spaceship.lives--;
-                if(this.spaceship.lives === 0){
-                    console.log("need to set state to gameover ")
-                    //this.state.setState(gameStates.START_NEW_GAME);//set to game over
+                if(this.spaceship.lives <= 0){
+                    this.spaceship.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); // make it stick in exploding mode or reset exploding time
+                    game.setState(gameStates.GAME_OVER);//set to game over
                 }
                 else{
                     this.spaceship.exploding = false;
-                    console.log("lives", this.spaceship.lives)
                     this.spaceship.setState(shipStates.SPACESHIP_IDLE)
                 }
             }   

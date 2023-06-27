@@ -30,7 +30,7 @@ export const shipStates = {
 }
 
 export const gameStates = {
-    START_NEW_GAME: 0,
+    NEW_GAME: 0,
     GAME_OVER: 1,
     PAUSE_GAME: 2,
     PLAYING_GAME: 3,

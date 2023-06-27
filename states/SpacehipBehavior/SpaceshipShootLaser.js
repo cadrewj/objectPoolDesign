@@ -34,7 +34,7 @@ export default class SpaceshipShootLaser extends State{
             }     
         } 
     }
-    handleInput(input){
+    handleInput(input, context){
         if(input.isMouseDown){
             this.spaceship.shots++;
             this.fuelConsumption(input);
@@ -57,7 +57,7 @@ export default class SpaceshipShootLaser extends State{
             this.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
         }
     }
-    fuelConsumption(input){
+    fuelConsumption(input, context){
         let burntFuel = 0;
  
         if(input.isMouseDown){

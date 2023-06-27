@@ -1,4 +1,4 @@
-export default function drawInputKeys(context, input, player, spaceship, currentState, state){
+export default function drawInputKeys(context, input, player, spaceship, game ){
     context.beginPath()
     context.fillStyle = "lime";
     context.textAlign ="left"
@@ -11,5 +11,6 @@ export default function drawInputKeys(context, input, player, spaceship, current
 
 
     context.fillText("Game Last Input: " + input.gameLastKey, 20, 100)
-    context.fillText("Active State: " + currentState[state], 20, 120)
+    context.fillText("Active State: " + game.currentState.state, 20, 120)
+    // console.log(currentState)
 }

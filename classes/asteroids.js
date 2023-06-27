@@ -9,6 +9,7 @@ export class Asteroid{
             height: game.height,   
         }
         this.asteroids;
+        this.collisionDamage = 0;
         this.initAsteroids()
     }
     initAsteroids(){
@@ -79,7 +80,7 @@ export class Asteroid{
     update(spaceship){     
         if(spaceship.canShoot && this.asteroids.length > 0){//to avoid unnecessary checks for collision
             this.laserHitAsteroid(spaceship);
-            // console.log("check")
+            // console.log(spaceship)
         }
             
         //move the asteriods
@@ -92,7 +93,16 @@ export class Asteroid{
                 handleEdgeOfScreen(this.asteroids[i], this.game.width, this.game.height)
 
                 //check for collision with ship and asteroid
-                this.handleAsteroidCollision(spaceship, this.asteroids[i], this.game.data, i);
+
+                if(spaceship.health > 0){
+                    this.collisionDamage = this.handleAsteroidCollision(spaceship, this.asteroids[i], this.game.data, i);
+                    if(this.collisionDamage){
+                        // console.log(this.collisionDamage, " damage")
+                        spaceship.health += this.collisionDamage;
+                        this.collisionDamage = 0;
+                    }
+                }
+              
             }
         } 
     }
@@ -105,25 +115,23 @@ export class Asteroid{
                     < spaceship.hitCircle.radius + asteroids.radius){
                     if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /2)){ //asign damage based on asteroid size
                         damage = data.ASTEROID_DAMAGE_IMPACT;
-                        console.log("original: ",damage);
+                        // console.log("original: ",damage);
                     }
                     else if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /4)){
                         damage = data.ASTEROID_DAMAGE_IMPACT /2;
-                        console.log("half: ",damage);
+                        // console.log("half: ",damage);
                     }
                     else if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /8)) {
                         damage = data.ASTEROID_DAMAGE_IMPACT/4
-                        console.log("quater: ",damage);
+                        // console.log("quater: ",damage);
                     }
                     else{
                         damage = data.ASTEROID_DAMAGE_IMPACT/8
-                        console.log("quater: ",damage);
+                        // console.log("eight: ",damage);
                     }
-                    spaceship.explodeTime = Math.ceil(data.SPACESHIP_EXPLODING_DUR * data.FPS);
-                    // spaceshipHealth(damage)
+                    
                     this.destroyAsteroid(index, data)
-                    // console.log("colliding", asteroids)
-                    return;
+                    return damage;
                 }      
             }
         }

@@ -104,7 +104,7 @@ class Player{
             this.playerInfo.height);   
     }
     update(input, enemyPool, camera){
-        this.currentState.handleInput(input,camera); 
+        this.currentState.handleInput(input, camera); 
 
         this.handleScreen()  //used to ensure the player doesn't fall off the screen
         this.updateHitBox();

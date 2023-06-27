@@ -13,7 +13,8 @@ class Spaceship{
         this.game = {
             width: game.width,
             height: game.height,
-            data: game.data,         
+            data: game.data,
+            game: game,       
         }
         this.position ={
             x: this.game.width / 2, //position the ship at the center of x axis
@@ -73,6 +74,7 @@ class Spaceship{
 
         this.lives = this.game.data.GAME_LIVES;
         this.health = 100;
+
         this.fuel = 100;
         this.accelartionTime = 0; // used for calculating fuel consumption for thrusting over time
         this.decelerationTime = 0; // used for calculating fuel consumption for thrusting over time
@@ -143,17 +145,39 @@ class Spaceship{
                     this.blinkNum--;
                 }
             }
+
+            //continue game play blinking if you explode
+            if(this.health <= 0 && this.lives > 0){
+                //make the ship explode;
+                this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
+                this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
+                this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
+                if(this.lives > 0 ){
+                    this.health = 100; //reset health of ship
+                }
+            }
             // move the ship
             this.position.x += this.thrust.x;
             this.position.y += this.thrust.y; 
             //draw laser on the screen
             this.drawLaser(context);
 
-            this.pan(camera) //note should only pan when thrusting
+            // this.pan(camera) //note should only pan when thrusting
             this.updateHitCircle();
             this.updateCameraBox();
             this.handleScreen(camera) 
         }
+    }
+    resetSpaceship(){
+        this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
+        this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
+        this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
+        this.health = 100; //reset health of ship
+        this.lives = this.game.data.GAME_LIVES;
+        this.position ={
+            x: this.game.width / 2, //position the ship at the center of x axis
+            y: this.game.height / 2, //position the ship at the center of y axis
+        }  
     }
     animateFrames(deltaTime){
         if (this.thrusting){
