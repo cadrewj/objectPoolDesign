@@ -13,6 +13,7 @@ export default class SpaceshipShootLaser extends State{
         if(!this.spaceship.exploding){
             for(let i = 0; i < this.spaceship.lasers.length; i++){
                 const canShoot = this.spaceship.fuel > 0;
+                this.spaceship.canShoot = canShoot;
                 let laser = this.spaceship.lasers[i]
                 if(canShoot && laser.free){
                     let angle = this.spaceship.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards

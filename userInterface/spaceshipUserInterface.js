@@ -8,37 +8,36 @@ export class SpaceshipUserInterface{
     drawSpaceshipHealthBar(context, health, exploding){
         let colorRange = 120;
         context.beginPath()
-        let color = exploding ? "red" :  "purple";
+        let color = exploding ? "red" :  "rgba(128, 0 , 128, 1)";
         context.strokeStyle = color;
-        context.strokeRect(this.width - 160, this.height - 20, 10, -this.data.SPACESHIP_MAX_HEALTH) // LIFE BAR
-        context.fillStyle = this.getColorForPercentage(health /100, colorRange)
-        context.fillRect(this.width - 160, this.height -20, 10, -health); 
+        context.strokeRect(this.width - 160, this.height - 20, 10, -this.data.SPACESHIP_MAX_HEALTH) // LIFE BAR 
+        if(!exploding){
+            context.fillStyle = this.getColorForPercentage(health / 100, colorRange)
+            context.fillRect(this.width - 159, this.height -20, 9, -health); 
+        }
+       
         
     }    
     drawSpaceshipLives(context, lives, exploding, ship){
-        let color = exploding ? "rgb(255,0,0)" : "rgb(225,255,255)";
-        let x = this.width - 175, y = this.height - 160; 
-        let shipLifeWidth = this.data.SPACESHIP_SIZE * 0.40;
-        let shipLifeHeight = this.data.SPACESHIP_SIZE * 0.40;
-        context.strokeStyle = color;
-        context.beginPath()
-        context.drawImage(ship.image, 
-            0, 0, 
-            ship.sw, ship.sh, // crop width and height
-            x, y, //where to place it on the screen
-            shipLifeWidth, shipLifeHeight); //size of the image in screen
-        context.stroke()
-        context.textAlign = "center";
-        context.textBaseline = "hanger"
-        context.fillStyle = color;
-        context.font = "20px Pacifico" //dejavu sans mono;
+        let color = exploding ? "rgb(255,0,0)" : "rgb(225,255,255)"; //red or purple
         if(lives >= 0){
+            let x = this.width - 175, y = this.height - 160; 
+            let shipLifeWidth = this.data.SPACESHIP_SIZE * 0.40;
+            let shipLifeHeight = this.data.SPACESHIP_SIZE * 0.40;
+            context.strokeStyle = color;
+            context.beginPath()
+            context.textAlign = "center";
+            context.textBaseline = "hanger"
+            context.fillStyle = color;
+            context.font = "20px Pacifico" //dejavu sans mono;
+            context.drawImage(ship.image, 
+                0, 0, 
+                ship.sw, ship.sh, // crop width and height
+                x, y, //where to place it on the screen
+                shipLifeWidth, shipLifeHeight); //size of the image in screen
             context.fillText(lives + "x", this.width - 185 , this.height - 130)
+            context.stroke()
         }
-        else{
-            context.fillText("x", this.width - 185 , this.height - 130)
-        }
-        
     }
     
     // Function to draw the fuel gauge
@@ -53,7 +52,7 @@ export class SpaceshipUserInterface{
         context.lineCap = "butt";
         context.arc(centerX, centerY, radius, startAngle, endAngle);
         context.lineWidth = 10;
-        context.strokeStyle = "rgba(204, 204, 204, 0.5)"//"#ccc";
+        context.strokeStyle = "rgba(128,0,128, 0.8)"//purple // "rgba(204, 204, 204, 0.5)"//"#ccc";
         context.stroke();
 
         // Calculate the fuel arc color based on the percentage
@@ -100,7 +99,7 @@ export class SpaceshipUserInterface{
 
         // Draw the text of guage percentage
         context.font = "12px Arial";
-        context.fillStyle = "#fff";
+        context.fillStyle = "rgba(255,255,255,1)";
         context.textAlign = "center";
         context.textBaseline = "bottom"
         const fuelPercentage = percentage * 100;
@@ -117,7 +116,7 @@ export class SpaceshipUserInterface{
     }
     getColorForPercentage(percentage, colorRange = 120){// Function to calculate the fuel arc color based on the percentage
         let hue = (percentage) * colorRange; // Calculate hue value from 0 to 120 (red to green)
-        let color = `hsl( ${hue}, ${colorRange}%, 45%)`; // Convert hue to HSL color format
+        let color = `hsla( ${hue}, ${colorRange}%, 45%, 0.5)`; // Convert hue to HSL color format
         // console.log(hue, color)
         return color;
     }

@@ -18,13 +18,14 @@ export default class SpaceshipExploding extends State{
             this.spaceship.explodeTime--;
             if (this.spaceship.explodeTime === 0) {
                 this.spaceship.lives--;
+
                 if(this.spaceship.lives <= 0){
                     this.spaceship.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); // make it stick in exploding mode or reset exploding time
                     game.setState(gameStates.GAME_OVER);//set to game over
                 }
                 else{
                     this.spaceship.exploding = false;
-                    this.spaceship.setState(shipStates.SPACESHIP_IDLE)
+                    this.spaceship.setState(shipStates.SPACESHIP_BLINKING)
                 }
             }   
         }

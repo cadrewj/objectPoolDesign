@@ -11,22 +11,21 @@ export default class SpaceshipBlinking extends State{
         }
     }
     enter(){
-
-        this.spaceship.exploding = this.spaceship.explodeTime > 0;
-        this.spaceship.blinkOn = this.spaceship.blinkNum % 2 == 0;
+        // this.blinkOn = this.blinkNum % 2 == 0;
+        // this.exploding = this.explodeTime > 0;
     }
     handleInput(input, context){
-        if(!this.spaceship.exploding){
+        // if(!this.spaceship.exploding && this.spaceship.blinkNum > 0){
             if (this.spaceship.blinkNum > 0) {
                 this.spaceship.blinkTime--;
                 if (this.spaceship.blinkTime == 0) {
                     this.spaceship.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS);
                     this.spaceship.blinkNum--;
                 }
-            } 
-        }  
-       
-        this.spaceship.setState(shipStates.SPACESHIP_IDLE)
+            }
+            this.spaceship.setState(shipStates.SPACESHIP_IDLE)    
+        // }  
+        
     }
 }
 

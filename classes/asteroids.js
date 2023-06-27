@@ -78,9 +78,9 @@ export class Asteroid{
         }
     }
     update(spaceship){     
+        //used to limit laser check for only when their is an asteriod and when the ship has fuel or canShoot
         if(spaceship.canShoot && this.asteroids.length > 0){//to avoid unnecessary checks for collision
             this.laserHitAsteroid(spaceship);
-            // console.log(spaceship)
         }
             
         //move the asteriods
@@ -98,8 +98,10 @@ export class Asteroid{
                     this.collisionDamage = this.handleAsteroidCollision(spaceship, this.asteroids[i], this.game.data, i);
                     if(this.collisionDamage){
                         // console.log(this.collisionDamage, " damage")
-                        spaceship.health += this.collisionDamage;
-                        this.collisionDamage = 0;
+                        // if(spaceship.health > 0){
+                            spaceship.health += this.collisionDamage;
+                            this.collisionDamage = 0;
+                        // }
                     }
                 }
               
@@ -174,12 +176,13 @@ export class Asteroid{
                 //grab laser properties
                 lx = spaceship.lasers[j].x;
                 ly = spaceship.lasers[j].y;
+                // console.log("laser info: ", lx, ly)
                  //detect hit
                 if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
                     // remove asteroid
                     this.destroyAsteroid(i, this.game.data)
     
-                    spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS);
+                    spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
                     
                     //create a function to give a random reward 
                     break;

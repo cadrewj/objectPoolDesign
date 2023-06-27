@@ -4,6 +4,7 @@ import { SpaceshipReverseThrust, SpaceshipThrust } from "../states/SpacehipBehav
 import SpaceshipChangeDirection from "../states/SpacehipBehavior/SpaceshipChangeDirection.js";
 import SpaceshipShootLaser from "../states/SpacehipBehavior/SpaceshipShootLaser.js";
 import SpaceshipExploding from "../states/SpacehipBehavior/SpaceshipExploding.js";
+import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
 // import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
 //note: set SHOW_BOUNDING to true for testing
 // later you need to add all the ship images into one spritesheet for optimisation
@@ -42,8 +43,9 @@ class Spaceship{
             new SpaceshipChangeDirection(this),
             new SpaceshipShootLaser(this),
             new SpaceshipExploding(this),
+            new SpaceshipBlinking(this),
         ]
-        this.currentState = this.states[0]; //state idle
+        this.currentState = this.states[6]; //state idle
 
         this.thruster = {
             image: document.querySelector("#thrust1"),
@@ -146,7 +148,7 @@ class Spaceship{
                 }
             }
 
-            //continue game play blinking if you explode
+            // //continue game play blinking if you explode
             if(this.health <= 0 && this.lives > 0){
                 //make the ship explode;
                 this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
@@ -168,17 +170,17 @@ class Spaceship{
             this.handleScreen(camera) 
         }
     }
-    resetSpaceship(){
-        this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
-        this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
-        this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
-        this.health = 100; //reset health of ship
-        this.lives = this.game.data.GAME_LIVES;
-        this.position ={
-            x: this.game.width / 2, //position the ship at the center of x axis
-            y: this.game.height / 2, //position the ship at the center of y axis
-        }  
-    }
+    // resetSpaceship(){
+    //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
+    //     this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
+    //     this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
+    //     this.health = 100; //reset health of ship
+    //     this.lives = this.game.data.GAME_LIVES;
+    //     this.position ={
+    //         x: this.game.width / 2, //position the ship at the center of x axis
+    //         y: this.game.height / 2, //position the ship at the center of y axis
+    //     }  
+    // }
     animateFrames(deltaTime){
         if (this.thrusting){
             if(this.ship.image.complete){//go through an animation frame to make the ship look like it is spiraling while thrusting
