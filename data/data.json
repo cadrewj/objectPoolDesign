@@ -1,7 +1,7 @@
 {
     "AUTOMATION_ON": false,
 
-    "ASTEROID_NUM": 5,
+    "ASTEROID_NUM": 15,
     "ASTEROID_SPEED": 50,
     "ASTEROID_SIZE": 100,
     "ASTEROID_STROKE_COLOR": "blue",

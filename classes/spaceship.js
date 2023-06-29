@@ -11,12 +11,17 @@ import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
 
 class Spaceship{
     constructor(game){
-        this.game = {
-            width: game.width,
-            height: game.height,
-            data: game.data,
-            game: game,       
-        }
+        this.game = game;
+        this.states =[ new SpaceshipIDLE(this.game), 
+            new SpaceshipThrust(this.game),
+            new SpaceshipReverseThrust(this.game),
+            new SpaceshipChangeDirection(this.game),
+            new SpaceshipShootLaser(this.game),
+            new SpaceshipExploding(this.game),
+            new SpaceshipBlinking(this.game),
+        ];
+        this.currentState = this.states[6]; //state idle
+
         this.position ={
             x: this.game.width / 2, //position the ship at the center of x axis
             y: this.game.height / 2, //position the ship at the center of y axis
@@ -37,15 +42,8 @@ class Spaceship{
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
         this.maxFrames = 59;
-        this.states =[ new SpaceshipIDLE(this), 
-            new SpaceshipThrust(this),
-            new SpaceshipReverseThrust(this),
-            new SpaceshipChangeDirection(this),
-            new SpaceshipShootLaser(this),
-            new SpaceshipExploding(this),
-            new SpaceshipBlinking(this),
-        ]
-        this.currentState = this.states[6]; //state idle
+      
+     
 
         this.thruster = {
             image: document.querySelector("#thrust1"),
@@ -107,6 +105,7 @@ class Spaceship{
     update(input, context, camera, deltaTime){
         this.currentState.handleInput(input, context); 
 
+        this.animate = this.fuel > 0
  
         if(this.animate){
             this.animateFrames(deltaTime);
@@ -114,7 +113,7 @@ class Spaceship{
         if(this.game.data.SHOW_BOUNDING){ //used for testing
 
             context.beginPath()
-            context.fillStyle = "rgba(234,233,0, 0.1)";
+            context.fillStyle = "rgba(234, 233, 0, 0.1)";
             context.fillRect(this.cameraBox.position.x, this.cameraBox.position.y, this.cameraBox.width, this.cameraBox.height);
 
             //draw hit circle for spaceship
@@ -169,6 +168,7 @@ class Spaceship{
             this.updateCameraBox();
             this.handleScreen(camera) 
         }
+      
     }
     // resetSpaceship(){
     //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time

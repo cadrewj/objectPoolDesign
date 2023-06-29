@@ -56,7 +56,7 @@ export class SpaceshipUserInterface{
         context.stroke();
 
         // Calculate the fuel arc color based on the percentage
-        let fuelColor = this.getColorForPercentage(percentage);
+        let fuelColor = this.getColorForPercentage(percentage, colorRange);
 
         // Draw the fuel arc
         let fuelLevel = (endAngle - startAngle) * percentage;

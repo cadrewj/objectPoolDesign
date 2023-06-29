@@ -13,8 +13,9 @@ export const states = {
     PLAYER_SHELL_SMASH_RIGHT: 11,
 }
 export class State{
-    constructor(state){
+    constructor(state, game){
         this.state = state; // used to keep track of the state name
+        this.game = game;
     }
 }
 

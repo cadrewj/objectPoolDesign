@@ -68,8 +68,8 @@ addEventListener("load",()=>{
             this.states =[ new StartNewGame(this), 
                 new GameOver(this)
             ]
-            this.currentState = this.states[0]; //state new game
-         
+           
+            this.currentState = this.states[0]; // game state
             // this.gameFrames = 0;
             this.enemyPool;
             this.maxEnemies;
@@ -81,7 +81,8 @@ addEventListener("load",()=>{
             this.meteorInterval; 
             this.meteorPool; // used to store meteors created in the game wether they are active or inactive.
             this.maxMeteors;// set the max value of meteors to be stored in the pool.
-      
+
+            // this.spaceship.currentState = this.spaceship.states[6]; //set spaceship state at the end of game class to avoid error
             
         }
         createGamePools(){ //create an object pool of meteors  all at once for faster allocation
@@ -90,6 +91,7 @@ addEventListener("load",()=>{
             createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
         render(context, deltaTime, input){
+            this.currentState.handleInput(input, context);       //set the game state
             
             // this.gameFrames++;
             context.save()
@@ -102,7 +104,8 @@ addEventListener("load",()=>{
             
             //draw the spaceship
             this.spaceship.update(input, context, this.camera, deltaTime)
-       
+            
+
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
@@ -112,7 +115,7 @@ addEventListener("load",()=>{
             // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
             this.stars.update(context, deltaTime);
-            drawInputKeys(context, input, this.player, this.spaceship, this)
+            drawInputKeys(context, input, this)
             displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
             
             const fuelPercentage = this.spaceship.fuel / 100;
@@ -124,10 +127,10 @@ addEventListener("load",()=>{
     
             //render a new meteor periodically if it's free;
             // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context); 
-            this.currentState.handleInput(input, context);       
+           
         }
         setState(state){ //the passed state is an index number
-            this.currentState = this.states[state]; //set the current state
+            this.currentState = this.states[state]; //set the current state of the game
             this.currentState.enter(); // calls the enter method on the current state you are on 
         }
         init(width, height, data){
@@ -152,7 +155,7 @@ addEventListener("load",()=>{
             this.states =[ new StartNewGame(this), 
                 new GameOver(this)
             ]
-            this.currentState = this.states[0]; //state new game
+            
          
             // this.gameFrames = 0;
             this.enemyPool =[];
@@ -165,6 +168,9 @@ addEventListener("load",()=>{
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
+
+            this.currentState = this.states[0]; //state new game
+            // this.spaceship.currentState = this.spaceship.states[6]; //spaceship state
             this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
         }
     }

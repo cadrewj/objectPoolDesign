@@ -9,12 +9,7 @@ import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 
 class Player{
     constructor(game, playerInfo){
-        this.game = {
-            width: game.width,
-            height: game.height,
-            data: game.data,
-            spaceship: game.spaceship,
-        };
+        this.game = game;
         this.playerInfo = {...playerInfo};
         this.frame = {
             x: 0,
@@ -26,18 +21,18 @@ class Player{
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
         
-        this.states = [new Player_Standing_Left(this),  //state 0
-            new Player_Standing_Right(this), //state 1
-            new Player_Sheild_Left(this), //state 2
-            new Player_Sheild_Right(this),//state 3
-            new Player_Running_Left(this),  //state 4
-            new Player_Running_Right(this), // state 5
-            new Player_Jumping_Left(this), // state 6
-            new Player_Jumping_Right(this), // state 7
-            new Player_Falling_Left(this), // state 8
-            new Player_Falling_Right(this), //state 9
-            new Player_Shell_Smash_Left(this), //state 10
-            new Player_Shell_Smash_Right(this),//state 11
+        this.states = [new Player_Standing_Left(this.game),  //state 0
+            new Player_Standing_Right(this.game), //state 1
+            new Player_Sheild_Left(this.game), //state 2
+            new Player_Sheild_Right(this.game),//state 3
+            new Player_Running_Left(this.game),  //state 4
+            new Player_Running_Right(this.game), // state 5
+            new Player_Jumping_Left(this.game), // state 6
+            new Player_Jumping_Right(this.game), // state 7
+            new Player_Falling_Left(this.game), // state 8
+            new Player_Falling_Right(this.game), //state 9
+            new Player_Shell_Smash_Left(this.game), //state 10
+            new Player_Shell_Smash_Right(this.game),//state 11
         ]; 
         this.currentState = this.states[1]; //state standing right (1)
         
