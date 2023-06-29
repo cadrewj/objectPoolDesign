@@ -1,21 +1,14 @@
 class InputHandler{
-    constructor(spaceship, data){
-        this.game = {
-            spaceship: spaceship,
-            data: data,
-        };
+    constructor(game){
+        this.game = game
         this.lastKey = "";
         this.shipLastKey = "";
         this.gameLastKey = "";
         this.isMouseDown = false;
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
-            // console.log(pressedKey);
-
             //spaceship keys
-            if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
-                return
-            }
+         
             switch(pressedKey){
                 case "a": //left arrow (rotate spaceship left)
                     this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_LEFT
@@ -68,14 +61,18 @@ class InputHandler{
                 case "Escape":
                     this.gameLastKey = this.game.data.gameKeys.PRESS_ESCAPE;
                 break;
+                case "G":
+                    this.gameLastKey = this.game.data.gameKeys.PRESS_DEBUG_MODE;
+                break;
+              
             }
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
        
-            if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
-                return
-            }
+            // if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
+            //     return
+            // }
             switch(releasedKey){
                  //Game Control keys
                  case "Enter":
@@ -84,6 +81,10 @@ class InputHandler{
                 case "Escape":
                     this.gameLastKey = this.game.data.gameKeys.RELEASE_ESCAPE;
                 break;
+                case "G":
+                    this.gameLastKey = this.game.data.gameKeys.RELEASE_DEBUG_MODE;
+                break;
+              
 
                 //spaceship keys released
                 case "w": //up arrow (stop thrust forward spaceship up)
@@ -128,6 +129,7 @@ class InputHandler{
                 case "c": //use to switch attack type
                     this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_SWITCH_LEFT;
                 break;
+
                 
             }
         });

@@ -110,18 +110,6 @@ class Spaceship{
         if(this.animate){
             this.animateFrames(deltaTime);
         }
-        if(this.game.data.SHOW_BOUNDING){ //used for testing
-
-            context.beginPath()
-            context.fillStyle = "rgba(234, 233, 0, 0.1)";
-            context.fillRect(this.cameraBox.position.x, this.cameraBox.position.y, this.cameraBox.width, this.cameraBox.height);
-
-            //draw hit circle for spaceship
-            context.beginPath()
-            context.strokeStyle = "black";
-            context.arc(this.hitCircle.position.x, this.hitCircle.position.y, this.hitCircle.radius, 0, degToRad(360), false);
-            context.stroke();
-        }
 
         this.exploding = this.explodeTime > 0;
         this.blinkOn = this.blinkNum % 2 == 0;
@@ -146,7 +134,6 @@ class Spaceship{
                     this.blinkNum--;
                 }
             }
-
             // //continue game play blinking if you explode
             if(this.health <= 0 && this.lives > 0){
                 //make the ship explode;

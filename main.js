@@ -13,6 +13,7 @@ import { Asteroid } from "./classes/asteroids.js";
 import StartNewGame from "./states/GameBehavior/NewGame.js";
 import GameOver from "./states/GameBehavior/gameOver.js";
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
+import DebugMode from "./states/GameBehavior/DebugMode.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -56,17 +57,20 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
+            this.debug = false;
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
             this.background = new Background(this.width, this.height, this.data)
             this.stars = new Stars(this.width, this.height, this.data);
-            this.input = new InputHandler(this.spaceship, this.data);
+            this.input = new InputHandler(this);
 
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
 
-            this.states =[ new StartNewGame(this), 
-                new GameOver(this)
+            this.states =[ 
+                new StartNewGame(this), 
+                new GameOver(this),
+                new DebugMode(this),
             ]
            
             this.currentState = this.states[0]; // game state
@@ -91,7 +95,7 @@ addEventListener("load",()=>{
             createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
         render(context, deltaTime, input){
-            this.currentState.handleInput(input, context);       //set the game state
+            
             
             // this.gameFrames++;
             context.save()
@@ -111,6 +115,7 @@ addEventListener("load",()=>{
                 this.player.draw(context, deltaTime);
                 this.player.update(input, this.enemyPool, this.camera)
             } 
+            this.currentState.handleInput(input, context);       //set the game state
             //render a new enemy periodically if it's free;
             // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
@@ -145,15 +150,18 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
+            this.debug = false
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
             this.background = new Background(this.width, this.height, this.data)
             this.stars = new Stars(this.width, this.height, this.data);
-            this.input = new InputHandler(this.spaceship, this.data);
+            this.input = new InputHandler(this);
 
-            this.states =[ new StartNewGame(this), 
-                new GameOver(this)
+            this.states =[ 
+                new StartNewGame(this), 
+                new GameOver(this),
+                new DebugMode(this)
             ]
             
          

@@ -37,10 +37,12 @@ export const gameKeys ={
     /////////// GAME SYSTEM CONTROLS //////////////
     PRESS_ENTER: "PRESS Enter",
     PRESS_ESCAPE: "PRESS Escape",
+    PRESS_DEBUG_MODE: "PRESS G",
 
     
     RELEASE_ENTER: "RELEASE Enter",
     RELEASE_ESCAPE: "RELEASE Escape",
+    RELEASE_DEBUG_MODE: "RELEASE G"
     
 
 

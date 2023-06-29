@@ -1,4 +1,4 @@
-import { State, shipStates } from "../state.js"
+import { State, shipStates, gameStates } from "../state.js"
 
 export default class SpaceshipIDLE extends State{
     constructor(game){
@@ -33,6 +33,9 @@ export default class SpaceshipIDLE extends State{
         }
         else if(this.game.spaceship.exploding){
             this.game.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
+        }
+        else if(input.gameLastKey === this.game.data.gameKeys.PRESS_DEBUG_MODE){
+            this.game.setState(gameStates.DEBUG_MODE)
         }
     }
 }

@@ -73,21 +73,8 @@ class Player{
     }
 
     draw(context, deltaTime){
-        if(this.game.data.SHOW_BOUNDING){ //used for testing
-            //draw cameraBox
-            context.beginPath()
-            context.fillStyle = "rgba(211, 232, 200, 0.1)";
-            context.fillRect(this.camerabox.position.x, this.camerabox.position.y, this.camerabox.width, this.camerabox.height);
-
-            //draw hitbox
-            context.beginPath()
-            context.strokeStyle = "rgba(255, 0, 0, 1)";
-            context.strokeRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
-            context.arc(this.position.x + this.hitbox.width/2, this.position.y + this.hitbox.width/3 + 20, this.hitbox.height/3, 0, degToRad(360), false);
-            context.stroke();
-        }
-
         this.animateFrames(deltaTime)
+        //draw the player on the screen
         context.drawImage(this.playerInfo.image, 
             this.frame.x * this.playerInfo.sw, 
             this.frame.y * this.playerInfo.sh,

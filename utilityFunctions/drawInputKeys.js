@@ -11,6 +11,7 @@ export default function drawInputKeys(context, input, game ){
 
 
     context.fillText("Game Last Input: " + input.gameLastKey, 20, 100)
-    context.fillText("Active State: " + game.currentState.state, 20, 120)
+    context.fillText("Game Active State: " + game.currentState.state, 20, 120)
+    context.fillText("Debug Mode: " + game.debug, 20, 140)
     // console.log(currentState)
 }

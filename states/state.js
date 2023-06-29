@@ -33,8 +33,10 @@ export const shipStates = {
 export const gameStates = {
     NEW_GAME: 0,
     GAME_OVER: 1,
-    PAUSE_GAME: 2,
-    PLAYING_GAME: 3,
-    LOAD_GAME: 4,
-    DISPLAY_GAME_MESSAGE: 5,
+    DEBUG_MODE: 2,
+    PAUSE_GAME: 3,
+    PLAYING_GAME: 4,
+    LOAD_GAME: 5,
+    DISPLAY_GAME_MESSAGE: 6,
+    
 }
