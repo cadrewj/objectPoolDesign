@@ -13,7 +13,6 @@ class Meteor {
             width: this.radius * 2,
             height: this.radius * 2,
         }
-        this.allowBounceOff = true;
         this.position ={
             x: randomNum(this.radius, this.game.width - this.radius),
             y: 0 -  this.radius,

@@ -8,7 +8,7 @@ export default class StartNewGame extends State{
     }
     enter(){
         this.game.init(this.game.width, this.game.height, this.game.data)
-        console.log(this.game, "entered new game")
+        // console.log(this.game, "entered new game")
 
         this.alpha = 8;
         // console.log("enter new game state", this.game)

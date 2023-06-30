@@ -1,4 +1,4 @@
-import { randomNum, testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
+import { randomNum} from "../utilityFunctions/utilityFunctions.js";
 
 export class Enemy{
     constructor(width, height, data){
@@ -10,8 +10,8 @@ export class Enemy{
         
         this.enemy = {
             image: document.querySelector("#fox"),
-            width: Math.floor(this.game.width * 0.03),//Math.floor(this.game.width * 0.1),
-            height: Math.floor(this.game.height * 0.02),//Math.floor(this.game.height * 0.08),
+            width: Math.floor(this.game.width * 0.2),//Math.floor(this.game.width * 0.1),
+            height: Math.floor(this.game.height * 0.1),//Math.floor(this.game.height * 0.08),
             sx:0,
             sy:0,
             sw: 80,
@@ -22,7 +22,6 @@ export class Enemy{
             x:0,
             y:0
         }
-        this.allowBounceOff = false;
         this.framesNum = 7
         this.originalPosition ={
             x: this.game.width,
@@ -33,14 +32,21 @@ export class Enemy{
             y: this.game.height - this.enemy.height,
         }
         
+        this.hitCircle = {
+            position:{
+                x: this.position.x,
+                y: this.position.y,
+            },
+            width: this.enemy.width/3,
+            height: this.enemy.height/3,
+        } 
+        
         this.speed = randomNum(1, 3) //Math.random() * 0.15 + 0.01;
         this.staggerFrames = 5;
         this.free = true;
     }
-    update(context, gameFrames){
-        
+    update(context, gameFrames){ 
         if(!this.free){
-            testBoundsOfObject(this.position.x + this.radius, this.position.y + this.radius, this.radius, this.game.data, context, true, this.enemy.width, this.enemy.height)
             this.draw(context) 
             if(this.enemy.image.complete){
                 // draw the image
@@ -79,7 +85,6 @@ export class Enemy{
         context.translate(this.position.x + this.enemy.width, this.position.y); // move the context to the right edge of the image
         context.scale(-1, 1); // flip the x-axis
 
-        
         context.drawImage(this.enemy.image, this.enemy.sw * this.frames.x, this.enemy.sy, this.enemy.sw, this.enemy.sh,
             0, 0, this.enemy.width, this.enemy.height)
         context.restore()
@@ -107,7 +112,7 @@ export class FlyingEnemy extends Enemy{
         }
         this.radius = this.enemy.width/2;
         this.originalPosition.x = this.game.width;
-        this.originalPosition.y = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
+        this.originalPosition.y = Math.random() * this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
         this.position.x = this.game.width;
         this.position.y = Math.random()* this.game.height * 0.5;//randomNum(this.enemy.width, this.game.height * 0.5);
         

@@ -13,6 +13,7 @@ import { Asteroid } from "./classes/asteroids.js";
 import StartNewGame from "./states/GameBehavior/NewGame.js";
 import GameOver from "./states/GameBehavior/gameOver.js";
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
+import { GameUserInterface } from "./userInterface/gameUserInterface.js";
 import DebugMode from "./states/GameBehavior/DebugMode.js";
 
 //define the canvas and it's dimensions
@@ -57,14 +58,23 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
-            this.debug = false;
+            this.debug = true;
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
             this.background = new Background(this.width, this.height, this.data)
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
-
+            this.velocity = {
+                x: 10,
+                y: 10
+            }
+            this.collisions = [];
+            this.particles = [];
+            this.maxParticles = 50;
+            
+            this.score = 0;
+            this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
 
             this.states =[ 
@@ -73,8 +83,9 @@ addEventListener("load",()=>{
                 new DebugMode(this),
             ]
            
-            this.currentState = this.states[0]; // game state
-            // this.gameFrames = 0;
+           
+            this.currentState = this.states[2]; // game state
+            this.gameFrames = 0;
             this.enemyPool;
             this.maxEnemies;
             this.enemyTimer;
@@ -85,8 +96,6 @@ addEventListener("load",()=>{
             this.meteorInterval; 
             this.meteorPool; // used to store meteors created in the game wether they are active or inactive.
             this.maxMeteors;// set the max value of meteors to be stored in the pool.
-
-            // this.spaceship.currentState = this.spaceship.states[6]; //set spaceship state at the end of game class to avoid error
             
         }
         createGamePools(){ //create an object pool of meteors  all at once for faster allocation
@@ -97,7 +106,7 @@ addEventListener("load",()=>{
         render(context, deltaTime, input){
             
             
-            // this.gameFrames++;
+            this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
             this.background.update(context);
@@ -108,16 +117,41 @@ addEventListener("load",()=>{
             
             //draw the spaceship
             this.spaceship.update(input, context, this.camera, deltaTime)
+
             
+            //draw game particles
+            this.particles.forEach((particle, index) => {
+                particle.draw(context)
+                particle.update();
+                if(particle.markedForDeletion){
+                    this.particles.splice(index, 1)
+                }   
+            });
+            //constrol the amount of particles in the array
+            if(this.particles.length > this.maxParticles){
+                this.particles = this.particles.splice(0, this.maxParticles)
+            }
+            // console.log(this.particles)
 
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
-                this.player.update(input, this.enemyPool, this.camera)
+                this.player.update(input, this.camera)
             } 
+
+            //handle collision sprites
+            this.collisions.forEach((collision, index)=>{
+                collision.draw(context);
+                collision.update(deltaTime);
+                if(collision.markedForDeletion){
+                    this.collisions.splice(index, 1)
+                }
+            })
+            
+
             this.currentState.handleInput(input, context);       //set the game state
             //render a new enemy periodically if it's free;
-            // this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
+            this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
             this.stars.update(context, deltaTime);
             drawInputKeys(context, input, this)
@@ -128,6 +162,7 @@ addEventListener("load",()=>{
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.playerInfo.width * 2.5, this.height - 20);
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
+            this.gameUI.drawScore(context);
             context.restore();
     
             //render a new meteor periodically if it's free;
@@ -150,7 +185,7 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
-            this.debug = false
+            this.debug = true;
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
@@ -163,13 +198,18 @@ addEventListener("load",()=>{
                 new GameOver(this),
                 new DebugMode(this)
             ]
-            
-         
-            // this.gameFrames = 0;
+            this.velocity = {
+                x: 10,
+                y: 10
+            }
+            this.gameFrames = 0;
+            this.particles = [];
+            this.collisions =[];
             this.enemyPool =[];
             this.maxEnemies = 9;
             this.enemyTimer = 0;
             this.enemyInterval = 3000;
+            
            
             // this.coins = new Coins(this.width, this.height, this.data);
             this.meteorTimer = 0;
@@ -177,8 +217,7 @@ addEventListener("load",()=>{
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
 
-            this.currentState = this.states[0]; //state new game
-            // this.spaceship.currentState = this.spaceship.states[6]; //spaceship state
+            this.currentState = this.states[2]; //state new game
             this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
         }
     }
@@ -192,10 +231,7 @@ addEventListener("load",()=>{
         lastTime = timeStamp;
         
         game.render(ctx, deltaTime, game.input);
-        // console.log(game.input.shipLastKey)
-        // if(!game.gameOver){
-            stopGame = requestAnimationFrame(animate)
-        // }  
+        stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
     }
     game.init(canvas.width, canvas.height, {...gameData, gameKeys});

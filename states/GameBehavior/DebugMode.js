@@ -31,10 +31,20 @@ export default class DebugMode extends State{
             //draw hitbox on player
             context.beginPath()
             context.strokeStyle = "rgba(255, 0, 0, 1)";
-            context.strokeRect(this.game.player.hitbox.position.x, this.game.player.hitbox.position.y, this.game.player.hitbox.width, this.game.player.hitbox.height);
-            context.arc(this.game.player.position.x + this.game.player.hitbox.width/2, this.game.player.position.y + this.game.player.hitbox.width/3 + 20, this.game.player.hitbox.height/3, 0, degToRad(360), false);
+            // context.strokeRect(this.game.player.hitbox.position.x, this.game.player.hitbox.position.y, this.game.player.hitbox.width, this.game.player.hitbox.height);
+            context.arc(this.game.player.hitCircle.position.x, this.game.player.hitCircle.position.y, this.game.player.hitCircle.width, 0, degToRad(360), false);
             context.stroke();
-            
+
+
+            //enemies hit circle
+            this.game.enemyPool.forEach(enemy => {
+                if(!enemy.free){
+                    context.beginPath()
+                    context.arc(enemy.position.x + enemy.radius, enemy.position.y + enemy.radius/2, enemy.radius/2, 0, degToRad(360), false);
+                    context.stroke();
+                }
+            });
+          
         }
     }
 

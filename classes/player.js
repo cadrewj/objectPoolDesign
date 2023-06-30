@@ -1,11 +1,12 @@
-// import { testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
+import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 import {Player_Standing_Left, Player_Standing_Right }from "../states/PlayerBehavior/PlayerStanding.js";
 import {Player_Running_Left, Player_Running_Right} from "../states/PlayerBehavior/PlayerRunning.js";
 import {Player_Jumping_Left, Player_Jumping_Right}from "../states/PlayerBehavior/PlayerJumping.js";
 import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerBehavior/PlayerFalling.js";
 import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
 import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
-import { degToRad } from "../utilityFunctions/utilityFunctions.js";
+import { Player_Collision_Behavior_Left, Player_Collision_Behavior_Right } from "../states/PlayerBehavior/PlayerCollisionBehavior.js";
+import { collisionAnimation } from "./collisionAnimation.js";
 
 class Player{
     constructor(game, playerInfo){
@@ -33,6 +34,8 @@ class Player{
             new Player_Falling_Right(this.game), //state 9
             new Player_Shell_Smash_Left(this.game), //state 10
             new Player_Shell_Smash_Right(this.game),//state 11
+            new Player_Collision_Behavior_Left(this.game), //state 12
+            new Player_Collision_Behavior_Right(this.game), //state 13
         ]; 
         this.currentState = this.states[1]; //state standing right (1)
         
@@ -47,13 +50,13 @@ class Player{
             x: this.game.spaceship.position.x,// this.game.width * 0.1,
             y: this.game.spaceship.position.y//this.game.height - this.playerInfo.height, // place the player at the bottom of the canvas
         }
-        this.hitbox = {
+        this.hitCircle = {
             position:{
-                x: this.position.x,
-                y: this.position.y,
+                x: this.position.x + this.playerInfo.width/2,
+                y: this.position.y + this.playerInfo.height/3 + 20,
             },
-            width: this.playerInfo.width,
-            height: this.playerInfo.height,
+            width: this.playerInfo.width/3,
+            height: this.playerInfo.height/3,
         } 
         this.camerabox = {
             position:{
@@ -85,12 +88,14 @@ class Player{
             this.playerInfo.width,
             this.playerInfo.height);   
     }
-    update(input, enemyPool, camera){
+    update(input, camera){
+        this.checkForCollisions()
         this.currentState.handleInput(input, camera); 
 
         this.handleScreen()  //used to ensure the player doesn't fall off the screen
-        this.updateHitBox();
+        this.updateHitCircle();
         this.updateCameraBox();
+        
 
         ////////horizontal movement////////////////
         this.position.x += this.velocity.x;
@@ -108,19 +113,6 @@ class Player{
                 this.position.y = this.game.height - this.playerInfo.height;
             }
         } 
-        
-         //set up collision with player
-        //  enemyPool.forEach(e => {
-        //     // const enemy = e.enemy
-        //     const dx = e.position.x - this.position.x;
-        //     const dy = e.position.y - this.position.y;
-        //     const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        //     if(distance < e.enemy.width/2 + this.hitbox.width){
-        //         console.log("gameover")
-        //         // this.game.gameOver = true;a
-        //     }
-            
-        // });
     }
 
     setState(state){ //the passed state is an index number
@@ -144,21 +136,21 @@ class Player{
         }
     }
     handleScreen(){ //has small bug
-        if(this.hitbox.position.x + this.velocity.x>= this.game.width - this.hitbox.width){   //add the velocity to check a few pixels in advance
-            this.position.x = this.game.width - this.hitbox.width
+        if(this.position.x + this.velocity.x >= this.game.width - this.playerInfo.width){   //add the velocity to check a few pixels in advance
+            this.position.x = this.game.width - this.playerInfo.width
         }
-        else if(this.hitbox.position.x + this.velocity.x <= 0){ //add the velocity to check a few pixels in advance
+        else if(this.position.x + this.velocity.x <= 0){ //add the velocity to check a few pixels in advance
             this.position.x = 0;
         }
     }
-    updateHitBox(){
-        this.hitbox = {
+    updateHitCircle(){
+        this.hitCircle = {
             position:{
-                x: this.position.x,
-                y: this.position.y,
+                x: this.position.x + this.playerInfo.width/2,
+                y: this.position.y + this.playerInfo.height/3 + 20,
             },
-            width: this.playerInfo.width,
-            height: this.playerInfo.height,
+            width: this.playerInfo.width/3.5,
+            height: this.playerInfo.height/3.5,
         } 
     }
     updateCameraBox(){
@@ -206,6 +198,27 @@ class Player{
         if(cameraBoxTop + this.velocity.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.velocity.y  // translate down;  note: this.velocity is negative, so two negatives = positive
         } 
+    }
+    checkForCollisions(){
+        this.game.enemyPool.forEach(enemy => {
+            if(enemy.position.x < this.position.x + this.hitCircle.width 
+                && enemy.position.x + enemy.enemy.width > this.position.x
+                &&  enemy.position.y < this.position.y + this.hitCircle.height 
+                && enemy.position.y + enemy.enemy.height > this.position.y
+                ){
+                    console.log("reseting enemy")
+                    enemy.reset(); //mark for deletion;
+                    this.game.collisions.push(new collisionAnimation(this.game, enemy.position, enemy.enemy.width, enemy.enemy.height))
+                    if(this.currentState === this.states[10] || this.currentState === this.states[11]){
+                        this.game.score++;
+                    }
+                    else{//next to add left right condition
+                        console.log("hurt");
+                        this.setState(12)
+                    }
+            }
+            
+        });
     }
 }
 

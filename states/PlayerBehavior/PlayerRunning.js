@@ -1,9 +1,11 @@
 import { State, states } from  "../state.js";
+import { Dust } from "../../classes/particles.js";
 
 export class Player_Running_Left extends State{
     constructor(game){
         super("PLAYER RUNNING LEFT", game); // used to access and call method on object's parent. meaning everything in their constructor; 
         this.game = game
+        this.sign = 1;
     }
     enter(){
         this.game.player.frame.y = 7; //the row position of the player image you want to use
@@ -11,7 +13,10 @@ export class Player_Running_Left extends State{
         this.game.player.velocity.x = -this.game.player.maxSpeed;  
     }
     handleInput(input, camera){
-        this.game.player.shouldPanCameraToRight(camera)
+        // this.game.player.shouldPanCameraToRight(camera)
+
+        this.game.particles.unshift(new Dust(this.game, this.game.player.position, this.sign))//used to add a new particle when the player runs
+
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
             this.game.player.setState(states.PLAYER_RUNNING_RIGHT); //set the player current state to standing right   
         }
@@ -31,6 +36,7 @@ export class Player_Running_Right extends State{
     constructor(game){
         super("PLAYER RUNNING RIGHT", game);
         this.game = game
+        this.sign = -1;
     }
     enter(){
         this.game.player.frame.y = 6;  //the row position of the player image you want to use
@@ -38,7 +44,9 @@ export class Player_Running_Right extends State{
         this.game.player.velocity.x = this.game.player.maxSpeed;   
     }
     handleInput(input, camera){
-        this.game.player.shouldPanCameraToLeft(camera);
+        // this.game.player.shouldPanCameraToLeft(camera);
+        this.game.particles.unshift(new Dust(this.game, this.game.player.position, this.sign))//used to add a new particle when the player runs
+        
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
             this.game.player.setState(states.PLAYER_RUNNING_LEFT); //set the player current state to Running left
             this.game.player.shouldPanCameraToLeft(camera)
