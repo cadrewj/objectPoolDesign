@@ -124,18 +124,15 @@ addEventListener("load",()=>{
 
             
             //draw game particles
-            this.particles.forEach((particle, index) => {
+            this.particles.forEach((particle) => {
                 particle.draw(context)
                 particle.update();
-                if(particle.markedForDeletion){
-                    this.particles.splice(index, 1)
-                }   
+                this.particles = this.particles.filter(particle => !particle.markedForDeletion)
             });
             //constrol the amount of particles in the array
             if(this.particles.length > this.maxParticles){
                 this.particles = this.particles.splice(0, this.maxParticles)
             }
-            // console.log(this.particles)
 
             //draw player 
             if(this.player.isOnPlanet){
@@ -147,9 +144,7 @@ addEventListener("load",()=>{
             this.collisions.forEach((collision, index)=>{
                 collision.draw(context);
                 collision.update(deltaTime);
-                if(collision.markedForDeletion){
-                    this.collisions.splice(index, 1)
-                }
+                this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
             
 

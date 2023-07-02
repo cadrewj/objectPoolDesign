@@ -80,7 +80,7 @@ export class Asteroid{
             
         //move the asteriods
         for(let i = 0; i < this.asteroids.length; i++){
-            if(!this.asteroids.free){
+            if(!this.asteroids[i].free){
                 this.asteroids[i].position.x += this.asteroids[i].velocity.x;
                 this.asteroids[i].position.y += this.asteroids[i].velocity.y;
     
@@ -92,11 +92,8 @@ export class Asteroid{
                 if(spaceship.health > 0){
                     this.collisionDamage = this.handleAsteroidCollision(spaceship, this.asteroids[i], this.game.data, i);
                     if(this.collisionDamage){
-                        // console.log(this.collisionDamage, " damage")
-                        // if(spaceship.health > 0){
-                            spaceship.health += this.collisionDamage;
-                            this.collisionDamage = 0;
-                        // }
+                        spaceship.health += this.collisionDamage;
+                        this.collisionDamage = 0;
                     }
                 }
               
@@ -154,38 +151,42 @@ export class Asteroid{
             console.log("rewarding")
             // selectReward(x,y,index);
         }
-        this.asteroids.splice(index,1);
+        this.asteroids[index].free = true;
+        this.asteroids = this.asteroids.filter(asteroid => !asteroid.free);
 
-        // console.log(this.asteroids)
+        console.log(this.asteroids)
     }
 
     laserHitAsteroid(spaceship){ 
         let ax, ay, ar, lx, ly;
         // console.log(this.asteroids)
         for (let i = 0; i < this.asteroids.length; i++){
-            //grab asteroid properties
-            ax = this.asteroids[i].position.x;
-            ay = this.asteroids[i].position.y;
-            ar = this.asteroids[i].radius;
-    
-            for(let j = 0; j < spaceship.lasers.length; j++){
-                //grab laser properties
-                lx = spaceship.lasers[j].x;
-                ly = spaceship.lasers[j].y;
-                // console.log("laser info: ", lx, ly)
-                 //detect hit
-                if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
-                    // remove asteroid
-                    this.destroyAsteroid(i, this.game.data)
-                    //increase game score if destroy asteroid
-                    this.game.score++; 
-    
-                    spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
-                    
-                    //create a function to give a random reward 
-                    break;
-                } 
+            if(!this.asteroids[i].free){
+                //grab asteroid properties
+                ax = this.asteroids[i].position.x;
+                ay = this.asteroids[i].position.y;
+                ar = this.asteroids[i].radius;
+
+                for(let j = 0; j < spaceship.lasers.length; j++){
+                    //grab laser properties
+                    lx = spaceship.lasers[j].x;
+                    ly = spaceship.lasers[j].y;
+                    // console.log("laser info: ", lx, ly)
+                    //detect hit
+                    if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
+                        // remove asteroid
+                        this.destroyAsteroid(i, this.game.data)
+                        //increase game score if destroy asteroid
+                        this.game.score++; 
+
+                        spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
+                        
+                        //create a function to give a random reward 
+                        break;
+                    } 
+                }
             }
+           
         }  
     }
 }

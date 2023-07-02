@@ -281,8 +281,6 @@ class Spaceship{
                     context.fill();
                 }  
                 if(this.lasers[i].dist > this.game.data.SPACESHIP_LASER_MAX_DIST * this.game.height){  
-                    // this.lasers.splice(i, 1);//delete the laser from the array 
-                    // console.log("distance met, laser set to free")
                     this.lasers[i].free = true; //use and object model to remove the laser instead of deleting
                     continue; 
                 }
@@ -293,7 +291,6 @@ class Spaceship{
         
                     //destroy laser after duration is up
                     if(this.lasers[i].explodeTime === 0){
-                        // this.lasers.splice(i, 1); 
                         this.lasers[i].free = true;
                         continue;
                     }
