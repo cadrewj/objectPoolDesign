@@ -22,8 +22,9 @@ export class Player_Shell_Smash_Left extends State{
             this.game.player.setState(states.PLAYER_STANDING_LEFT);  
 
         }
-        else if(this.game.player.onGround()  && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
-            this.game.player.position.y -= this.game.player.maxSpeed * 30; 
+        else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ 
+            this.game.player.setState(states.PLAYER_RUNNING_RIGHT);  
+
         }
         else if(this.game.player.onGround()){ // switch state when player touch the ground
             for(let i =0; i< 30;i++){
@@ -55,14 +56,13 @@ export class Player_Shell_Smash_Right extends State{
         else if(this.game.player.onGround()  && input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_DOWN){ 
             this.game.player.setState(states.PLAYER_STANDING_RIGHT);  
         }
-        else if(this.game.player.onGround()  && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
-            this.game.player.position.y -= this.game.player.maxSpeed * 30; 
+        else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ 
+            this.game.player.setState(states.PLAYER_RUNNING_LEFT);  
         }
         else if(this.game.player.onGround()){ // switch state when player touch the ground
             for(let i =0; i< 30;i++){
-                this.game.particles.unshift(new Splash(this.game, this.game.player.position))
+                this.game.particles.unshift(new Splash(this.game, this.game.player.position, this.sign))
             }
-            
         }
         // else if(this.game.player.onGround() && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
         //     this.game.player.setState(states.PLAYER_RUNNING_RIGHT);

@@ -40,7 +40,10 @@ export class Dust extends Particle{
     }
     update(){
         super.update()
-        this.position.x += (this.velocity.x + this.game.velocity.x) * this.sign; //change the direction of the particle if facing left
+        this.velocity.x *= this.sign
+        // this.game.velocity.x  *= this.sign
+        this.position.x *= this.sign;
+        this.position.x += this.velocity.x //+ this.game.velocity.x; //change the direction of the particle if facing left
     }
 }
 
@@ -66,7 +69,9 @@ export class Fire extends Particle{
     update(){
         super.update()
         this.angle += this.velocity.angle;
-        this.position.x += (this.velocity.x + this.game.velocity.x) * this.sign; //use sign to change the direction of the paritcle if facing left
+        this.velocity.x *=this.sign;
+        this.position.x *= this.sign; //use sign to change the direction of the paritcle if facing left
+        this.position.x += this.velocity.x //+ this.game.velocity.x
 
         this.position.x += Math.sin(this.angle * 10);  // add horizontal wabble
         
@@ -100,6 +105,8 @@ export class Splash  extends Particle{
     }
     update(){
         super.update();
+        this.velocity.x *=this.sign;
+        this.position.x *= this.sign;
         this.gravity += 0.1
         this.position.y += this.gravity;
     }

@@ -8,7 +8,7 @@ export class GameUserInterface{
     }
     drawScore(context){
         context.beginPath()
-        context.font = this.fontSize + this.fontFamily;
+        context.font =  "32px Space Grotesk"//this.fontSize + this.fontFamily;
         context.textAlign = "center";
         context.textBaseline = "middle"
         context.fillStyle = "rgba(255,255,255, 0.5)";

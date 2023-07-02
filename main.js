@@ -15,6 +15,7 @@ import GameOver from "./states/GameBehavior/gameOver.js";
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
 import { GameUserInterface } from "./userInterface/gameUserInterface.js";
 import DebugMode from "./states/GameBehavior/DebugMode.js";
+import {PlayerUserInterface} from "./userInterface/playerUserInterface.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -46,6 +47,8 @@ addEventListener("load",()=>{
         sw: 200, //72
         sh: 181.83, //72
     }
+   
+    
     class Game{
         constructor(width, height, data){
             this.gameOver = false;
@@ -72,6 +75,7 @@ addEventListener("load",()=>{
             this.collisions = [];
             this.particles = [];
             this.maxParticles = 50;
+            this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             
             this.score = 0;
             this.gameUI = new GameUserInterface(this)
@@ -154,7 +158,7 @@ addEventListener("load",()=>{
             this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
             this.stars.update(context, deltaTime);
-            drawInputKeys(context, input, this)
+            // drawInputKeys(context, input, this)
             displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
             
             const fuelPercentage = this.spaceship.fuel / 100;
@@ -163,6 +167,8 @@ addEventListener("load",()=>{
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
             this.gameUI.drawScore(context);
+            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt);
+            
             context.restore();
     
             //render a new meteor periodically if it's free;
@@ -209,8 +215,8 @@ addEventListener("load",()=>{
             this.maxEnemies = 9;
             this.enemyTimer = 0;
             this.enemyInterval = 3000;
-            
-           
+            this.score = 0;
+            this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             // this.coins = new Coins(this.width, this.height, this.data);
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 

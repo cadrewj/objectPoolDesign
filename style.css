@@ -2,8 +2,13 @@
     /*  *means do for all html tags */
     margin: 0;
     padding: 0;
-    font-family: Helvetica, sans-serif, cursive;
+    /* font-family: Helvetica, sans-serif, cursive; */
     box-sizing: border-box;
+    /* google fonts */
+    font-family: 'Creepster', cursive;
+    font-family: 'Nanum Pen Script', cursive;
+    font-family: 'Press Start 2P', cursive;
+    font-family: 'Space Grotesk', sans-serif;
 
 }
 body{
@@ -22,6 +27,7 @@ body{
 
 }
 #loading{
+    font-family: 'Space Grotesk', sans-serif;
     position: absolute;
     top: 30%; /* offset top an left from the edge of the image*/
     left: 50%;

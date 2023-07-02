@@ -1,3 +1,5 @@
+import { randomNum } from "../utilityFunctions/utilityFunctions.js";
+
 export class collisionAnimation{
     constructor(game,  position, tWidth, tHeight){
         this.game = game;
@@ -10,8 +12,8 @@ export class collisionAnimation{
         this.sw = 16;
         this.sh = 16;
         this.sizeModifier = Math.random() + 0.5 // number between 0.5 and 1.5;
-        this.width =  this.sw * this.sizeModifier;
-        this.height =  this.sh * this.sizeModifier;
+        this.width =  80 * this.sizeModifier;
+        this.height =  80 * this.sizeModifier;
         this.position ={
             x: position.x - this.width / 2 ,
             y: position.y - this.height /2
@@ -22,9 +24,12 @@ export class collisionAnimation{
         }
         this.maxFrames = 5;
         this.velocity ={
-            x: Math.random(),
-            y: Math.random()
+            x: randomNum(-5,5),
+            y: randomNum(-5,5)//Math.random()
         }
+        this.FPS = Math.random() *10 +5//this.game.data.FPS;
+        this.frameTimer = 0;
+        this.frameInterval = 1000/this.FPS;
         this.markedForDeletion = false; 
     }
     draw(context){
@@ -40,7 +45,17 @@ export class collisionAnimation{
         ); 
     }
     update(deltaTime){
-        this.position.x += this.velocity.x + this.game.velocity.x; //change the direction of the particle if facing left
-        this.position.y -= this.velocity.y + this.game.velocity.y;
+        this.position.x += this.velocity.x //change the direction of the particle if facing left
+        this.position.y += this.velocity.y 
+        
+        if(this.frameTimer > this.frameInterval){ // animate player sprite
+            this.frame.x++;     
+            this.frameTimer = 0;
+        }else{
+            this.frameTimer += deltaTime;
+        }
+        if(this.frame.x > this.maxFrames){
+            this.markedForDeletion = true;
+        }
     }
 }

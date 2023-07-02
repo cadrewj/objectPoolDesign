@@ -72,6 +72,7 @@ export class Enemy{
     } 
     reset(){ //make an enemy available for use in the enemy pool 
         this.free = true; 
+        this.position.x = this.originalPosition.x
     }
     start(){ //reset the position of the enemy to off screen.
         this.free = false;

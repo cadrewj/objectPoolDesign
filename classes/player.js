@@ -16,11 +16,16 @@ class Player{
             x: 0,
             y: 0,
         }
+        this.health = 100;
+        this.lives = 5;
         this.maxFrames = 6; //set initial max to six cuz the default image is 6 frames long
         this.isOnPlanet = true;
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
+
+        this.hurt = false;
+        this.hurtTime = 0;
         
         this.states = [new Player_Standing_Left(this.game),  //state 0
             new Player_Standing_Right(this.game), //state 1
@@ -95,8 +100,13 @@ class Player{
         this.handleScreen()  //used to ensure the player doesn't fall off the screen
         this.updateHitCircle();
         this.updateCameraBox();
-        
 
+        //check if the player is hurt
+        this.hurt = this.hurtTime > 0
+        if(this.hurt){
+            this.hurtTime--;
+        }
+        
         ////////horizontal movement////////////////
         this.position.x += this.velocity.x;
 
@@ -113,6 +123,15 @@ class Player{
                 this.position.y = this.game.height - this.playerInfo.height;
             }
         } 
+        //handle lives
+        if(this.health <= 0 && this.lives > 0){
+            this.lives --;
+            this.health = 100;
+        }
+        else if(this.lives <= 0){
+            this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
+            this.game.setState(1);
+        }
     }
 
     setState(state){ //the passed state is an index number
@@ -200,22 +219,28 @@ class Player{
         } 
     }
     checkForCollisions(){
+
         this.game.enemyPool.forEach(enemy => {
             if(enemy.position.x < this.position.x + this.hitCircle.width 
                 && enemy.position.x + enemy.enemy.width > this.position.x
                 &&  enemy.position.y < this.position.y + this.hitCircle.height 
                 && enemy.position.y + enemy.enemy.height > this.position.y
                 ){
-                    console.log("reseting enemy")
-                    enemy.reset(); //mark for deletion;
+                    // console.log("reseting enemy")                   
                     this.game.collisions.push(new collisionAnimation(this.game, enemy.position, enemy.enemy.width, enemy.enemy.height))
+                    
                     if(this.currentState === this.states[10] || this.currentState === this.states[11]){
                         this.game.score++;
                     }
                     else{//next to add left right condition
-                        console.log("hurt");
-                        this.setState(12)
+                        this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
+                        this.health -= enemy.enemy.width * 0.03;
+                        // console.log("hurt");
+                        // this.setState(12)
                     }
+                    setTimeout(()=>{
+                        enemy.reset(); //mark for deletion;
+                    },100)
             }
             
         });

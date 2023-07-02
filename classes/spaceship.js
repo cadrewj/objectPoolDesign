@@ -5,9 +5,6 @@ import SpaceshipChangeDirection from "../states/SpacehipBehavior/SpaceshipChange
 import SpaceshipShootLaser from "../states/SpacehipBehavior/SpaceshipShootLaser.js";
 import SpaceshipExploding from "../states/SpacehipBehavior/SpaceshipExploding.js";
 import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
-// import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
-//note: set SHOW_BOUNDING to true for testing
-// later you need to add all the ship images into one spritesheet for optimisation
 
 class Spaceship{
     constructor(game){
@@ -43,8 +40,6 @@ class Spaceship{
         this.frameInterval = 1000/this.FPS;
         this.maxFrames = 59;
       
-     
-
         this.thruster = {
             image: document.querySelector("#thrust1"),
             width : this.game.data.SPACESHIP_SIZE,
@@ -380,13 +375,13 @@ class Spaceship{
     handleScreen(camera){ 
         //rightside of screen
         if(this.position.x  + this.hitCircle.radius + this.thrust.x >= this.game.width ){
-            this.position.x = this.game.width - this.hitCircle.radius - this.thrust.x
+            this.position.x = this.game.width - this.hitCircle.radius;
             this.thrust.x = 0;
             this.revThruster.x = 0;
         }
         //leftside of the screen
         else if(this.position.x + this.thrust.x <= 0  ){
-            this.position.x = 0 + this.hitCircle.radius + Math.abs(this.thrust.x);
+            this.position.x = 0 + Math.abs(this.thrust.x);
             this.thrust.x = 0;
             this.revThruster.x = 0;   
         }
@@ -398,7 +393,7 @@ class Spaceship{
         }
         //top of the screen
         else if(this.position.y + this.thrust.y <= 0){
-            this.position.y = 0  + this.hitCircle.radius  + Math.abs(this.thrust.y); //has small bug
+            this.position.y = 0 + Math.abs(this.thrust.y); //has small bug
             this.thrust.y = 0;
             this.revThruster.y = 0;   
         }

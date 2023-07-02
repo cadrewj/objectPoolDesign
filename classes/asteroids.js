@@ -1,13 +1,8 @@
 import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen, randomNum } from "../utilityFunctions/utilityFunctions.js";
-
+import { collisionAnimation } from "./collisionAnimation.js";
 export class Asteroid{
     constructor(game){
-        this.game = {
-            data: game.data,
-            spaceship: game.spaceship,
-            width: game.width,
-            height: game.height,   
-        }
+        this.game = game;
         this.asteroids;
         this.collisionDamage = 0;
         this.initAsteroids()
@@ -115,6 +110,7 @@ export class Asteroid{
                 let damage = 0;
                 if(distanceBetweenPoints(spaceship.position.x, spaceship.position.y, asteroids.position.x, asteroids.position.y) 
                     < spaceship.hitCircle.radius + asteroids.radius){
+                        this.game.collisions.push(new collisionAnimation(this.game, this.asteroids[index].position, this.asteroids[index].radius * 2, this.asteroids[index].radius * 2))
                     if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /2)){ //asign damage based on asteroid size
                         damage = data.ASTEROID_DAMAGE_IMPACT;
                         // console.log("original: ",damage);
@@ -181,6 +177,8 @@ export class Asteroid{
                 if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
                     // remove asteroid
                     this.destroyAsteroid(i, this.game.data)
+                    //increase game score if destroy asteroid
+                    this.game.score++; 
     
                     spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
                     

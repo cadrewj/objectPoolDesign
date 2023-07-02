@@ -3,7 +3,6 @@ export class SpaceshipUserInterface{
         this.data = data;
         this.width = width;
         this.height = height;
-
     }
     drawSpaceshipHealthBar(context, health, exploding){
         let colorRange = 120;
@@ -15,8 +14,6 @@ export class SpaceshipUserInterface{
             context.fillStyle = this.getColorForPercentage(health / 100, colorRange)
             context.fillRect(this.width - 159, this.height -20, 9, -health); 
         }
-       
-        
     }    
     drawSpaceshipLives(context, lives, exploding, ship){
         let color = exploding ? "rgb(255,0,0)" : "rgb(225,255,255)"; //red or purple
@@ -29,7 +26,7 @@ export class SpaceshipUserInterface{
             context.textAlign = "center";
             context.textBaseline = "hanger"
             context.fillStyle = color;
-            context.font = "20px Pacifico" //dejavu sans mono;
+            context.font =  "20px Space Grotesk"//"20px Pacifico" //dejavu sans mono;
             context.drawImage(ship.image, 
                 0, 0, 
                 ship.sw, ship.sh, // crop width and height
@@ -98,13 +95,13 @@ export class SpaceshipUserInterface{
         }
 
         // Draw the text of guage percentage
-        context.font = "12px Arial";
+        context.font =  "12px Space Grotesk"//"12px Arial";
         context.fillStyle = "rgba(255,255,255,1)";
         context.textAlign = "center";
         context.textBaseline = "bottom"
         const fuelPercentage = percentage * 100;
         context.fillText(" "+ fuelPercentage.toFixed(0) + "%", centerX, centerY);
-        context.font = "8px Arial";
+        context.font = "8px Space Grotesk"//"8px Arial";
         context.fillText("E", centerX - radius, centerY);
         context.fillText("F", centerX + radius, centerY);
 

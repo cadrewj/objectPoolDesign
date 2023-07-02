@@ -58,6 +58,7 @@
     "NN_LOG_ON": false,
     "NN_LOG_FREQ":10000,
     "PLAYER_SIZE": 80,
+    "PLAYER_HURT_DURATION": 0.5,
 
     "PLANET_SIZE": 0.10,
     "PLANET_NUM": 5,

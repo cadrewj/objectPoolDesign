@@ -8,7 +8,11 @@ class InputHandler{
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
             //spaceship keys
-         
+            if (this.game.currentState.state === "GAME OVER"|| this.game.data.AUTOMATION_ON === true){ //stop player from playing when game over
+                if(pressedKey !== "Enter"){
+                    return
+                }   
+            }
             switch(pressedKey){
                 case "a": //left arrow (rotate spaceship left)
                     this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_LEFT
@@ -70,9 +74,6 @@ class InputHandler{
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
        
-            // if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
-            //     return
-            // }
             switch(releasedKey){
                  //Game Control keys
                  case "Enter":
