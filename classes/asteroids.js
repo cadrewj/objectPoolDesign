@@ -1,10 +1,14 @@
-import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen, randomNum } from "../utilityFunctions/utilityFunctions.js";
-import { collisionAnimation } from "./collisionAnimation.js";
+import { FloatingMessage } from "../userInterface/gameUserInterface.js";
+import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen} from "../utilityFunctions/utilityFunctions.js";
+import { CollisionAnimation } from "./collisionAnimation.js";
 export class Asteroid{
     constructor(game){
         this.game = game;
         this.asteroids;
         this.collisionDamage = 0;
+        this.maxAsteroids = 5;
+        this.timer = 0;
+        this.timeInterval = 100000/this.game.data.FPS;
         this.initAsteroids()
     }
     initAsteroids(){
@@ -22,12 +26,12 @@ export class Asteroid{
     newAsteroid(x,y, radius){
     const asteroid = {
         position:{
-        x: x,
-        y: y,
+            x: x,
+            y: y,
         },
         velocity:{
-        x: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
-        y: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
+            x: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
+            y: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
         },
         radius: radius, 
         direction: Math.random() * Math.PI /2,//degToRad(Math.random()),
@@ -72,7 +76,15 @@ export class Asteroid{
             } 
         }
     }
-    update(spaceship){     
+    update(spaceship){
+        if(this.timer > this.timeInterval){ // animate player sprite //used to slow down the speed of the animation between frames
+            // console.log("start")
+            this.start();
+            this.timer = 0;
+        }
+        else{
+            this.timer ++;
+        }
         //used to limit laser check for only when their is an asteriod and when the ship has fuel or canShoot
         if(spaceship.canShoot && this.asteroids.length > 0){//to avoid unnecessary checks for collision
             this.laserHitAsteroid(spaceship);
@@ -88,17 +100,43 @@ export class Asteroid{
                 handleEdgeOfScreen(this.asteroids[i], this.game.width, this.game.height)
 
                 //check for collision with ship and asteroid
-
                 if(spaceship.health > 0){
                     this.collisionDamage = this.handleAsteroidCollision(spaceship, this.asteroids[i], this.game.data, i);
                     if(this.collisionDamage){
                         spaceship.health += this.collisionDamage;
                         this.collisionDamage = 0;
                     }
-                }
-              
+                } 
             }
         } 
+    }
+    start(){ /// used to create a new asteroid after the time interval has passed and the asteroid array is empty
+        if(this.asteroids.length <= 0){
+            for (let i = 0; i < this.game.data.ASTEROID_NUM; i++) {
+                let x, y;
+                const direction = Math.floor(Math.random() * 4); // Randomly select a direction (0, 1, 2, or 3)
+                
+                switch (direction) { //make the asteroid pop up in a random direction offscreen
+                  case 0: // Top of the screen
+                    x = Math.floor(Math.random() * this.game.width);
+                    y = -this.game.data.ASTEROID_SIZE;
+                    break;
+                  case 1: // Right side of the screen
+                    x = this.game.width + this.game.data.ASTEROID_SIZE;
+                    y = Math.floor(Math.random() * this.game.height);
+                    break;
+                  case 2: // Bottom of the screen
+                    x = Math.floor(Math.random() * this.game.width);
+                    y = this.game.height + this.game.data.ASTEROID_SIZE;
+                    break;
+                  case 3: // Left side of the screen
+                    x = -this.game.data.ASTEROID_SIZE;
+                    y = Math.floor(Math.random() * this.game.height);
+                    break;
+                }
+                this.asteroids.push(this.newAsteroid(x, y, Math.ceil(this.game.data.ASTEROID_SIZE / 2)));
+            }     
+        }  
     }
     handleAsteroidCollision(spaceship, asteroids, data, index){
          //used to check if two objects collide (e.g: the spaceship collide with the asteroid, then call a function to reduce the damage to the ship)
@@ -107,7 +145,7 @@ export class Asteroid{
                 let damage = 0;
                 if(distanceBetweenPoints(spaceship.position.x, spaceship.position.y, asteroids.position.x, asteroids.position.y) 
                     < spaceship.hitCircle.radius + asteroids.radius){
-                        this.game.collisions.push(new collisionAnimation(this.game, this.asteroids[index].position, this.asteroids[index].radius * 2, this.asteroids[index].radius * 2))
+                        this.game.collisions.push(new CollisionAnimation(this.game, this.asteroids[index].position, this.asteroids[index].radius * 2, this.asteroids[index].radius * 2))
                     if(asteroids.radius === Math.ceil(data.ASTEROID_SIZE /2)){ //asign damage based on asteroid size
                         damage = data.ASTEROID_DAMAGE_IMPACT;
                         // console.log("original: ",damage);
@@ -131,7 +169,6 @@ export class Asteroid{
             }
         }
     }
-
     ///need to convert to object model using free///////////////////////////
     destroyAsteroid(index, data){
         let x = this.asteroids[index].position.x
@@ -154,7 +191,7 @@ export class Asteroid{
         this.asteroids[index].free = true;
         this.asteroids = this.asteroids.filter(asteroid => !asteroid.free);
 
-        console.log(this.asteroids)
+        // console.log(this.asteroids)
     }
 
     laserHitAsteroid(spaceship){ 
@@ -176,6 +213,7 @@ export class Asteroid{
                     if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
                         // remove asteroid
                         this.destroyAsteroid(i, this.game.data)
+                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", ax, ay, this.game.width/2, 0))
                         //increase game score if destroy asteroid
                         this.game.score++; 
 

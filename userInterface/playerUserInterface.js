@@ -15,7 +15,10 @@ export class PlayerUserInterface{
         for (let i = 0; i < lives; i++) {
             this.drawHeart(context, i);
         }
-        this.handleHeartHealth(context, lives, percentage, hurt)
+        if(lives > 0){
+            this.handleHeartHealth(context, lives, percentage, hurt)
+        }
+        
     }
     drawHeart(context, i) {
         context.beginPath()

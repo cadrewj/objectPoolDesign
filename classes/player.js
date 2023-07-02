@@ -1,4 +1,3 @@
-import { degToRad } from "../utilityFunctions/utilityFunctions.js";
 import {Player_Standing_Left, Player_Standing_Right }from "../states/PlayerBehavior/PlayerStanding.js";
 import {Player_Running_Left, Player_Running_Right} from "../states/PlayerBehavior/PlayerRunning.js";
 import {Player_Jumping_Left, Player_Jumping_Right}from "../states/PlayerBehavior/PlayerJumping.js";
@@ -6,7 +5,8 @@ import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerBehavior
 import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
 import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
 import { Player_Collision_Behavior_Left, Player_Collision_Behavior_Right } from "../states/PlayerBehavior/PlayerCollisionBehavior.js";
-import { collisionAnimation } from "./collisionAnimation.js";
+import { CollisionAnimation } from "./collisionAnimation.js";
+import { FloatingMessage } from "../userInterface/gameUserInterface.js";
 
 class Player{
     constructor(game, playerInfo){
@@ -93,8 +93,8 @@ class Player{
             this.playerInfo.width,
             this.playerInfo.height);   
     }
-    update(input, camera){
-        this.checkForCollisions()
+    update(input, camera, context){
+        this.checkForCollisions(context)
         this.currentState.handleInput(input, camera); 
 
         this.handleScreen()  //used to ensure the player doesn't fall off the screen
@@ -218,7 +218,7 @@ class Player{
             camera.position.y -= this.velocity.y  // translate down;  note: this.velocity is negative, so two negatives = positive
         } 
     }
-    checkForCollisions(){
+    checkForCollisions(context){
 
         this.game.enemyPool.forEach(enemy => {
             if(enemy.position.x < this.position.x + this.hitCircle.width 
@@ -227,20 +227,36 @@ class Player{
                 && enemy.position.y + enemy.enemy.height > this.position.y
                 ){
                     // console.log("reseting enemy")                   
-                    this.game.collisions.push(new collisionAnimation(this.game, enemy.position, enemy.enemy.width, enemy.enemy.height))
+                    this.game.collisions.push(new CollisionAnimation(this.game, enemy.position, enemy.enemy.width, enemy.enemy.height))
                     
                     if(this.currentState === this.states[10] || this.currentState === this.states[11]){
-                        this.game.score++;
+                        let x = enemy.position.x
+                        let y = enemy.position.y
+                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", x, y, this.game.width/2, 0))
+                        
                     }
                     else{//next to add left right condition
                         this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
                         this.health -= enemy.enemy.width * 0.03;
+                        let positionX = this.hitCircle.position.x + this.hitCircle.width
+                        let positionY = this.hitCircle.position.y;
+                        let textSize = "10";
+                        let floatSpeed = 0.08;
+                        let floatTime = 50;
+                        let margin = 8;
+                        //curse using symbols &#%!@?!
+                        this.game.floatingMessage.push(
+                            new FloatingMessage(this.game, "&", positionX, positionY, positionX + margin, positionY -margin, textSize, floatSpeed, floatTime), 
+                            new FloatingMessage(this.game, "#", positionX, positionY, positionX + margin * 2, positionY -margin * 2, textSize, floatSpeed, floatTime), 
+                            new FloatingMessage(this.game, "%", positionX, positionY, positionX + margin * 3, positionY -margin * 3, textSize, floatSpeed, floatTime),
+                            new FloatingMessage(this.game, "!", positionX, positionY, positionX + margin * 4, positionY -margin * 4, textSize, floatSpeed, floatTime),
+                            new FloatingMessage(this.game, "@", positionX, positionY, positionX + margin * 5, positionY -margin * 5, textSize, floatSpeed, floatTime),
+                            new FloatingMessage(this.game, "?", positionX, positionY, positionX + margin * 6, positionY -margin * 6, textSize, floatSpeed, floatTime),
+                            new FloatingMessage(this.game, "!", positionX, positionY, positionX + margin * 7, positionY -margin * 7, textSize, floatSpeed, floatTime))
                         // console.log("hurt");
                         // this.setState(12)
                     }
-                    setTimeout(()=>{
-                        enemy.reset(); //mark for deletion;
-                    },100)
+                    enemy.reset(); //mark for deletion;
             }
             
         });

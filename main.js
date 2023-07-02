@@ -47,8 +47,6 @@ addEventListener("load",()=>{
         sw: 200, //72
         sh: 181.83, //72
     }
-   
-    
     class Game{
         constructor(width, height, data){
             this.gameOver = false;
@@ -74,6 +72,7 @@ addEventListener("load",()=>{
             }
             this.collisions = [];
             this.particles = [];
+            this.floatingMessage = [];
             this.maxParticles = 50;
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             
@@ -85,9 +84,7 @@ addEventListener("load",()=>{
                 new StartNewGame(this), 
                 new GameOver(this),
                 new DebugMode(this),
-            ]
-           
-           
+            ];
             this.currentState = this.states[2]; // game state
             this.gameFrames = 0;
             this.enemyPool;
@@ -99,17 +96,14 @@ addEventListener("load",()=>{
             this.meteorTimer;
             this.meteorInterval; 
             this.meteorPool; // used to store meteors created in the game wether they are active or inactive.
-            this.maxMeteors;// set the max value of meteors to be stored in the pool.
-            
+            this.maxMeteors;// set the max value of meteors to be stored in the pool.  
         }
         createGamePools(){ //create an object pool of meteors  all at once for faster allocation
             const  enemyTypes = [Enemy, FlyingEnemy];
             createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height, this.data) //this is used to pass the game width and height  to the Meteor class
             createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
         }
-        render(context, deltaTime, input){
-            
-            
+        render(context, deltaTime, input){     
             this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
@@ -122,7 +116,6 @@ addEventListener("load",()=>{
             //draw the spaceship
             this.spaceship.update(input, context, this.camera, deltaTime)
 
-            
             //draw game particles
             this.particles.forEach((particle) => {
                 particle.draw(context)
@@ -131,23 +124,23 @@ addEventListener("load",()=>{
             });
             //constrol the amount of particles in the array
             if(this.particles.length > this.maxParticles){
-                this.particles = this.particles.splice(0, this.maxParticles)
+                this.particles = this.particles.filter(particle=>!particle.markedForDeletion).slice(0, this.maxParticles)
             }
 
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
-                this.player.update(input, this.camera)
+                this.player.update(input, this.camera, context)
             } 
 
             //handle collision sprites
-            this.collisions.forEach((collision, index)=>{
+            this.collisions.forEach((collision)=>{
                 collision.draw(context);
                 collision.update(deltaTime);
+                //delete marked collision sprites
                 this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
             
-
             this.currentState.handleInput(input, context);       //set the game state
             //render a new enemy periodically if it's free;
             this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
@@ -156,8 +149,14 @@ addEventListener("load",()=>{
             // drawInputKeys(context, input, this)
             displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
             
+            //draw in game floating messages
+            this.floatingMessage.forEach((message)=>{
+                message.draw(context)
+                message.update();
+                //delete marked floating messages
+                this.floatingMessage = this.floatingMessage.filter(msg => !msg.markedForDeletion);
+            })
             const fuelPercentage = this.spaceship.fuel / 100;
-
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.playerInfo.width * 2.5, this.height - 20);
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
@@ -207,9 +206,10 @@ addEventListener("load",()=>{
             this.particles = [];
             this.collisions =[];
             this.enemyPool =[];
+            this.floatingMessage = [];
             this.maxEnemies = 9;
             this.enemyTimer = 0;
-            this.enemyInterval = 3000;
+            this.enemyInterval = 1000;
             this.score = 0;
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             // this.coins = new Coins(this.width, this.height, this.data);
@@ -229,16 +229,13 @@ addEventListener("load",()=>{
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         canvas.focus();
         const deltaTime = timeStamp - lastTime;
-        lastTime = timeStamp;
-        
+        lastTime = timeStamp;  
         game.render(ctx, deltaTime, game.input);
         stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
     }
     game.init(canvas.width, canvas.height, {...gameData, gameKeys});
-    animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.
-    
-  
+    animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
 })
 
 addEventListener("resize",()=>{

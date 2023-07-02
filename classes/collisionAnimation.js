@@ -1,6 +1,6 @@
 import { randomNum } from "../utilityFunctions/utilityFunctions.js";
 
-export class collisionAnimation{
+export class CollisionAnimation{
     constructor(game,  position, tWidth, tHeight){
         this.game = game;
         this.target ={
