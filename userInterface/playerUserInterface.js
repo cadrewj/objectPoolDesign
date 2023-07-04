@@ -10,15 +10,13 @@ export class PlayerUserInterface{
         this.y = 10;
         this.dimension = Math.min(this.heartWidth, this.heartHeight);
     }
-
     update(context, lives, percentage, hurt) {  
         for (let i = 0; i < lives; i++) {
             this.drawHeart(context, i);
         }
         if(lives > 0){
             this.handleHeartHealth(context, lives, percentage, hurt)
-        }
-        
+        }   
     }
     drawHeart(context, i) {
         context.beginPath()

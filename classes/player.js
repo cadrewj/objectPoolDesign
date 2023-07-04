@@ -1,12 +1,14 @@
-import {Player_Standing_Left, Player_Standing_Right }from "../states/PlayerBehavior/PlayerStanding.js";
+import {Player_Standing_Left, Player_Standing_Right } from "../states/PlayerBehavior/PlayerStanding.js";
 import {Player_Running_Left, Player_Running_Right} from "../states/PlayerBehavior/PlayerRunning.js";
-import {Player_Jumping_Left, Player_Jumping_Right}from "../states/PlayerBehavior/PlayerJumping.js";
-import {Player_Falling_Left, Player_Falling_Right}from "../states/PlayerBehavior/PlayerFalling.js";
+import {Player_Jumping_Left, Player_Jumping_Right} from "../states/PlayerBehavior/PlayerJumping.js";
+import {Player_Falling_Left, Player_Falling_Right} from "../states/PlayerBehavior/PlayerFalling.js";
 import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
 import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
 import { Player_Collision_Behavior_Left, Player_Collision_Behavior_Right } from "../states/PlayerBehavior/PlayerCollisionBehavior.js";
+
 import { CollisionAnimation } from "./collisionAnimation.js";
 import { FloatingMessage } from "../userInterface/gameUserInterface.js";
+import { collisionBlockDectection, collisionCircleDetection } from "../utilityFunctions/utilityFunctions.js";
 
 class Player{
     constructor(game, playerInfo){
@@ -95,10 +97,9 @@ class Player{
     }
     update(input, camera, context){
         this.checkForCollisions(context)
-        this.currentState.handleInput(input, camera); 
-
-        this.handleScreen()  //used to ensure the player doesn't fall off the screen
         this.updateHitCircle();
+        this.currentState.handleInput(input, camera); 
+        this.handleScreen()  //used to ensure the player doesn't fall off the screen
         this.updateCameraBox();
 
         //check if the player is hurt
@@ -219,15 +220,19 @@ class Player{
         } 
     }
     checkForCollisions(context){
+        this.game.rewards.forEach(reward=>{
+            if(collisionCircleDetection(this.hitCircle, reward)){
+                if(reward.type === "food"){
+                    this.lives += Math.floor(reward.vertices / 3);
+                    reward.markedForDeletion = true;
+                }
+            }
+        })
 
         this.game.enemyPool.forEach(enemy => {
-            if(enemy.position.x < this.position.x + this.hitCircle.width 
-                && enemy.position.x + enemy.enemy.width > this.position.x
-                &&  enemy.position.y < this.position.y + this.hitCircle.height 
-                && enemy.position.y + enemy.enemy.height > this.position.y
-                ){
+            if(collisionBlockDectection(this, enemy)){
                     // console.log("reseting enemy")                   
-                    this.game.collisions.push(new CollisionAnimation(this.game, enemy.position, enemy.enemy.width, enemy.enemy.height))
+                    this.game.collisions.push(new CollisionAnimation(this.game, enemy.position, enemy.width, enemy.height))
                     
                     if(this.currentState === this.states[10] || this.currentState === this.states[11]){
                         let x = enemy.position.x
@@ -237,7 +242,7 @@ class Player{
                     }
                     else{//next to add left right condition
                         this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
-                        this.health -= enemy.enemy.width * 0.03;
+                        this.health -= enemy.width * 0.03;
                         let positionX = this.hitCircle.position.x + this.hitCircle.width
                         let positionY = this.hitCircle.position.y;
                         let textSize = "10";

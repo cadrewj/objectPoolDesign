@@ -1,6 +1,8 @@
 import { FloatingMessage } from "../userInterface/gameUserInterface.js";
 import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen} from "../utilityFunctions/utilityFunctions.js";
 import { CollisionAnimation } from "./collisionAnimation.js";
+import { SelectReward } from "./reward.js";
+
 export class Asteroid{
     constructor(game){
         this.game = game;
@@ -185,13 +187,12 @@ export class Asteroid{
             this.asteroids.push(this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / 8)));  // new asteroid three
         }
         if(this.asteroids[index].hasReward){
-            console.log("rewarding")
-            // selectReward(x,y,index);
+            //create a function to give a random reward 
+            const reward = new SelectReward(this.game, x, y);
+            console.log("has reward")
         }
         this.asteroids[index].free = true;
         this.asteroids = this.asteroids.filter(asteroid => !asteroid.free);
-
-        // console.log(this.asteroids)
     }
 
     laserHitAsteroid(spaceship){ 
@@ -218,8 +219,6 @@ export class Asteroid{
                         this.game.score++; 
 
                         spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
-                        
-                        //create a function to give a random reward 
                         break;
                     } 
                 }

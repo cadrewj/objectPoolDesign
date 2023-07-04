@@ -8,21 +8,30 @@ export function distanceBetweenPoints(x1, y1, x2, y2){
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
 }
-export function collision(object1, object2){
+export function collisionCircleDetection(object1, object2){
     const dist = distanceBetweenPoints(object1.position.x, object1.position.y, object2.position.x, object2.position.y)  
-    const value = object1.radius + object2.radius;
+    const value = object1.width/2 + object2.width/2;
     const sign = dist <= value ? (true) : (false);
     return sign
 }
-export function collisionBlockDectection({object1, object2}){
+export function collisionBlockDectection(player, enemy){
     return (
-        object1.position.y + object1.height  >= object2.position.y && 
-        object1.position.y <= object2.position.y + object2.height &&
-        object1.position.x <= object2.position.x + object2.width &&
-        object1.position.x + object1.width  >= object2.position.x  
-    );
+           enemy.position.x <= player.position.x + player.hitCircle.width 
+                && enemy.position.x + enemy.width >= player.position.x
+                &&  enemy.position.y <= player.position.y + player.hitCircle.height 
+                && enemy.position.y + enemy.height >= player.position.y
+        );
 
 }
+// object1.position.y + object1.height  > object2.position.y && 
+// object1.position.y < object2.position.y + object2.height &&
+// object1.position.x < object2.position.x + object2.width &&
+// object1.position.x + object1.width  > object2.position.x  
+
+// enemy.position.x < this.position.x + this.hitCircle.width 
+//                 && enemy.position.x + enemy.enemy.width > this.position.x
+//                 &&  enemy.position.y < this.position.y + this.hitCircle.height 
+//                 && enemy.position.y + enemy.enemy.height > this.position.y
 
 export function handleEdgeOfScreen(movingObject, width, height){
     //x axis bounds
@@ -64,41 +73,6 @@ export function randomRGB() {
     return  `rgba(${randomNum(0, 255)},${randomNum(0, 255)},${randomNum(0, 255)})`;
 }
 
-export function testBoundsOfObject(x,y,radius, data, context, isCircle=true, width=0, height = 0){
-
-    if(data.SHOW_BOUNDING && isCircle){
-        context.strokeStyle = "lime";
-        context.beginPath();
-        context.arc(x, y,radius, 0, degToRad(360), false) // to draw a circle around ship to test for collision
-        context.stroke();
-    }
-    else if(data.SHOW_BOUNDING && !isCircle){
-        context.strokeStyle = "lime";
-        context.beginPath();
-        context.strokeRect(x, y, width, height) // to draw a circle around ship to test for collision
-        // context.stroke();
-    }
-}
-
-export function drawStatusText(context, width, height, data){
-    // context.font = "10px Helvetica";
-    // context.fillStyle = "green"
-    // context.fillText("Last input: " + input.lastKey, 10, 20);
-    // if(gameOver){
-        context.beginPath()
-        context.font = `${data.FONT_DISPLAY_TEXT_SIZE} ${data.FONT_DISPLAY_TEXT}`;
-        context.fillStyle = "white"
-        context.textAlign= "center"
-        context.fillText("Game Over", width/2, height/2)
-        context.beginPath()
-        context.font = `${data.FONT_DISPLAY_SUBTEXT_SIZE} ${data.FONT_DISPLAY_SUBTEXT}`;
-        context.fillStyle = "white"
-        context.textAlign = "center"
-        context.fillText("Try Again", width/2 , height/2 + data.FONT_DISPLAY_SUBTEXT_SIZE)
-
-    // }
-}
-
 export function createPool(arrayPool, maxNumElements, objectClass, width, height, data){
 //    console.log(typeof(objectClass))
    if(Array.isArray(objectClass)) {
@@ -117,9 +91,7 @@ export function createPool(arrayPool, maxNumElements, objectClass, width, height
     }
     else{
         // console.log("error in the createPool function of utilities",arrayPool)
-    }
-    
-  
+    } 
 } 
 
 export function getElement(arrayPool){
@@ -127,21 +99,6 @@ export function getElement(arrayPool){
         if(arrayPool[i].free){
             return arrayPool[i]; //return the free object
         }
-    }
-}
-export function bounceOff(object1, object2){
-    const result = collision(object1, object2)
-    if (result === true) {
-        // console.log("crashed")
-        const speed = 4
-        // Calculate angle of collision
-        const angle = Math.atan2(object1.position.y - object1.position.y, object2.position.x - object2.position.x);
-        
-        // Update velocities of both particles
-        object1.velocity.x = -speed * Math.cos(angle); // send object1 in the opposite direction
-        object1.velocity.y = -speed * Math.sin(angle);
-        object2.velocity.x = speed * Math.cos(angle); // send object2 in the opposite direction
-        object2.velocity.y = speed * Math.sin(angle);
     }
 }
 

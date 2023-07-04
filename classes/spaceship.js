@@ -1,4 +1,6 @@
 import { degToRad } from "../utilityFunctions/utilityFunctions.js";
+import { collisionCircleDetection } from "../utilityFunctions/utilityFunctions.js";
+
 import SpaceshipIDLE from "../states/SpacehipBehavior/SpaceshipIDLE.js";
 import { SpaceshipReverseThrust, SpaceshipThrust } from "../states/SpacehipBehavior/SpaceshipThrusting.js";
 import SpaceshipChangeDirection from "../states/SpacehipBehavior/SpaceshipChangeDirection.js";
@@ -85,6 +87,9 @@ class Spaceship{
                 y: this.position.y,
             },
             radius: this.ship.width/3,
+            width: this.ship.width/1.5,
+            height: this.ship.height/1.5,
+
         } 
         this.camRadius = this.game.height * 0.25,
         this.cameraBox = {
@@ -98,6 +103,7 @@ class Spaceship{
         this.initLasers();
     }
     update(input, context, camera, deltaTime){
+        this.checkForCollisions();
         this.currentState.handleInput(input, context); 
 
         this.animate = this.fuel > 0
@@ -114,7 +120,6 @@ class Spaceship{
                 context.save();
                 context.translate(this.position.x, this.position.y); //rotate the direction of the ship to face up
                 context.rotate(this.angle); // set the rotatio angle
-                
                 context.drawImage(this.ship.image, 
                     this.ship.sw * this.ship.frame.x, this.ship.sh * this.ship.frame.y, 
                     this.ship.sw, this.ship.sh,
@@ -151,6 +156,25 @@ class Spaceship{
             this.handleScreen(camera) 
         }
       
+    }
+    checkForCollisions(){
+        this.game.rewards.forEach(reward=>{
+            if(reward.type === "recovery"){
+                if(reward.isPointInside(this.position.x, this.position.y)){
+                    // console.log("recovering fuel")
+                    if(this.fuel < 100){
+                        this.fuel += 0.05;
+                    }
+                    if(this.health <100){
+                        this.health += 0.05;
+                    }
+                    if(this.lives < this.game.data.GAME_LIVES){
+                        this.lives++;
+                    }
+                    // console.log(this.fuel, this.health, this.lives)
+                }
+            }
+        })
     }
     // resetSpaceship(){
     //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time

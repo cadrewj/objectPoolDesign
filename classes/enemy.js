@@ -7,17 +7,17 @@ export class Enemy{
             height: height,
             data: data
         };
+        this.width = Math.floor(this.game.width * 0.2);//Math.floor(this.game.width * 0.1),
+        this.height= Math.floor(this.game.height * 0.1);//Math.floor(this.game.height * 0.08),
         
         this.enemy = {
             image: document.querySelector("#fox"),
-            width: Math.floor(this.game.width * 0.2),//Math.floor(this.game.width * 0.1),
-            height: Math.floor(this.game.height * 0.1),//Math.floor(this.game.height * 0.08),
             sx:0,
             sy:0,
             sw: 80,
             sh: 48,
         }
-        this.radius = this.enemy.width/2
+        this.radius = this.width/2
         this.frames = {
             x:0,
             y:0
@@ -25,22 +25,20 @@ export class Enemy{
         this.framesNum = 7
         this.originalPosition ={
             x: this.game.width,
-            y: this.game.height - this.enemy.height,
+            y: this.game.height - this.height,
         } 
         this.position = {
             x: this.game.width,
-            y: this.game.height - this.enemy.height,
+            y: this.game.height - this.height,
         }
-        
         this.hitCircle = {
             position:{
                 x: this.position.x,
                 y: this.position.y,
             },
-            width: this.enemy.width/3,
-            height: this.enemy.height/3,
+            width: this.width/3,
+            height: this.height/3,
         } 
-        
         this.speed = randomNum(1, 3) //Math.random() * 0.15 + 0.01;
         this.staggerFrames = 5;
         this.free = true;
@@ -59,16 +57,13 @@ export class Enemy{
                     }  
                 }
                 this.position.x -=this.speed; // change the position of the enemy on the x axis
-            
             }
              //check if colliding with screen bounds
-             if(this.position.x < 0 -this.enemy.width){ 
-                this.position.x = this.game.width + this.enemy.width; //reset the position of enemt to offscreen x axis
+             if(this.position.x < 0 -this.width){ 
+                this.position.x = this.game.width + this.width; //reset the position of enemt to offscreen x axis
                 this.reset() //remove meteor from the screen by setting its value to free
             }  
         }
-        
-
     } 
     reset(){ //make an enemy available for use in the enemy pool 
         this.free = true; 
@@ -83,11 +78,11 @@ export class Enemy{
     draw(context){
         //flip the direction the enemy is facing
         context.save(); // save the current state of the context
-        context.translate(this.position.x + this.enemy.width, this.position.y); // move the context to the right edge of the image
+        context.translate(this.position.x + this.width, this.position.y); // move the context to the right edge of the image
         context.scale(-1, 1); // flip the x-axis
 
         context.drawImage(this.enemy.image, this.enemy.sw * this.frames.x, this.enemy.sy, this.enemy.sw, this.enemy.sh,
-            0, 0, this.enemy.width, this.enemy.height)
+            0, 0, this.width, this.height)
         context.restore()
     }
 }
@@ -100,11 +95,11 @@ export class FlyingEnemy extends Enemy{
             height: height,
             data: data
         };
+        this.width = Math.floor(this.game.width * 0.1);
+        this.height = Math.floor(this.game.height * 0.1);
     
         this.enemy ={
             image: document.querySelector("#jelly"),
-            width: Math.floor(this.game.width * 0.1),
-            height: Math.floor(this.game.height * 0.1),
             sx:0,
             sy:0,
             sw: 39,

@@ -1,4 +1,3 @@
-
 export class GameUserInterface{
     constructor(game){
         this.game =  game;
@@ -12,8 +11,7 @@ export class GameUserInterface{
         context.textBaseline = "middle"
         context.fillStyle = "rgba(255,255,255, 0.5)";
         context.fillText(this.game.score, this.game.width/2 , 20)
-    }
-    
+    } 
 }
 
 export class FloatingMessage{

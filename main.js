@@ -1,20 +1,27 @@
 import gameData from "./data/data.json" assert { type: "json" }
+import { gameKeys } from "./data/gameKeys.js";
+// import { REWARDS } from "./data/rewardData.js";
+
 import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
 import {Background, Stars} from "./classes/background.js";
 import {Enemy, FlyingEnemy} from "./classes/enemy.js";
-import { periodicInterval, createPool, drawStatusText} from "./utilityFunctions/utilityFunctions.js";
+import { Asteroid } from "./classes/asteroids.js";
+import { Food } from "./classes/reward.js";
+import { PhantomTriangle } from "./classes/reward.js";
+
+import { periodicInterval, createPool} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 import { displayPositionOnMap } from "./utilityFunctions/displayPositionOnMap.js";
-import { gameKeys } from "./data/gameKeys.js";
-import { Asteroid } from "./classes/asteroids.js";
+
 import StartNewGame from "./states/GameBehavior/NewGame.js";
 import GameOver from "./states/GameBehavior/gameOver.js";
+import DebugMode from "./states/GameBehavior/DebugMode.js";
+
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
 import { GameUserInterface } from "./userInterface/gameUserInterface.js";
-import DebugMode from "./states/GameBehavior/DebugMode.js";
 import {PlayerUserInterface} from "./userInterface/playerUserInterface.js";
 
 //define the canvas and it's dimensions
@@ -71,6 +78,10 @@ addEventListener("load",()=>{
                 y: 10
             }
             this.collisions = [];
+            this.rewards =[];
+            this.rewardTypes = [(game, x, y)=> new Food(game, x, y), 
+                (game, x, y)=> new PhantomTriangle(game, x, y)
+            ];
             this.particles = [];
             this.floatingMessage = [];
             this.maxParticles = 50;
@@ -91,6 +102,7 @@ addEventListener("load",()=>{
             this.maxEnemies;
             this.enemyTimer;
             this.enemyInterval;
+            
            
             // this.coins = new Coins(this.width, this.height, this.data);
             this.meteorTimer;
@@ -146,9 +158,8 @@ addEventListener("load",()=>{
             this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
             this.stars.update(context, deltaTime);
-            // drawInputKeys(context, input, this)
-            displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
-            
+           
+
             //draw in game floating messages
             this.floatingMessage.forEach((message)=>{
                 message.draw(context)
@@ -156,13 +167,25 @@ addEventListener("load",()=>{
                 //delete marked floating messages
                 this.floatingMessage = this.floatingMessage.filter(msg => !msg.markedForDeletion);
             })
+            
+            //draw in game rewards
+            if(this.rewards.length > 0){
+                this.rewards.forEach((reward)=>{
+                    reward.draw(context)
+                    reward.update();
+                    //delete marked rewards
+                    this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
+                })
+            }
+
             const fuelPercentage = this.spaceship.fuel / 100;
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.playerInfo.width * 2.5, this.height - 20);
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
             this.gameUI.drawScore(context);
             this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt);
-            
+             // drawInputKeys(context, input, this)
+            displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
             context.restore();
     
             //render a new meteor periodically if it's free;
@@ -206,11 +229,17 @@ addEventListener("load",()=>{
             this.particles = [];
             this.collisions =[];
             this.enemyPool =[];
+            this.rewards =[];
+            this.rewardTypes = [(g, x, y)=> new Food(g, x, y),
+                (game, x, y)=> new PhantomTriangle(game, x, y) 
+            ];
             this.floatingMessage = [];
             this.maxEnemies = 9;
             this.enemyTimer = 0;
-            this.enemyInterval = 1000;
+            this.enemyInterval = 50000;
             this.score = 0;
+            
+
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             // this.coins = new Coins(this.width, this.height, this.data);
             this.meteorTimer = 0;
