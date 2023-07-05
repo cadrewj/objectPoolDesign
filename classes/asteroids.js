@@ -214,7 +214,7 @@ export class Asteroid{
                     if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
                         // remove asteroid
                         this.destroyAsteroid(i, this.game.data)
-                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", ax, ay, this.game.width/2, 0))
+                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", ax, ay, this.game.width/2, 40))
                         //increase game score if destroy asteroid
                         this.game.score++; 
 

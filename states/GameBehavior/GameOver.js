@@ -25,12 +25,11 @@ export default class GameOver extends State{
         }
     }
     displayMessage(context){
-        context.beginPath()
         context.font = `${this.game.data.FONT_DISPLAY_TEXT_SIZE} ${this.game.data.FONT_DISPLAY_TEXT}`;
         context.fillStyle = `rgba(255,255,255,${this.alpha})`
         context.textAlign= "center"
         context.fillText("Game Over", this.game.width/2, this.game.height/2)
-        context.beginPath()
+        
         context.font = `${this.game.data.FONT_DISPLAY_SUBTEXT_SIZE} ${this.game.data.FONT_DISPLAY_SUBTEXT}`;
         context.fillStyle = `rgba(255,255,255,${this.alpha})`
         context.textAlign = "center"

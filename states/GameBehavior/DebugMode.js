@@ -37,12 +37,12 @@ export default class DebugMode extends State{
 
 
             //enemies hit circle
-            this.game.enemyPool.forEach(enemy => {
-                if(!enemy.free){
+            this.game.enemies.forEach(enemy => {
+                // if(!enemy.free){
                     context.beginPath()
-                    context.arc(enemy.position.x + enemy.radius, enemy.position.y + enemy.radius/2, enemy.radius/2, 0, degToRad(360), false);
+                    context.arc(enemy.hitCircle.position.x, enemy.hitCircle.position.y, enemy.hitCircle.width, 0, degToRad(360), false);
                     context.stroke();
-                }
+                // }
             });
           
         }

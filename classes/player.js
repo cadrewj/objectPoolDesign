@@ -79,7 +79,7 @@ class Player{
         }
     }
     onGround(){
-        return(this.position.y >= this.game.height - this.playerInfo.height)
+        return(this.position.y >= this.game.height - this.playerInfo.height - this.game.groundMargin)
     }
 
     draw(context, deltaTime){
@@ -121,7 +121,7 @@ class Player{
                 this.velocity.y = 0; // make player fall after jump
             }
             if(this.position.y > this.game.height - this.playerInfo.height){// ensure player doesn't fall off screen
-                this.position.y = this.game.height - this.playerInfo.height;
+                this.position.y = this.game.height - this.playerInfo.height - this.game.groundMargin;
             }
         } 
         //handle lives
@@ -229,20 +229,23 @@ class Player{
             }
         })
 
-        this.game.enemyPool.forEach(enemy => {
-            if(collisionBlockDectection(this, enemy)){
+        this.game.enemies.forEach(enemy => {
+            // if(collisionCircleDetection(this.hitCircle, enemy.hitCircle)){
+                if(collisionBlockDectection(this.hitCircle, enemy)){
                     // console.log("reseting enemy")                   
                     this.game.collisions.push(new CollisionAnimation(this.game, enemy.position, enemy.width, enemy.height))
                     
                     if(this.currentState === this.states[10] || this.currentState === this.states[11]){
                         let x = enemy.position.x
                         let y = enemy.position.y
-                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", x, y, this.game.width/2, 0))
+                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", x, y, this.game.width/2, 40))
+                        // enemy.reset(); //mark for deletion;
+                        enemy.markedForDeletion = true;
                         
                     }
                     else{//next to add left right condition
                         this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
-                        this.health -= enemy.width * 0.03;
+                        this.health -= enemy.width * 0.2;
                         let positionX = this.hitCircle.position.x + this.hitCircle.width
                         let positionY = this.hitCircle.position.y;
                         let textSize = "10";
@@ -261,7 +264,7 @@ class Player{
                         // console.log("hurt");
                         // this.setState(12)
                     }
-                    enemy.reset(); //mark for deletion;
+                    
             }
             
         });

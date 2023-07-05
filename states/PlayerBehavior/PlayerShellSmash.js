@@ -1,5 +1,5 @@
 import { State, states } from  "../state.js";
-import { Fire, Splash } from "../../classes/particles.js";
+import { Fire, Fireworks, Splash } from "../../classes/particles.js";
 
 export class Player_Shell_Smash_Left extends State{
     constructor(game){
@@ -11,6 +11,7 @@ export class Player_Shell_Smash_Left extends State{
         this.game.player.frame.y = 11; //the row position of the player image you want to use
         this.game.player.maxFrames = 6;  //the max number of columns for the player image
         // this.game.player.velocity.x = -this.game.player.maxSpeed * 0.5;
+        this.game.player.velocity.x = 0;
         this.game.player.velocity.y = this.game.player.weight * 50;
     }
     handleInput(input){
@@ -27,9 +28,15 @@ export class Player_Shell_Smash_Left extends State{
 
         }
         else if(this.game.player.onGround()){ // switch state when player touch the ground
-            for(let i =0; i< 30;i++){
-                this.game.particles.unshift(new Splash(this.game, this.game.player.position, this.sign))
-            }
+            for (let i = 0; i < 30; i++) {
+                const position = {
+                  x: this.game.player.position.x + this.game.player.playerInfo.width / 2,
+                  y: this.game.player.position.y + this.game.player.playerInfo.height / 2
+                };
+                this.game.particles.unshift(new Fireworks(this.game, position, this.sign));
+                this.game.particles.unshift(new Splash(this.game, position, this.sign));
+                // this.game.particles.unshift(new Splash(this.game, position, this.sign));
+              }
         }
     }
 }
@@ -45,6 +52,7 @@ export class Player_Shell_Smash_Right extends State{
         this.game.player.frame.y = 10;  //the row position of the player image you want to use
         this.game.player.maxFrames = 6;   //the max number of columns for the player image
         // this.game.player.velocity.x = this.game.player.maxSpeed * 0.5;
+        this.game.player.velocity.x = 0;
         this.game.player.velocity.y = this.game.player.weight * 50;
       
     }
@@ -60,8 +68,15 @@ export class Player_Shell_Smash_Right extends State{
             this.game.player.setState(states.PLAYER_RUNNING_LEFT);  
         }
         else if(this.game.player.onGround()){ // switch state when player touch the ground
-            for(let i =0; i< 30;i++){
-                this.game.particles.unshift(new Splash(this.game, this.game.player.position, this.sign))
+            for (let i = 0; i < 30; i++) {
+                const position = {
+                  x: this.game.player.position.x + this.game.player.playerInfo.width / 2,
+                  y: this.game.player.position.y + this.game.player.playerInfo.height / 2
+                };
+                this.game.particles.unshift(new Fireworks(this.game, position, this.sign));
+
+                this.game.particles.unshift(new Splash(this.game, position, this.sign));
+                // this.game.particles.unshift(new Splash(this.game, position, this.sign));
             }
         }
         // else if(this.game.player.onGround() && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
@@ -72,3 +87,19 @@ export class Player_Shell_Smash_Right extends State{
         // }
     }
 }
+// class Particle{
+//     constructor(game){
+//         this.game = game;
+//         this.markedForDeletion = false;
+//     }
+//     update(){
+//        this.position.x += this.velocity.x + this.game.velocity.x;
+//        this.position.y += this.velocity.y;
+//        this.size *= 0.95; //make the trail longer the larger the number is
+       
+//        if(this.size < 0.5){
+//             this.markedForDeletion = true;
+//        }
+
+//     }
+// }

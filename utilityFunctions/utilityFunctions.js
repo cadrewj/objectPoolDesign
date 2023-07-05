@@ -11,14 +11,13 @@ export function distanceBetweenPoints(x1, y1, x2, y2){
 export function collisionCircleDetection(object1, object2){
     const dist = distanceBetweenPoints(object1.position.x, object1.position.y, object2.position.x, object2.position.y)  
     const value = object1.width/2 + object2.width/2;
-    const sign = dist <= value ? (true) : (false);
-    return sign
+    return dist <= value ? (true) : (false);
 }
 export function collisionBlockDectection(player, enemy){
     return (
-           enemy.position.x <= player.position.x + player.hitCircle.width 
+           enemy.position.x <= player.position.x + player.width 
                 && enemy.position.x + enemy.width >= player.position.x
-                &&  enemy.position.y <= player.position.y + player.hitCircle.height 
+                &&  enemy.position.y <= player.position.y + player.height 
                 && enemy.position.y + enemy.height >= player.position.y
         );
 
@@ -73,7 +72,7 @@ export function randomRGB() {
     return  `rgba(${randomNum(0, 255)},${randomNum(0, 255)},${randomNum(0, 255)})`;
 }
 
-export function createPool(arrayPool, maxNumElements, objectClass, width, height, data){
+export function createPool(arrayPool, maxNumElements, objectClass, game){
 //    console.log(typeof(objectClass))
    if(Array.isArray(objectClass)) {
         const numOfTypes = objectClass.length
@@ -81,12 +80,12 @@ export function createPool(arrayPool, maxNumElements, objectClass, width, height
         for(let i = 0; i < maxNumElements; i++){
             const num = randomNum(0, numOfTypes-1)
             const info = objectClass[num];
-            arrayPool.push(new info(width, height, data)); //this is used to pass the entire game class to the array of classes
+            arrayPool.push(new info(game)); //this is used to pass the entire game class to the array of classes
         } 
     }
     else if( typeof(objectClass) === "function"){
         for(let i = 0; i < maxNumElements; i++){
-            arrayPool.push(new objectClass(width, height, data)); //this is used to pass the entire game class to the Meteor class
+            arrayPool.push(new objectClass(game)); //this is used to pass the entire game class to the Meteor class
         } 
     }
     else{

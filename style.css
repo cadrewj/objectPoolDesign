@@ -39,6 +39,21 @@ body{
 img{
     display: none;
 }
+#continue{
+    background-image: url("./images/button2.png");
+
+    display: block;
+}
+#startNewGame{
+    background-image: url("./images/button1.png");
+    display: block;
+
+}
+#settings{
+    background-image: url("./images/button1.png");
+    display: block;
+
+}
 /* 
 #rthrust{
     display: none;  

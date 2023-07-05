@@ -41,13 +41,13 @@ export class Player_Falling_Right extends State{
         // if(!this.game.player.onGround()){
         //     this.game.player.shouldPanCameraDown(camera)
         // }
-        if(input.lastKey ===this.game.data.gameKeys.PLAYER_PRESS_LEFT ){ // note: "a" = left 
+        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT ){ // note: "a" = left 
             this.game.player.setState(states.PLAYER_FALLING_LEFT); //set the player current state to Running left
         } 
         else if(this.game.player.onGround()){
             this.game.player.setState(states.PLAYER_STANDING_RIGHT); //set the player current state to standing right
         }
-        else if(!this.game.player.onGround() && input.lastKey ===this.game.data.gameKeys.PLAYER_PRESS_DOWN){ //// switch state when player is falling to the ground
+        else if(!this.game.player.onGround() && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ //// switch state when player is falling to the ground
             this.game.player.setState(states.PLAYER_SHELL_SMASH_RIGHT); 
         }
 

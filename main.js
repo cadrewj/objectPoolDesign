@@ -7,12 +7,12 @@ import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
 import {Background, Stars} from "./classes/background.js";
-import {Enemy, FlyingEnemy} from "./classes/enemy.js";
+import {ClimbingEnemy, FlyingEnemy, GroundEnemy} from "./classes/enemy.js";
 import { Asteroid } from "./classes/asteroids.js";
 import { Food } from "./classes/reward.js";
 import { PhantomTriangle } from "./classes/reward.js";
 
-import { periodicInterval, createPool} from "./utilityFunctions/utilityFunctions.js";
+import { periodicInterval, createPool, randomNum} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 import { displayPositionOnMap } from "./utilityFunctions/displayPositionOnMap.js";
 
@@ -57,8 +57,10 @@ addEventListener("load",()=>{
     class Game{
         constructor(width, height, data){
             this.gameOver = false;
+
             this.width = width;
             this.height = height;
+            this.groundMargin = 0
             this.data = data;
             this.camera = {
                 position: {
@@ -66,7 +68,7 @@ addEventListener("load",()=>{
                     y: -0,
                 }
             }
-            this.debug = true;
+            
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
@@ -78,32 +80,35 @@ addEventListener("load",()=>{
                 y: 10
             }
             this.collisions = [];
-            this.rewards =[];
+            this.rewards = [];
             this.rewardTypes = [(game, x, y)=> new Food(game, x, y), 
                 (game, x, y)=> new PhantomTriangle(game, x, y)
             ];
-            this.particles = [];
             this.floatingMessage = [];
+            this.particles = [];
             this.maxParticles = 50;
-            this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
-            
+
             this.score = 0;
+            this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
 
-            this.states =[ 
+            this.debug = true;
+            this.states = [ 
                 new StartNewGame(this), 
                 new GameOver(this),
                 new DebugMode(this),
             ];
-            this.currentState = this.states[2]; // game state
-            this.gameFrames = 0;
+            this.currentState = this.states[0]; // game state
+            
+            // this.gameFrames = 0;
             this.enemyPool;
             this.maxEnemies;
             this.enemyTimer;
             this.enemyInterval;
+            this.enemies = []
             
-           
+            
             // this.coins = new Coins(this.width, this.height, this.data);
             this.meteorTimer;
             this.meteorInterval; 
@@ -111,12 +116,23 @@ addEventListener("load",()=>{
             this.maxMeteors;// set the max value of meteors to be stored in the pool.  
         }
         createGamePools(){ //create an object pool of meteors  all at once for faster allocation
-            const  enemyTypes = [Enemy, FlyingEnemy];
-            createPool(this.meteorPool, this.maxMeteors, Meteor, this.width, this.height, this.data) //this is used to pass the game width and height  to the Meteor class
-            createPool(this.enemyPool, this.maxEnemies, enemyTypes, this.width, this.height, this.data) //this is used to pass the game width and height to the enemies class   
+            // const  enemyTypes = [Enemy, FlyingEnemy];
+            // createPool(this.meteorPool, this.maxMeteors, Meteor, this) //this is used to pass the game width and height  to the Meteor class
+            // createPool(this.enemyPool, this.maxEnemies, enemyTypes, this) //this is used to pass the game width and height to the enemies class   
+        }
+        addEnemy(){
+            const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
+            let selectedEnemy = randomNum(0, enemyTypes.length-1)
+            if(this.velocity.x > 0 && Math.random() < 0.2){
+                this.enemies.push(enemyTypes[selectedEnemy]);
+                
+            }
+            console.log(this.enemies)
+        
+
         }
         render(context, deltaTime, input){     
-            this.gameFrames++;
+            // this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
             this.background.update(context);
@@ -139,6 +155,23 @@ addEventListener("load",()=>{
                 this.particles = this.particles.filter(particle=>!particle.markedForDeletion).slice(0, this.maxParticles)
             }
 
+            //handle enemies
+            if(this.enemyTimer > this.enemyInterval){
+                this.addEnemy();
+                this.enemyTimer = 0;
+            }
+            else{
+                this.enemyTimer += deltaTime;
+            }
+            //draw enemy
+            this.enemies.forEach((enemy)=>{
+                enemy.draw(context)
+                enemy.update(deltaTime)
+                enemy.updateHitCircle()
+                this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion)
+
+            })
+            // 
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
@@ -154,8 +187,6 @@ addEventListener("load",()=>{
             })
             
             this.currentState.handleInput(input, context);       //set the game state
-            //render a new enemy periodically if it's free;
-            this.enemyTimer = periodicInterval(this.enemyTimer, this.enemyInterval, deltaTime, this.enemyPool, context, this.gameFrames);
            
             this.stars.update(context, deltaTime);
            
@@ -199,16 +230,18 @@ addEventListener("load",()=>{
         init(width, height, data){
             canvas.focus();
             this.gameOver = false;
+            
             this.width = width;
             this.height = height;
             this.data = data;
+            this.groundMargin = 0;
             this.camera = {
                 position: {
                     x: 0,
                     y: -0,
                 }
             }
-            this.debug = true;
+           
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
@@ -216,39 +249,47 @@ addEventListener("load",()=>{
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
 
+            this.debug = true;
             this.states =[ 
                 new StartNewGame(this), 
                 new GameOver(this),
                 new DebugMode(this)
             ]
+            this.currentState = this.states[0]; //state new game
+
             this.velocity = {
                 x: 10,
                 y: 10
             }
-            this.gameFrames = 0;
+            // this.gameFrames = 0;
+            this.maxParticles = 50;
             this.particles = [];
-            this.collisions =[];
-            this.enemyPool =[];
-            this.rewards =[];
+            this.collisions = [];
+            this.floatingMessage = [];
+            this.rewards = [];
             this.rewardTypes = [(g, x, y)=> new Food(g, x, y),
                 (game, x, y)=> new PhantomTriangle(game, x, y) 
             ];
-            this.floatingMessage = [];
+            
+            this.enemies = [];
+            this.enemyPool = [];
             this.maxEnemies = 9;
             this.enemyTimer = 0;
-            this.enemyInterval = 50000;
+            this.enemyInterval = 1000;
+            this.enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
             this.score = 0;
             
-
-            this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             // this.coins = new Coins(this.width, this.height, this.data);
             this.meteorTimer = 0;
             this.meteorInterval = 3000; 
             this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
             this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
 
-            this.currentState = this.states[2]; //state new game
-            this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
+            this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
+            this.gameUI = new GameUserInterface(this)
+            this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
+
+            this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created.     
         }
     }
     

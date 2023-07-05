@@ -5,7 +5,6 @@ export class GameUserInterface{
         this.fontFamily = this.game.data.FONT_HEADING_TEXT
     }
     drawScore(context){
-        context.beginPath()
         context.font =  "32px Space Grotesk"//this.fontSize + this.fontFamily;
         context.textAlign = "center";
         context.textBaseline = "middle"
