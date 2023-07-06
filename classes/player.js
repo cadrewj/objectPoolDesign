@@ -18,13 +18,14 @@ class Player{
             x: 0,
             y: 0,
         }
-        this.health = 100;
-        this.lives = 5;
+        this.health = this.game.data.PLAYER_MAX_HEALTH;
+        this.lives = this.game.data.PLAYER_LIVES;
         this.maxFrames = 6; //set initial max to six cuz the default image is 6 frames long
         this.isOnPlanet = true;
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
+        this.oxygenLevel = this.game.data.PLAYER_OXYGEN_LEVEL;
 
         this.hurt = false;
         this.hurtTime = 0;
@@ -96,7 +97,7 @@ class Player{
             this.playerInfo.height);   
     }
     update(input, camera, context){
-        this.checkForCollisions(context)
+        this.checkForCollisions()
         this.updateHitCircle();
         this.currentState.handleInput(input, camera); 
         this.handleScreen()  //used to ensure the player doesn't fall off the screen
@@ -127,7 +128,7 @@ class Player{
         //handle lives
         if(this.health <= 0 && this.lives > 0){
             this.lives --;
-            this.health = 100;
+            this.health = this.game.data.PLAYER_MAX_HEALTH;
         }
         else if(this.lives <= 0){
             this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
@@ -219,14 +220,35 @@ class Player{
             camera.position.y -= this.velocity.y  // translate down;  note: this.velocity is negative, so two negatives = positive
         } 
     }
-    checkForCollisions(context){
+    checkForCollisions(){
         this.game.rewards.forEach(reward=>{
             if(collisionCircleDetection(this.hitCircle, reward)){
                 if(reward.type === "food"){
-                    this.lives += Math.floor(reward.vertices / 3);
-                    reward.markedForDeletion = true;
+                    if(this.lives >= this.game.data.PLAYER_LIVES && this.health >= this.game.data.PLAYER_MAX_HEALTH){
+                        this.game.inventory.push("lives");
+                    }
+                    else{
+                        this.lives += Math.floor(reward.vertices / 3);
+                    }
+                    // reward.markedForDeletion = true;
                 }
+                else if(reward.type === "oxygen"){
+                    if(this.oxygenLevel >= this.game.data.PLAYER_OXYGEN_LEVEL){
+                        this.game.inventory.push("oxygen");
+                    }
+                    else{
+                        this.oxygenLevel += reward.width;
+                        // console.log(this.oxygenLevel, "O2")
+                    }
+                    // reward.markedForDeletion = true;
+                }
+                else if(reward.type === "mineral"){
+                    this.game.inventory.push("mineral")
+                    // reward.markedForDeletion = true;
+                }
+                reward.markedForDeletion = true;
             }
+            // console.log(this.game.inventory, "inventory")
         })
 
         this.game.enemies.forEach(enemy => {
@@ -245,7 +267,7 @@ class Player{
                     }
                     else{//next to add left right condition
                         this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
-                        this.health -= enemy.width * 0.2;
+                        this.health -= enemy.width * 0.3;
                         let positionX = this.hitCircle.position.x + this.hitCircle.width
                         let positionY = this.hitCircle.position.y;
                         let textSize = "10";

@@ -126,7 +126,7 @@ export class Fireworks {
         };
         this.velocity = {
             x: Math.random() * 6 - 3,
-            y: Math.random() * -5 - 5
+            y: Math.random() * -3 - 3
         };
         this.gravity = 0.5;
         this.opacity = 1;

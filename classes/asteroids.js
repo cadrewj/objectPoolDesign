@@ -1,5 +1,5 @@
 import { FloatingMessage } from "../userInterface/gameUserInterface.js";
-import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen} from "../utilityFunctions/utilityFunctions.js";
+import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen, collisionCircleDetection, randomNum, collideBounceOff} from "../utilityFunctions/utilityFunctions.js";
 import { CollisionAnimation } from "./collisionAnimation.js";
 import { SelectReward } from "./reward.js";
 
@@ -12,6 +12,7 @@ export class Asteroid{
         this.timer = 0;
         this.timeInterval = 100000/this.game.data.FPS;
         this.initAsteroids()
+        this.image = document.querySelector("#Desert");
     }
     initAsteroids(){
         let x, y;
@@ -36,6 +37,8 @@ export class Asteroid{
             y: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
         },
         radius: radius, 
+        width: radius * 2,
+        height: radius * 2,
         direction: Math.random() * Math.PI /2,//degToRad(Math.random()),
         vertices: Math.floor(Math.random() * (this.game.data.ASTEROID_VERTICES + 1) + this.game.data.ASTEROID_VERTICES/2),
         offsets: [],
@@ -51,7 +54,8 @@ export class Asteroid{
         return asteroid;
     }
     draw(context){
-        context.fillStyle = this.game.data.ASTEROID_COLOR;
+        const pattern = context.createPattern(this.image, "repeat");
+        context.fillStyle = pattern//this.game.data.ASTEROID_COLOR;
         context.strokeStyle = this.game.data.ASTEROID_STROKE_COLOR;
         context.lineWidth = this.game.data.ASTEROID_LINEWIDTH;
 
@@ -97,6 +101,7 @@ export class Asteroid{
             if(!this.asteroids[i].free){
                 this.asteroids[i].position.x += this.asteroids[i].velocity.x;
                 this.asteroids[i].position.y += this.asteroids[i].velocity.y;
+                const asteriod = this.asteroids[i]; //for bounce off effect
     
                 //reposition the asteroid on the screen if out of bounds
                 handleEdgeOfScreen(this.asteroids[i], this.game.width, this.game.height)
@@ -107,6 +112,18 @@ export class Asteroid{
                     if(this.collisionDamage){
                         spaceship.health += this.collisionDamage;
                         this.collisionDamage = 0;
+                    }
+                }
+                //create a collide bounce off effect
+                if (this.asteroids.length > 1) {
+                    for (let j = i + 1; j < this.asteroids.length; j++) {  
+                        const otherAsteroid = this.asteroids[j];
+                        const speed = Math.random() * 0.01 + 1;
+                        const result = collideBounceOff(asteriod, otherAsteroid, speed)
+                        if(result){
+                            asteriod.velocity = result[0];
+                            otherAsteroid.velocity = result[1]
+                        }
                     }
                 } 
             }

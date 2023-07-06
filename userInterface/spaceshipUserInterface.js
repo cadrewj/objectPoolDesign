@@ -1,3 +1,4 @@
+//1440 764
 export class SpaceshipUserInterface{
     constructor(data, width, height){
         this.data = data;
@@ -8,11 +9,11 @@ export class SpaceshipUserInterface{
         let colorRange = 120;
         context.beginPath()
         let color = exploding ? "red" :  "rgba(128, 0 , 128, 1)";
-        context.strokeStyle = color;
-        context.strokeRect(this.width - 160, this.height - 20, 10, -this.data.SPACESHIP_MAX_HEALTH) // LIFE BAR 
+        context.strokeStyle = color; 
+        context.strokeRect(this.width - this.width * 0.111, this.height - this.height * 0.026, this.height * 0.0130, -this.data.SPACESHIP_MAX_HEALTH) // HEALTH BAR  //160 20 10 
         if(!exploding){
-            context.fillStyle = this.getColorForPercentage(health / 100, colorRange)
-            context.fillRect(this.width - 159, this.height -20, 9, -health); 
+            context.fillStyle = this.getColorForPercentage(health / 100, colorRange) 
+            context.fillRect(this.width - this.width * 0.11, this.height -this.height * 0.026, this.height * 0.0117, -health); //159 20 9
         }
     }    
     drawSpaceshipLives(context, lives, exploding, ship){

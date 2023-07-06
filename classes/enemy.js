@@ -138,10 +138,7 @@ export class GroundEnemy extends Enemy{
             sy:0,
             sw: 512,
             sh: 512,
-
         }
-        
-       
         this.position ={
             x: this.game.width,
             y: this.game.height  - this.height/this.offset - this.game.groundMargin
@@ -206,8 +203,8 @@ export class ClimbingEnemy extends Enemy{
     constructor(game){
         super();
         this.game = game
-        this.width = Math.floor(this.game.width * 0.1);
-        this.height = Math.floor(this.game.height * 0.1);
+        this.width = Math.floor(this.game.width * 0.07);
+        this.height = Math.floor(this.game.height * 0.07);
         this.radius = this.width/2;
         this.enemy ={
             image: document.querySelector("#climbingEnemy"),
@@ -215,18 +212,17 @@ export class ClimbingEnemy extends Enemy{
             sy:0,
             sw: 512,
             sh: 512,
-
         }
-       
-       
         this.position ={
             x: this.game.width * Math.random(),
-            y: Math.random() * this.game.height,
+            y: 0 - Math.random()* this.game.height * 0.5,
         } 
         
         this.velocity = {
             x: 0,
-            y: Math.random() > 0.5 ? 1: -1
+            y: 0 - Math.random() * 0.5 + 1
+            // y: Math.random() > 0.5 ? 1: -1 //creates move up and move down effect
+
         }
         this.hitCircle ={
             position:{
@@ -236,16 +232,19 @@ export class ClimbingEnemy extends Enemy{
             },
             width: this.width * 0.35,
         }
+        this.maxWebLength = Math.random()* this.game.height
         this.maxFrames = 0
+        this.didReverse = false;
     }
     draw(context){
-        super.draw(context)
+       
         //draw web
         context.beginPath()
         context.strokeStyle = "rgba(255, 255, 255, 0.5)"
         context.moveTo(this.position.x + this.width/2, 0)
         context.lineTo(this.position.x  + this.width/2, this.position.y + this.height/1.40)
         context.stroke()
+        super.draw(context)
     }
     updateHitCircle(){
         this.hitCircle = {
@@ -256,6 +255,23 @@ export class ClimbingEnemy extends Enemy{
             },
             width: this.width*0.35,
         } 
+    }
+    update(deltaTime){
+        super.update(deltaTime);
+        if(this.position.y >= this.maxWebLength){
+            this.velocity.y *= -1; //used to reverse the movement.
+            this.didReverse = true;
+        }
+        else if(this.didReverse && this.position.y < -this.height/2){
+            this.velocity.y = 0;
+            setTimeout(()=>{
+                // this.velocity.y *= -1; //used to reverse the movement.
+                this.velocity.y += randomNum(1,4) 
+                this.maxWebLength += randomNum(50, 300);
+                this.didReverse = false;
+            }, Math.floor(Math.random()*3000+ 1000))
+          
+        }
     }
     // reset(){
     //     super.reset();

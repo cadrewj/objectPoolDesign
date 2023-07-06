@@ -10,7 +10,7 @@ export function distanceBetweenPoints(x1, y1, x2, y2){
 }
 export function collisionCircleDetection(object1, object2){
     const dist = distanceBetweenPoints(object1.position.x, object1.position.y, object2.position.x, object2.position.y)  
-    const value = object1.width/2 + object2.width/2;
+    const value = object1.width/2 + object2.height/2;
     return dist <= value ? (true) : (false);
 }
 export function collisionBlockDectection(player, enemy){
@@ -22,15 +22,22 @@ export function collisionBlockDectection(player, enemy){
         );
 
 }
-// object1.position.y + object1.height  > object2.position.y && 
-// object1.position.y < object2.position.y + object2.height &&
-// object1.position.x < object2.position.x + object2.width &&
-// object1.position.x + object1.width  > object2.position.x  
-
-// enemy.position.x < this.position.x + this.hitCircle.width 
-//                 && enemy.position.x + enemy.enemy.width > this.position.x
-//                 &&  enemy.position.y < this.position.y + this.hitCircle.height 
-//                 && enemy.position.y + enemy.enemy.height > this.position.y
+export function collideBounceOff(object1, object2, speed){
+    const result = collisionCircleDetection(object1, object2);
+    if (result === true) {
+        // Calculate angle of collision
+        const angle = Math.atan2(object2.position.y - object1.position.y, object2.position.x - object1.position.x);
+        // Update velocities of both asteriods to move in opposite direction
+        return [object1.velocity ={
+            x: -speed * Math.cos(angle), // send object1 in the opposite direction
+            y: -speed * Math.sin(angle)
+        },
+        object2.velocity ={
+            x: speed * Math.cos(angle), // send object2 in the opposite direction
+            y: speed * Math.sin(angle)
+        }]
+    }
+}
 
 export function handleEdgeOfScreen(movingObject, width, height){
     //x axis bounds
