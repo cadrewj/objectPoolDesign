@@ -1,4 +1,4 @@
-import { randomNum, degToRad, testBoundsOfObject } from "../utilityFunctions/utilityFunctions.js";
+import { randomNum, degToRad } from "../utilityFunctions/utilityFunctions.js";
 
 class Meteor {
     constructor(width, height, data){
@@ -13,7 +13,6 @@ class Meteor {
             width: this.radius * 2,
             height: this.radius * 2,
         }
-        this.allowBounceOff = true;
         this.position ={
             x: randomNum(this.radius, this.game.width - this.radius),
             y: 0 -  this.radius,
@@ -41,7 +40,7 @@ class Meteor {
         //used to update only the active meteors position
         if(!this.free){ 
             // this.testBound(context);
-            testBoundsOfObject(this.position.x, this.position.y, this.radius, this.game.data, context)
+            // testBoundsOfObject(this.position.x, this.position.y, this.radius, this.game.data, context)
 
             this.draw(context);
             this.position.x += this.velocity.y;

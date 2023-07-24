@@ -1,7 +1,7 @@
 {
     "AUTOMATION_ON": false,
 
-    "ASTEROID_NUM": 5,
+    "ASTEROID_NUM": 3,
     "ASTEROID_SPEED": 50,
     "ASTEROID_SIZE": 100,
     "ASTEROID_STROKE_COLOR": "blue",
@@ -14,6 +14,7 @@
 
     "GAME_LIVES": 3,
     "GAME_DISPLAY_MESSAGE_TIME": 300,
+    "GUAGE_SIZE": 40,
 
 
     "FOOD_NUM": 15,
@@ -43,7 +44,11 @@
 
 
     "FPS" : 60, 
-    "FRICTION" : 0.7, 
+    "FRICTION" : 0.3, 
+
+    "MINERAL_SPEED": 50, 
+    "MINERAL_SIZE": 25,
+
     "NEW_GAME_TEXT_FADE_TIME": 2.5,
     "NEW_GAME_TEXT_PX_SIZE": 40,
 
@@ -56,7 +61,12 @@
     "NN_OUTPUT_THRESHOLD": 0.05,
     "NN_LOG_ON": false,
     "NN_LOG_FREQ":10000,
-    "PLAYER_SIZE": 30,
+    
+    "PLAYER_SIZE": 80,
+    "PLAYER_HURT_DURATION": 0.5,
+    "PLAYER_LIVES": 5,
+    "PLAYER_OXYGEN_LEVEL": 100,
+    "PLAYER_MAX_HEALTH": 100,
 
     "PLANET_SIZE": 0.10,
     "PLANET_NUM": 5,
@@ -81,13 +91,14 @@
     "OXYGEN_BALL_GRADIENTCOLOR1": "#02f8fb",
     "OXYGEN_BALL_GRADIENTCOLOR2": "#04d4ff",
 
+
     "SPACESHIP_SPRITEWIDTH": 256,
     "SPACESHIP_SPRITEHEIGHT": 256,
     "SPACESHIP_SIZE": 100, 
     "SPACESHIP_THRUST": 5, 
     "SPACESHIP_THRUST_REV":3,
     "SPACESHIP_TURN_SPEED": 360,
-    "SPACESHIP_THRUSTER_CONSUMPTION_RATIO": 0.002,
+    "SPACESHIP_THRUSTER_CONSUMPTION_RATIO": -0.002,
 
     "SPACESHIP_STROKE_COLOR": "white",
     "SPACESHIP_THRUSTER_STROKE_COLOR": "yellow",
@@ -99,12 +110,12 @@
     "SPACESHIP_BLINK_DUR": 0.1,
 
     "SPACESHIP_MAX_FUEL": 100,
-    "SPACESHIP_FUEL_CONSUMPTION": -0.6,
+    "SPACESHIP_FUEL_CONSUMPTION": -0.2,
     "SPACESHIP_LASER_MAX": 10,
-    "SPACESHIP_LASER_SPEED": 500,
+    "SPACESHIP_LASER_SPEED": 800,
     "SPACESHIP_LASER_MAX_DIST": 0.8, 
     "SPACESHIP_LASER_CONSUMPTION": -3,
-    "SPACESHIP_LASER_CONSUMPTION_RATIO": 0.005,
+    "SPACESHIP_LASER_CONSUMPTION_RATIO": -0.005,
     "SPACESHIP_LASER_SIZE": 0.08,
     "SPACESHIP_LASER_EXPLODE_DUR": 0.015,
     "SPACESHIP_LASER_EXPLODING_SIZE": 0.55,
@@ -113,7 +124,7 @@
     "SPACE_COLOR":"rgba(0,0,0,0.5)",
 
     "STAR_COLOR": "white",
-    "STAR_NUM": 300,
+    "STAR_NUM": 100,
     "STAR_SIZE": 0.005,
     "STAR_SPEED": 0.05,
     "STAR_SPEED_MULT_MAX": 1.2,
@@ -123,12 +134,6 @@
     "SHOW_BOUNDING": true,
     "SHOW_CENTER_DOT": true,
 
-    "jump":  "./images/player/jump.png",
-    "idle":  "./images/player/idle.png",
-    "run":  "./images/player/run.png",
-    "attack":  "./images/player/attack.png",
-    "fall": "./images/player/fall.png"
+    "TESTING_CONSOLE_LOGS": true
     
-
-
 }

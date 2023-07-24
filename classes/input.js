@@ -1,117 +1,145 @@
 class InputHandler{
-    constructor(spaceship, player, data, camera){
-        this.game = {
-            spaceship: spaceship,
-            player: player,
-            data: data,
-            // camera: camera
-        };
-        this.keys = [];
+    constructor(game){
+        this.game = game
+        this.lastKey = "";
+        this.shipLastKey = "";
+        this.gameLastKey = "";
+        this.isMouseDown = false;
         window.addEventListener("keydown", (e)=>{      
             const pressedKey = e.key;
             //spaceship keys
-            if (this.game.spaceship.lives === 0 || this.game.data.AUTOMATION_ON === true){
-                return
+            if (this.game.currentState.state === "GAME OVER"|| this.game.data.AUTOMATION_ON === true){ //stop player from playing when game over
+                if(pressedKey !== "Enter"){
+                    return
+                }   
             }
             switch(pressedKey){
-                case "Enter": //enter
-                    console.log("pressed enter")
-                    break;
-                case " ": //spacebar (spaceship shoot laser)
-                case "Spacebar":  // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
-                    this.game.spaceship.canShoot = this.game.spaceship.fuel > 0 
-                    this.game.spaceship.shooting = true; 
-                    this.game.spaceship.shots++;          
+                case "a": //left arrow (rotate spaceship left)
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_LEFT
                 break;
-                case "ArrowLeft": //left arrow (rotate spaceship left)
-                    // rotateSpaceShip(false)
-                    this.game.spaceship.rotation = -0.05; ;//data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30
+                case "w": //up arrow (thrust forward spaceship up)
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_UP
                 break;
-                case "ArrowUp": //up arrow (thrust forward spaceship up)
-                    this.game.spaceship.thrusting = true;
+                case "d": //right arrow (rotate spaceship right )
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT
                 break;
-                case "ArrowRight": //right arrow (rotate spaceship right )
-                    // rotateSpaceShip(true)
-                    this.game.spaceship.rotation = 0.05; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
+                case "s": //down arrow (thrust backward spaceship left)
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_DOWN
                 break;
-                case "ArrowDown": //down arrow (thrust backward spaceship left)
-                    this.game.spaceship.reversing = true;
+
+                case ",": //switch ship attack type
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_SWITCH_LEFT
+                break;
+                case ".": //used to switch ship attack type
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_PRESS_SWITCH_RIGHT
                 break;
 
                 //player keys
-                case "a": //left arrow (rotate spaceship left)
-                // rotateSpaceShip(false)
-                this.game.player.runLeft = true; ;//data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30
+                case "ArrowUp":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_UP;
                 break;
-                case "w": //up arrow (thrust forward spaceship up)
-                    this.game.player.jump = true;
+                case "ArrowLeft":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_LEFT;
                 break;
-                case "d": //right arrow (rotate spaceship right )
-                    // rotateSpaceShip(true)
-                    this.game.player.runRight = true; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
+                case "ArrowDown":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_DOWN;
                 break;
-                case "s": //down arrow (thrust backward spaceship left)
-                    this.game.player.sheild = true;
+                case "ArrowRight":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_RIGHT;
                 break;
-                case "g": //down arrow (thrust backward spaceship left)
-                this.game.player.attack = true;
+                case " ": //player attack
+                case "Spacebar": // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_ATTACK;
                 break;
+                case "c": //use to switch attack type
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_SWITCH_LEFT;
+                break;
+                case "v": //use to switch attack type
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_SWITCH_RIGHT;
+                break;
+
+                //Game Control keys
+                case "Enter":
+                    this.gameLastKey = this.game.data.gameKeys.PRESS_ENTER;
+                break;
+                case "Escape":
+                    this.gameLastKey = this.game.data.gameKeys.PRESS_ESCAPE;
+                break;
+                case "G":
+                    this.gameLastKey = this.game.data.gameKeys.PRESS_DEBUG_MODE;
+                break;
+              
             }
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
-            //spaceship keys released
-            if (this.game.spaceship.lives === 0  || this.game.data.AUTOMATION_ON === true){
-                return
-            }
+       
             switch(releasedKey){
-                case " ": //spacebar (spaceship shoot laser)
+                 //Game Control keys
+                 case "Enter":
+                    this.gameLastKey = this.game.data.gameKeys.RELEASE_ENTER;
+                break;
+                case "Escape":
+                    this.gameLastKey = this.game.data.gameKeys.RELEASE_ESCAPE;
+                break;
+                case "G":
+                    this.gameLastKey = this.game.data.gameKeys.RELEASE_DEBUG_MODE;
+                break;
+              
+
+                //spaceship keys released
+                case "w": //up arrow (stop thrust forward spaceship up)
+                    this.shipLastKey= this.game.data.gameKeys.SPACESHIP_RELEASE_UP;
+                break;
+                case "a": //left arrow (stop rotate spaceship left)
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_RELEASE_LEFT;
+                break;
+                case "s": //down arrow (stop thrust backward spaceship left)
+                    this.shipLastKey= this.game.data.gameKeys.SPACESHIP_RELEASE_DOWN;
+                break;
+                case "d": //right arrow (stop rotate spaceship right )
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_RELEASE_RIGHT;
+                break;
+                case ",": //switch ship attack type
+                this.shipLastKey = this.game.data.gameKeys.SPACESHIP_RELEASE_SWITCH_LEFT
+                break;
+                case ".": //used to switch ship attack type
+                    this.shipLastKey = this.game.data.gameKeys.SPACESHIP_RELEASE_SWITCH_RIGHT
+                break;
+               
+                //player keys
+                case "ArrowUp":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_UP;
+                break;
+                case "ArrowLeft":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_LEFT;
+                break;
+                case "ArrowDown":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_DOWN;
+                break;
+                case "ArrowRight":
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_RIGHT;
+                break;
+                case " ": //player attack
                 case "Spacebar": // if the event.key value matches either " " or "Spacebar", since In most web browsers, the event key for the spacebar is "Spacebar" or " ". 
-                    // console.log("not shooting");
-                    this.game.spaceship.canShoot = false;
-                    // this.game.spaceship.shooting = false;
-                    this.game.spaceship.shots = 0;
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_ATTACK
                 break;
-                case "ArrowLeft": //left arrow (stop rotate spaceship left)
-                    this.game.spaceship.rotation = 0; // add the frame rate to slow down the speed of the rotation;
-                    this.game.spaceship.angle += 0;
-                    //using photo image 55 - 50 for a slight animation of tilting the ship
+                case "v": //use to switch attack type
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_SWITCH_RIGHT;
                 break;
-                case "ArrowUp": //up arrow (stop thrust forward spaceship up)
-                    this.game.spaceship.thrusting = false;
-                    this.game.spaceship.accelartionTime = 0;
-                break;
-                case "ArrowRight": //right arrow (stop rotate spaceship right )
-                    this.game.spaceship.rotation = 0;  // add the frame rate to slow down the speed of the rotation;
-                    this.game.spaceship.angle += 0;  
-                    //using the photo images 4 - 9 for a slight animation of tilting the ship 
-                break;
-                case "ArrowDown": //down arrow (stop thrust backward spaceship left)
-                    this.game.spaceship.reversing = false;
-                    this.game.spaceship.decelerationTime = 0;
+                case "c": //use to switch attack type
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_SWITCH_LEFT;
                 break;
 
-                //player keys
-                case "a": //left arrow (rotate spaceship left)
-                // rotateSpaceShip(false)
-                this.game.player.runLeft = false; //data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30
-                break;
-                case "w": //up arrow (thrust forward spaceship up)
-                    this.game.player.jump = false;
-                break;
-                case "d": //right arrow (rotate spaceship right )
-                    // rotateSpaceShip(true)
-                    this.game.player.runRight = false; //-data.SPACESHIP_TURN_SPEED / degToRad(180) / data.FPS / 30 // add the frame rate to slow down the speed of the rotation;
-                    
-                break;
-                case "s": //down arrow (thrust backward spaceship left)
-                    this.game.player.sheild = false;
-                break;
-                case "g": //down arrow (thrust backward spaceship left)
-                this.game.player.attack = false;
-                break;
+                
             }
         });
+        window.addEventListener("mousedown", (e)=>{
+           this.isMouseDown = true;
+        })
+        window.addEventListener("mouseup", (e)=>{
+            this.isMouseDown = false;
+        })
     }
 }
 export default InputHandler;

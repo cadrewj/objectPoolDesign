@@ -8,20 +8,35 @@ export function distanceBetweenPoints(x1, y1, x2, y2){
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
 }
-export function collision(object1, object2){
+export function collisionCircleDetection(object1, object2){
     const dist = distanceBetweenPoints(object1.position.x, object1.position.y, object2.position.x, object2.position.y)  
-    const value = object1.radius + object2.radius;
-    const sign = dist <= value ? (true) : (false);
-    return sign
+    const value = object1.width/2 + object2.width/2;
+    return dist <= value ? (true) : (false);
 }
-export function collisionBlockDectection({object1, object2}){
+export function collisionBlockDectection(player, enemy){
     return (
-        object1.position.y + object1.height  >= object2.position.y && 
-        object1.position.y <= object2.position.y + object2.height &&
-        object1.position.x <= object2.position.x + object2.width &&
-        object1.position.x + object1.width  >= object2.position.x  
-    );
+           enemy.position.x <= player.position.x + player.width 
+                && enemy.position.x + enemy.width >= player.position.x
+                &&  enemy.position.y <= player.position.y + player.height 
+                && enemy.position.y + enemy.height >= player.position.y
+        );
 
+}
+export function collideBounceOff(object1, object2, speed){
+    const result = collisionCircleDetection(object1, object2);
+    if (result === true) {
+        // Calculate angle of collision
+        const angle = Math.atan2(object2.position.y - object1.position.y, object2.position.x - object1.position.x);
+        // Update velocities of both asteriods to move in opposite direction
+        return [object1.velocity ={
+            x: -speed * Math.cos(angle), // send object1 in the opposite direction
+            y: -speed * Math.sin(angle)
+        },
+        object2.velocity ={
+            x: speed * Math.cos(angle), // send object2 in the opposite direction
+            y: speed * Math.sin(angle)
+        }]
+    }
 }
 
 export function handleEdgeOfScreen(movingObject, width, height){
@@ -48,70 +63,47 @@ export function handleEdgeOfScreen(movingObject, width, height){
     return result
 
 }
+//function that return true or false at a rate determined by the number passed in;
+export function calculateProbability(probability) {
+    if (probability < 0 || probability > 0.9) {
+      throw new Error("Probability must be between 0 and 0.9");
+    }
+  
+    const randomValue = Math.random(); // Generate a random number between 0 and 1
+  
+    return randomValue < probability;
+  }
+
 // function to generate random number
 export function randomNum(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+export function randomDecimal(min, max) {
+    return Math.random() * (max - min) + min;
+  }
 export function randomRGB() {
     return  `rgba(${randomNum(0, 255)},${randomNum(0, 255)},${randomNum(0, 255)})`;
 }
 
-export function testBoundsOfObject(x,y,radius, data, context, isCircle=true, width=0, height = 0){
-
-    if(data.SHOW_BOUNDING && isCircle){
-        context.strokeStyle = "lime";
-        context.beginPath();
-        context.arc(x, y,radius, 0, degToRad(360), false) // to draw a circle around ship to test for collision
-        context.stroke();
-    }
-    else if(data.SHOW_BOUNDING && !isCircle){
-        context.strokeStyle = "lime";
-        context.beginPath();
-        context.strokeRect(x, y, width, height) // to draw a circle around ship to test for collision
-        // context.stroke();
-    }
-}
-
-export function drawStatusText(context, width, height, data, gameOver){
-    // context.font = "10px Helvetica";
-    // context.fillStyle = "green"
-    // context.fillText("Last input: " + input.lastKey, 10, 20);
-    if(gameOver){
-        context.beginPath()
-        context.font = `${data.FONT_DISPLAY_TEXT_SIZE} ${data.FONT_DISPLAY_TEXT}`;
-        context.fillStyle = "white"
-        context.textAlign= "center"
-        context.fillText("Game Over", width/2, height/2)
-        context.beginPath()
-        context.font = `${data.FONT_DISPLAY_SUBTEXT_SIZE} ${data.FONT_DISPLAY_SUBTEXT}`;
-        context.fillStyle = "white"
-        context.textAlign = "center"
-        context.fillText("Try Again", width/2 , height/2 + data.FONT_DISPLAY_SUBTEXT_SIZE)
-
-    }
-}
-
-export function createPool(arrayPool, maxNumElements, objectClass, width, height, data){
-   console.log(typeof(objectClass))
+export function createPool(arrayPool, maxNumElements, objectClass, game){
+//    console.log(typeof(objectClass))
    if(Array.isArray(objectClass)) {
         const numOfTypes = objectClass.length
         
         for(let i = 0; i < maxNumElements; i++){
             const num = randomNum(0, numOfTypes-1)
             const info = objectClass[num];
-            arrayPool.push(new info(width, height, data)); //this is used to pass the entire game class to the array of classes
+            arrayPool.push(new info(game)); //this is used to pass the entire game class to the array of classes
         } 
     }
     else if( typeof(objectClass) === "function"){
         for(let i = 0; i < maxNumElements; i++){
-            arrayPool.push(new objectClass(width, height, data)); //this is used to pass the entire game class to the Meteor class
+            arrayPool.push(new objectClass(game)); //this is used to pass the entire game class to the Meteor class
         } 
     }
     else{
-        console.log("error in the createPool function of utilities",arrayPool)
-    }
-    
-  
+        // console.log("error in the createPool function of utilities",arrayPool)
+    } 
 } 
 
 export function getElement(arrayPool){
@@ -119,21 +111,6 @@ export function getElement(arrayPool){
         if(arrayPool[i].free){
             return arrayPool[i]; //return the free object
         }
-    }
-}
-export function bounceOff(object1, object2){
-    const result = collision(object1, object2)
-    if (result === true) {
-        console.log("crashed")
-        const speed = 4
-        // Calculate angle of collision
-        const angle = Math.atan2(object1.position.y - object1.position.y, object2.position.x - object2.position.x);
-        
-        // Update velocities of both particles
-        object1.velocity.x = -speed * Math.cos(angle); // send object1 in the opposite direction
-        object1.velocity.y = -speed * Math.sin(angle);
-        object2.velocity.x = speed * Math.cos(angle); // send object2 in the opposite direction
-        object2.velocity.y = speed * Math.sin(angle);
     }
 }
 

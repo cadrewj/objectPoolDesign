@@ -41,7 +41,6 @@ class Coins{
         this.displayCoins(context);
        
     }
-
     displayCoins(context){
         context.font = `${this.game.data.FONT_BODY_TEXT_SIZE} ${this.game.data.FONT_BODY_TEXT}`;
         context.fillStyle = "lime";

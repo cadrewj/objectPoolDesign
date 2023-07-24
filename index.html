@@ -3,22 +3,51 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="style.css" rel="stylesheet"/>
+    
+    <!-- google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Pen+Script&family=Press+Start+2P&family=Space+Grotesk&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>  
     <title>Object Pool</title>
 </head>
 <body>
     <canvas id="main">
-        <img src="./images/Meteor1.png" alt="meteor" id="meteor"/>
-        <img src="./images/SF01.png" alt="spaceship" id="spaceship"/>
-        <img src="./images/thrust1.png" alt="thrust1" id="thrust1"/>
-        <img src="./images/rthrust.png" alt="rthrust" id="rthrust"/>
-        <img src="./images/SF01Sprite.png" alt="spaceshipSprite" id="spaceshipSprite"/> 
-        <img src="./images/player/run.png" alt="run" id="run"/>
-        <img src="./images/foxSpritesheet.png" alt="fox" id="fox"/>
-        <img src="./images/jelly1.png" alt="jelly" id="jelly"/>
-        <img src="./images/bg3.png" alt="bg" id="bg"/>
+        <img src="./images//Textures/Meteor1.png" alt="meteor" id="meteor"/>
+        <!-- Ship Images -->
+        <img src="./images/Ships/SF01.png" alt="spaceship" id="spaceship"/>
+        <img src="./images/Thrusters/thrust1.png" alt="thrust1" id="thrust1"/>
+        <img src="./images/Thrusters/rthrust.png" alt="rthrust" id="rthrust"/>
+        <img src="./images/Ships/SF01Sprite.png" alt="spaceshipSprite" id="spaceshipSprite"/> 
+        <!--  Enemy Images-->
+        <img src="./images/Enemies/foxSpritesheet.png" alt="fox" id="fox"/>
+        <img src="./images/Enemies/jelly1.png" alt="jelly" id="jelly"/>
+        <img src="/images/Enemies/climbingEnemy.png" alt="climbingEnemy" id="climbingEnemy"/>
+        <img src="/images/Enemies/SmashingEnemy.png" alt="smashingEnemy" id="smashingEnemy"/>
+        <!-- <img src="./images/bg3.png" alt="bg" id="bg"/> -->
+
+       <!-- Textures -->
+        <img src="./images/Textures/flameTexture.png" alt="flameTexture" id="flameTexture"/>
+        <img src="./images/Textures/Alpine-Clouds.png" alt="Alpine-Clouds" id="Alpine-Clouds"/>
+        <img src="./images/Textures/Desert.png" alt="Desert" id="Desert"/>
+        <img src="./images/Textures/Volcanic.png" alt="Volcanic" id="Volcanic"/>
+        <img src="./images/Textures//Rocky.png" alt="Rocky" id="Rocky"/>
+        <img src="./images/Textures/RedPlanet.png" alt="RedPlanet" id="RedPlanet"/>
+        <img src="./images/Textures/Radiated.png" alt="Radiated" id="Radiated"/>
+
+        <!-- Effect Images -->
+        <img src="./images/Effects/smoke.png" alt="smoke" id="smoke"/>
+
+        <!-- Player Images -->
+        <img id="player"  alt="player" src="./images/Player/dog_left_right_white.png"/>
     </canvas>
     <h1 id="loading">Loading....</h1>
+    <div id="userInterface">
+        <div id="messageBox"></div>
+        <button id="startNewGame">Start New Game</button>
+        <button id="continue">Continue</button>
+        <button id="settings">Settings</button>
+    </div>
 
     <script src="main.js" type="module"></script>
 </body>
