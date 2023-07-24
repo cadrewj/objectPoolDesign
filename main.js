@@ -140,24 +140,13 @@ addEventListener("load",()=>{
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
             this.background.update(context);
+            this.stars.update(context, deltaTime);
+            this.currentState.handleInput(input, context);       //set the game state
             
             //draw asteroid
             this.asteroid.draw(context);
             this.asteroid.update(this.spaceship);
-            
-            //draw the spaceship
-            this.spaceship.update(input, context, this.camera, deltaTime)
 
-            //draw game particles
-            this.particles.forEach((particle) => {
-                particle.draw(context)
-                particle.update();
-                this.particles = this.particles.filter(particle => !particle.markedForDeletion)
-            });
-            //constrol the amount of particles in the array
-            if(this.particles.length > this.maxParticles){
-                this.particles = this.particles.filter(particle=>!particle.markedForDeletion).slice(0, this.maxParticles)
-            }
             //handle enemies
             if(this.enemyTimer > this.enemyInterval){
                 this.addEnemy();
@@ -174,6 +163,21 @@ addEventListener("load",()=>{
                 this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion)
 
             })
+            
+            //draw the spaceship
+            this.spaceship.update(input, context, this.camera, deltaTime)
+
+            //draw game particles
+            this.particles.forEach((particle) => {
+                particle.draw(context)
+                particle.update();
+                this.particles = this.particles.filter(particle => !particle.markedForDeletion)
+            });
+            //control the amount of particles in the array
+            if(this.particles.length > this.maxParticles){
+                this.particles = this.particles.filter(particle=>!particle.markedForDeletion).slice(0, this.maxParticles)
+            }
+        
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
@@ -186,10 +190,6 @@ addEventListener("load",()=>{
                 //delete marked collision sprites
                 this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
-            
-            
-            this.stars.update(context, deltaTime);
-           
 
             //draw in game floating messages
             this.floatingMessage.forEach((message)=>{
@@ -207,7 +207,7 @@ addEventListener("load",()=>{
                     //delete marked rewards
                     this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
                 })
-                this.currentState.handleInput(input, context);       //set the game state
+               
             }
 
             const fuelPercentage = this.spaceship.fuel / 100;
@@ -215,13 +215,20 @@ addEventListener("load",()=>{
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
             this.gameUI.drawScore(context);
-            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt);
-             // drawInputKeys(context, input, this)
-            displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
 
-
+            //draw the assistant
             const angle = (Date.now() / 1000) % (Math.PI * 2);
-            assistantUI(context, this.width - this.player.playerInfo.width * 5, -20, angle)
+            assistantUI(context, this.width - this.width* 0.3, -20, angle)
+            
+            //draw player user interface
+            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
+           
+            
+
+            // this.player.oxygenLevel--;
+
+            displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
+            drawInputKeys(context, input, this);
             context.restore();
 
 

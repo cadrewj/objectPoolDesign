@@ -21,7 +21,7 @@ export class Food{
     this.game = game
     this.type = "food";
     this.time = 0;
-    this.interval = randomNum(5000, 100000)/this.game.data.FPS;
+    this.interval = randomNum(50000, 100000)/this.game.data.FPS;
     this.markedForDeletion = false;
 
     this.position={
@@ -76,7 +76,7 @@ export class Oxygen{
     this.game = game
     this.type = "oxygen";
     this.time = 0;
-    this.interval = randomNum(5000, 100000)/this.game.data.FPS;
+    this.interval = randomNum(50000, 100000)/this.game.data.FPS;
     this.markedForDeletion = false;
     this.position={
         x: x,
@@ -202,8 +202,8 @@ export class Minerals{
       y: this.game.data.MINERAL_SIZE/2
 
     } 
-    this.width = this.radius.x * 2;
-    this.height = this.radius.y * 2; 
+    this.width = this.game.data.MINERAL_SIZE;
+    this.height = this.game.data.MINERAL_SIZE; 
     this.direction = Math.random() * degToRad(Math.random());
   }
   draw(context){
@@ -212,8 +212,8 @@ export class Minerals{
     context.fillStyle = pattern
     context.strokeStyle = "wheat"
     context.lineWidth = 0.3;
-    context.arc(this.position.x, this.position.y, this.radius, 0, degToRad(360), false)
-    // context.ellipse(this.position.x, this.position.y, this.eRadius.x, this.eRadius.y, degToRad(this.angle), 0, degToRad(360))
+    // context.arc(this.position.x, this.position.y, this.radius, 0, degToRad(360), false)
+    context.ellipse(this.position.x, this.position.y, this.eRadius.x, this.eRadius.y, degToRad(this.angle), 0, degToRad(360))
     context.fill();
     context.stroke();    
   }

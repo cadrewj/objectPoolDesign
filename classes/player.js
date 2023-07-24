@@ -25,7 +25,7 @@ class Player{
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
-        this.oxygenLevel = this.game.data.PLAYER_OXYGEN_LEVEL;
+        this.oxygenLevel = 6000//this.game.data.PLAYER_OXYGEN_LEVEL;
 
         this.hurt = false;
         this.hurtTime = 0;

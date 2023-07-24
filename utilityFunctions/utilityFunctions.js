@@ -10,7 +10,7 @@ export function distanceBetweenPoints(x1, y1, x2, y2){
 }
 export function collisionCircleDetection(object1, object2){
     const dist = distanceBetweenPoints(object1.position.x, object1.position.y, object2.position.x, object2.position.y)  
-    const value = object1.width/2 + object2.height/2;
+    const value = object1.width/2 + object2.width/2;
     return dist <= value ? (true) : (false);
 }
 export function collisionBlockDectection(player, enemy){
@@ -64,17 +64,23 @@ export function handleEdgeOfScreen(movingObject, width, height){
 
 }
 //function that return true or false at a rate determined by the number passed in;
-export function probability(decimal){
-    const result =  Math.random() < decimal ?(true): (false);
-    // console.log(result)
-    return result
-
-}
+export function calculateProbability(probability) {
+    if (probability < 0 || probability > 0.9) {
+      throw new Error("Probability must be between 0 and 0.9");
+    }
+  
+    const randomValue = Math.random(); // Generate a random number between 0 and 1
+  
+    return randomValue < probability;
+  }
 
 // function to generate random number
 export function randomNum(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+export function randomDecimal(min, max) {
+    return Math.random() * (max - min) + min;
+  }
 export function randomRGB() {
     return  `rgba(${randomNum(0, 255)},${randomNum(0, 255)},${randomNum(0, 255)})`;
 }

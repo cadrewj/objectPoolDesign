@@ -1,6 +1,6 @@
-import { FloatingMessage } from "../userInterface/gameUserInterface.js";
-import { distanceBetweenPoints, randomSign, degToRad, probability, handleEdgeOfScreen, collisionCircleDetection, randomNum, collideBounceOff} from "../utilityFunctions/utilityFunctions.js";
+import { distanceBetweenPoints, randomSign, degToRad, calculateProbability, handleEdgeOfScreen, collideBounceOff} from "../utilityFunctions/utilityFunctions.js";
 import { CollisionAnimation } from "./collisionAnimation.js";
+import { FloatingMessage } from "../userInterface/gameUserInterface.js";
 import { SelectReward } from "./reward.js";
 
 export class Asteroid{
@@ -43,7 +43,7 @@ export class Asteroid{
         vertices: Math.floor(Math.random() * (this.game.data.ASTEROID_VERTICES + 1) + this.game.data.ASTEROID_VERTICES/2),
         offsets: [],
         destructionTime: 0,
-        hasReward: probability(0.2),
+        hasReward: calculateProbability(0.1),
         free: false
         }
         //create the vertex offset array, (note: 0 = none, 1 = alot)
