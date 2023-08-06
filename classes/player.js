@@ -96,7 +96,7 @@ class Player{
             this.playerInfo.width,
             this.playerInfo.height);   
     }
-    update(input, camera, context){
+    update(input, camera){
         this.checkForCollisions()
         this.updateHitCircle();
         this.currentState.handleInput(input, camera); 

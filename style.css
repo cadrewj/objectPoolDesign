@@ -16,6 +16,7 @@ body{
     background-color: white;
 }
 #main{ 
+    display: block; /* can be used to remove scroll bars in browsers */
     max-width: 100%; /* this make you game sreen or border fix accross devices*/
     max-height: 100%;/* this make you game sreen or border fix accross devices*/
     border: 5px solid red;
@@ -39,19 +40,17 @@ body{
 img{
     display: none;
 }
-#continue{
-    background-image: url("./images/button2.png");
+#miniMapCanvas{
+    border: 1px solid rgb(246, 11, 11);
+    display: block;
+    margin: 20px;
+    position: absolute;
+    z-index: 1;
+    bottom: 180px;
+    right: 0;
 
-    display: block;
-}
-#startNewGame{
-    background-image: url("./images/button1.png");
-    display: block;
-
-}
-#settings{
-    background-image: url("./images/button1.png");
-    display: block;
+    max-width: 100%; /* this make you game sreen or border fix accross devices*/
+    max-height: 100%;/* this make you game sreen or border fix accross devices*/
 
 }
 /* 

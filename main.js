@@ -2,7 +2,7 @@ import gameData from "./data/data.json" assert { type: "json" }
 import { gameKeys } from "./data/gameKeys.js";
 // import { REWARDS } from "./data/rewardData.js";
 
-import Meteor from "./classes/meteor.js";
+// import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
@@ -14,9 +14,8 @@ import { Oxygen } from "./classes/reward.js";
 import { PhantomTriangle } from "./classes/reward.js";
 import { Minerals } from "./classes/reward.js";
 
-import { periodicInterval, createPool, randomNum} from "./utilityFunctions/utilityFunctions.js";
+import { randomNum} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
-import { displayPositionOnMap } from "./utilityFunctions/displayPositionOnMap.js";
 
 import StartNewGame from "./states/GameBehavior/NewGame.js";
 import GameOver from "./states/GameBehavior/gameOver.js";
@@ -26,12 +25,20 @@ import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.j
 import { GameUserInterface } from "./userInterface/gameUserInterface.js";
 import {PlayerUserInterface} from "./userInterface/playerUserInterface.js";
 import { assistantUI } from "./userInterface/assistantUserInterface.js";
+import { MiniMapUserInterface } from "./userInterface/miniMapUserInterface.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
+const miniMapCanvas = document.getElementById('miniMapCanvas');
+const miniMapCtx = miniMapCanvas.getContext('2d');
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+miniMapCanvas.width = Math.floor(canvas.width * 0.18);
+miniMapCanvas.height = Math.floor(canvas.height * 0.15);
+// console.log(canvas.width * 0.18, canvas.height * 0.15)
 
 /*This property is useful for games and other apps that use pixel art. 
 When enlarging images, the default resizing algorithm will blur the pixels. 
@@ -58,11 +65,14 @@ addEventListener("load",()=>{
         sh: 181.83, //72
     }
     class Game{
-        constructor(width, height, data){
+        constructor(width, height, miniWidth, miniHeight, data){
             this.gameOver = false;
 
             this.width = width;
             this.height = height;
+            this.miniWidth = miniWidth;
+            this.miniHeight = miniHeight;
+
             this.groundMargin = 0
             this.data = data;
             this.camera = {
@@ -96,7 +106,10 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-
+            this.miniMapUI = new MiniMapUserInterface(this.width, this.height, this.miniWidth, this.miniHeight,this.player.position.x, this.player.position.y,
+                this.spaceship.position.x,
+                this.spaceship.position.y
+            );
             this.debug = true;
             this.states = [ 
                 new StartNewGame(this), 
@@ -104,25 +117,12 @@ addEventListener("load",()=>{
                 new DebugMode(this),
             ];
             this.currentState = this.states[0]; // game state
-            
-            // this.gameFrames = 0;
-            // this.enemyPool;
-            // this.maxEnemies;
             this.enemyTimer;
             this.enemyInterval;
             this.enemies = [];
             
-            // this.coins = new Coins(this.width, this.height, this.data);
-            // this.meteorTimer;
-            // this.meteorInterval; 
-            // this.meteorPool; // used to store meteors created in the game wether they are active or inactive.
-            // this.maxMeteors;// set the max value of meteors to be stored in the pool.  
+            // this.coins = new Coins(this.width, this.height, this.data);  
             this.inventory = [];
-        }
-        createGamePools(){ //create an object pool of meteors  all at once for faster allocation
-            // const  enemyTypes = [Enemy, FlyingEnemy];
-            // createPool(this.meteorPool, this.maxMeteors, Meteor, this) //this is used to pass the game width and height  to the Meteor class
-            // createPool(this.enemyPool, this.maxEnemies, enemyTypes, this) //this is used to pass the game width and height to the enemies class   
         }
         addEnemy(){
             const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
@@ -131,11 +131,8 @@ addEventListener("load",()=>{
                 this.enemies.push(enemyTypes[selectedEnemy]);
                 
             }
-            // console.log(this.enemies)
-        
-
         }
-        render(context, deltaTime, input){     
+        render(context, miniMapCtx, deltaTime, input){     
             // this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
@@ -181,7 +178,7 @@ addEventListener("load",()=>{
             //draw player 
             if(this.player.isOnPlanet){
                 this.player.draw(context, deltaTime);
-                this.player.update(input, this.camera, context)
+                this.player.update(input, this.camera)
             } 
             //handle collision sprites
             this.collisions.forEach((collision)=>{
@@ -222,32 +219,25 @@ addEventListener("load",()=>{
             
             //draw player user interface
             this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
-           
+            this.miniMapUI.update(this.player.position.x, this.player.position.y,
+                this.spaceship.position.x, this.spaceship.position.y);
+            this.miniMapUI.draw(miniMapCtx);
             
-
-            // this.player.oxygenLevel--;
-
-            displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
             drawInputKeys(context, input, this);
             context.restore();
-
-
-
-    
-            //render a new meteor periodically if it's free;
-            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context); 
-           
         }
         setState(state){ //the passed state is an index number
             this.currentState = this.states[state]; //set the current state of the game
             this.currentState.enter(); // calls the enter method on the current state you are on 
         }
-        init(width, height, data){
+        init(width, height, miniWidth, miniHeight, data){
             canvas.focus();
             this.gameOver = false;
             
             this.width = width;
             this.height = height;
+            this.miniWidth = miniWidth;
+            this.miniHeight = miniHeight;
             this.data = data;
             this.groundMargin = 0;
             this.camera = {
@@ -297,35 +287,30 @@ addEventListener("load",()=>{
             this.score = 0;
             
             // this.coins = new Coins(this.width, this.height, this.data);
-            // this.meteorTimer = 0;
-            // this.meteorInterval = 3000; 
-            // this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
-            // this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
-
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-
-            // this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
+            this.miniMapUI = new MiniMapUserInterface(this.width, this.height, this.miniWidth, this.miniHeight, this.player.position.x, this.player.position.y,
+                this.spaceship.position.x,
+                this.spaceship.position.y
+            );
             this.inventory = []; // 
         }
     }
     
-    game = new Game(canvas.width, canvas.height, {...gameData, gameKeys});
+    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
     let lastTime = 0;
     // console.log(innerWidth, innerHeight) 
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         canvas.focus();
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;  
-        game.render(ctx, deltaTime, game.input);
+        game.render(ctx, miniMapCtx, deltaTime, game.input);
         stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
 
-
-
     }
-    game.init(canvas.width, canvas.height, {...gameData, gameKeys});
+    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
     animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
 })
 
