@@ -6,7 +6,7 @@ export class Background{
             height: height,
             data: data,
         };
-        this.position ={
+        this.position = {
             x: 0, 
             y: 0
         }

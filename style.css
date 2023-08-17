@@ -19,7 +19,7 @@ body{
     display: block; /* can be used to remove scroll bars in browsers */
     max-width: 100%; /* this make you game sreen or border fix accross devices*/
     max-height: 100%;/* this make you game sreen or border fix accross devices*/
-    border: 5px solid red;
+    /* border: 5px solid red; */
     /* background: url("./images/bg3.png"); */
     position: absolute;
     top: 50%; /* offset top an left from the edge of the image*/
@@ -41,7 +41,7 @@ img{
     display: none;
 }
 #miniMapCanvas{
-    border: 1px solid rgb(246, 11, 11);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: block;
     margin: 20px;
     position: absolute;

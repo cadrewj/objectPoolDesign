@@ -7,6 +7,7 @@ import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
 import {Background, Stars} from "./classes/background.js";
+import { Universe } from "./classes/universe.js";
 import {ClimbingEnemy, FlyingEnemy, GroundEnemy} from "./classes/enemy.js";
 import { Asteroid } from "./classes/asteroids.js";
 import { Food } from "./classes/reward.js";
@@ -65,7 +66,7 @@ addEventListener("load",()=>{
         sh: 181.83, //72
     }
     class Game{
-        constructor(width, height, miniWidth, miniHeight, data){
+        constructor(width, height, miniWidth, miniHeight, data, ctx){
             this.gameOver = false;
 
             this.width = width;
@@ -84,7 +85,9 @@ addEventListener("load",()=>{
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
-            this.background = new Background(this.width, this.height, this.data)
+            // this.background = new Background(this.width, this.height, this.data)
+            this.universe = new Universe(this, ctx);
+            
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
             this.velocity = {
@@ -136,8 +139,12 @@ addEventListener("load",()=>{
             // this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
-            this.background.update(context);
-            this.stars.update(context, deltaTime);
+            // this.background.update(context);
+            this.universe.draw(context);
+            this.universe.update();
+
+            // this.stars.update(context, deltaTime);
+
             this.currentState.handleInput(input, context);       //set the game state
             
             //draw asteroid
@@ -176,7 +183,7 @@ addEventListener("load",()=>{
             }
         
             //draw player 
-            if(this.player.isOnPlanet){
+            if(this.player.isOnPlanet || this.player.isInSpace){
                 this.player.draw(context, deltaTime);
                 this.player.update(input, this.camera)
             } 
@@ -188,8 +195,13 @@ addEventListener("load",()=>{
                 this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
 
-            //draw in game floating messages
-            this.floatingMessage.forEach((message)=>{
+            context.restore(); /// content that got panned//////
+
+
+            /////////////////////game interface ///////////////////// no panning//////////
+
+             //draw in game floating messages
+             this.floatingMessage.forEach((message)=>{
                 message.draw(context)
                 message.update();
                 //delete marked floating messages
@@ -207,6 +219,12 @@ addEventListener("load",()=>{
                
             }
 
+            //draw player user interface
+            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
+            this.miniMapUI.update(this.player.position.x, this.player.position.y,
+                this.spaceship.position.x, this.spaceship.position.y);
+            this.miniMapUI.draw(miniMapCtx);
+
             const fuelPercentage = this.spaceship.fuel / 100;
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.playerInfo.width * 2.5, this.height - 20);
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
@@ -216,21 +234,15 @@ addEventListener("load",()=>{
             //draw the assistant
             const angle = (Date.now() / 1000) % (Math.PI * 2);
             assistantUI(context, this.width - this.width* 0.3, -20, angle)
-            
-            //draw player user interface
-            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
-            this.miniMapUI.update(this.player.position.x, this.player.position.y,
-                this.spaceship.position.x, this.spaceship.position.y);
-            this.miniMapUI.draw(miniMapCtx);
-            
+
             drawInputKeys(context, input, this);
-            context.restore();
+
         }
         setState(state){ //the passed state is an index number
             this.currentState = this.states[state]; //set the current state of the game
             this.currentState.enter(); // calls the enter method on the current state you are on 
         }
-        init(width, height, miniWidth, miniHeight, data){
+        init(width, height, miniWidth, miniHeight, data, ctx){
             canvas.focus();
             this.gameOver = false;
             
@@ -250,7 +262,9 @@ addEventListener("load",()=>{
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this, playerInfo);
-            this.background = new Background(this.width, this.height, this.data)
+            // this.background = new Background(this.width, this.height, this.data)
+            this.universe = new Universe(this, ctx);
+
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
 
@@ -290,7 +304,7 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-            this.miniMapUI = new MiniMapUserInterface(this.width, this.height, this.miniWidth, this.miniHeight, this.player.position.x, this.player.position.y,
+            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniWidth, this.miniHeight, this.player.position.x, this.player.position.y,
                 this.spaceship.position.x,
                 this.spaceship.position.y
             );
@@ -298,7 +312,7 @@ addEventListener("load",()=>{
         }
     }
     
-    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
+    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
     let lastTime = 0;
     // console.log(innerWidth, innerHeight) 
     function animate(timeStamp){ //note: timeStamp is automatically generated.
@@ -310,7 +324,7 @@ addEventListener("load",()=>{
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
 
     }
-    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
+    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
     animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
 })
 
