@@ -22,8 +22,9 @@ class Player{
         this.lives = this.game.data.PLAYER_LIVES;
         this.maxFrames = 6; //set initial max to six cuz the default image is 6 frames long
 
-        this.isOnPlanet = false;
+        this.isOnPlanet = true;
         this.isInSpace = true;
+        
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
@@ -136,6 +137,7 @@ class Player{
             this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
             this.game.setState(1);
         }
+
     }
 
     setState(state){ //the passed state is an index number
@@ -159,11 +161,14 @@ class Player{
         }
     }
     handleScreen(){ //has small bug
-        if(this.position.x + this.velocity.x >= this.game.width - this.playerInfo.width){   //add the velocity to check a few pixels in advance
-            this.position.x = this.game.width - this.playerInfo.width
+        if(this.position.x + this.velocity.x >= this.game.universe.width/4 - this.playerInfo.width){   //add the velocity to check a few pixels in advance
+            this.position.x = this.game.universe.width/4 - this.playerInfo.width;
+            this.velocity.x = 0;
+            console.log("pass")
         }
-        else if(this.position.x + this.velocity.x <= 0){ //add the velocity to check a few pixels in advance
-            this.position.x = 0;
+        else if(this.position.x + this.velocity.x <= 0 - this.game.universe.centerPoint.x/2){ //add the velocity to check a few pixels in advance
+            this.position.x = 0 - this.game.universe.centerPoint.x/2 + Math.abs(this.velocity.x)
+            this.velocity.x = 0; //stop player from moving and the universe from movings
         }
     }
     updateHitCircle(){
@@ -188,19 +193,19 @@ class Player{
     }
     shouldPanCameraToLeft(camera){
         const cameraBoxRightSide = this.camerabox.position.x + this.camerabox.width;
-        // if(cameraBoxRightSide + this.velocity.x >= this.game.width){ //prevent panning beyond width of background
-        //     return
-        // }
-        if(cameraBoxRightSide + this.velocity.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.velocity.x >= this.game.universe.width/4){ //prevent panning beyond width of background
+            return
+        }
+        else if(cameraBoxRightSide + this.velocity.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.velocity.x  //translate left
         }
     }
     shouldPanCameraToRight(camera){
         const cameraBoxLeftSide = this.camerabox.position.x;
-        // if(cameraBoxLeftSide + this.velocity.x <= 0){ //prevent panning beyond 0
-        //     return
-        // }
-        if(cameraBoxLeftSide + this.velocity.x <= Math.abs(camera.position.x)){
+        if(cameraBoxLeftSide + this.velocity.x <= 0 - this.game.universe.centerPoint.x/2){ //prevent panning beyond 0
+            return
+        }
+        else if(cameraBoxLeftSide + this.velocity.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.velocity.x  // translate right
         }
     }

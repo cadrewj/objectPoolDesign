@@ -38,7 +38,7 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 miniMapCanvas.width = Math.floor(canvas.width * 0.18);
-miniMapCanvas.height = Math.floor(canvas.height * 0.15);
+miniMapCanvas.height = Math.floor(canvas.height * 0.18);
 // console.log(canvas.width * 0.18, canvas.height * 0.15)
 
 /*This property is useful for games and other apps that use pixel art. 
@@ -109,7 +109,7 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-            this.miniMapUI = new MiniMapUserInterface(this.width, this.height, this.miniWidth, this.miniHeight,this.player.position.x, this.player.position.y,
+            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniWidth, this.miniHeight, this.player.position.x, this.player.position.y,
                 this.spaceship.position.x,
                 this.spaceship.position.y
             );
@@ -146,6 +146,17 @@ addEventListener("load",()=>{
             // this.stars.update(context, deltaTime);
 
             this.currentState.handleInput(input, context);       //set the game state
+
+            //draw in game rewards
+            if(this.rewards.length > 0){
+                this.rewards.forEach((reward)=>{
+                    reward.draw(context)
+                    reward.update();
+                    //delete marked rewards
+                    this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
+                })
+                
+            }
             
             //draw asteroid
             this.asteroid.draw(context);
@@ -194,6 +205,7 @@ addEventListener("load",()=>{
                 //delete marked collision sprites
                 this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
+         
 
             context.restore(); /// content that got panned//////
 
@@ -208,16 +220,7 @@ addEventListener("load",()=>{
                 this.floatingMessage = this.floatingMessage.filter(msg => !msg.markedForDeletion);
             })
             
-            //draw in game rewards
-            if(this.rewards.length > 0){
-                this.rewards.forEach((reward)=>{
-                    reward.draw(context)
-                    reward.update();
-                    //delete marked rewards
-                    this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
-                })
-               
-            }
+           
 
             //draw player user interface
             this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);

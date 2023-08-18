@@ -56,11 +56,11 @@ export class MiniMapUserInterface{
     }
     update(playerX, playerY, shipX, shipY){
         // set the new player position
-        this.playerX = playerX ;
-        this.playerY = playerY;
-
+        this.playerX = playerX + this.gameWidth/2;
+        this.playerY = playerY + this.gameHeight/2;
+        
         // set the new ship position
-        this.shipX =  shipX;
-        this.shipY = shipY;
+        this.shipX =  shipX + this.gameWidth/2;
+        this.shipY = shipY + this.gameHeight/2;
     }
 }

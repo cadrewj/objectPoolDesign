@@ -364,20 +364,23 @@ class Spaceship{
             camera.position.x -= this.thrust.x  //translate left
             // console.log("Rgo")
         }
-        //rightside of screen
-        // if(this.position.x  + this.hitCircle.radius + this.thrust.x >= this.game.width ){
-        //     // this.position.x = this.game.width - this.hitCircle.radius;
-
-        // }
-        //leftside of the screen
-        // if(this.position.x + this.thrust.x <= 0  ){
-        //     // this.position.x = 0 + Math.abs(this.thrust.x);
- 
-        // }
-        if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
+        else if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
             // console.log("Lgo")
         }  
+        //rightside of handlescreen
+        if(this.position.x  + this.hitCircle.radius + this.thrust.x >= this.game.universe.width/4 ){
+            this.position.x = this.game.universe.width/4 - this.hitCircle.radius;
+            console.log("reach the end width")
+
+        }
+        //leftside of the handlescreen
+        if(this.position.x + this.thrust.x <= 0  - this.game.universe.centerPoint.x){
+            this.position.x = 0 - this.game.universe.centerPoint.x  + Math.abs(this.thrust.x)   //Math.abs(this.thrust.x);
+            //need to set the right bounds for player and ship
+ 
+        }
+      
 
         if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.thrust.y  //translate up
@@ -389,11 +392,12 @@ class Spaceship{
             // console.log("Tgo")
         }
         //bottom of the screen
-        // else if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.height){
-        //     this.position.y = this.game.height - this.hitCircle.radius
-        //     // this.thrust.y = 0;
-        //     // this.revThruster.y = 0;    
-        // }
+        else if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.universe.height/4){
+            this.position.y = this.game.universe.height/4 - this.hitCircle.radius
+            console.log("reach the end height")
+            // this.thrust.y = 0;
+            // this.revThruster.y = 0;    
+        }
         //top of the screen
         // else if(this.position.y + this.thrust.y <= 0){
         //     this.position.y = 0 + Math.abs(this.thrust.y); //has small bug
