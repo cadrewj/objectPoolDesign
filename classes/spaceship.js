@@ -25,18 +25,17 @@ class Spaceship{
             x: this.game.width / 2, //position the ship at the center of x axis
             y: this.game.height / 2, //position the ship at the center of y axis
         }  
-        this.ship = {
-            image:  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
-            width : this.game.data.SPACESHIP_SIZE,
-            height: this.game.data.SPACESHIP_SIZE,
-            radius: this.game.data.SPACESHIP_SIZE / 2,
-            sw: this.game.data.SPACESHIP_SPRITEWIDTH, //width of each frame
-            sh: this.game.data.SPACESHIP_SPRITEHEIGHT, //height of each frame
-            frame:{
+        this.image =  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
+        this.width = this.game.data.SPACESHIP_SIZE,
+        this.height = this.game.data.SPACESHIP_SIZE,
+        this.radius = this.game.data.SPACESHIP_SIZE / 2,
+        this.sw = this.game.data.SPACESHIP_SPRITEWIDTH, //width of each frame
+        this.sh = this.game.data.SPACESHIP_SPRITEHEIGHT, //height of each frame
+        this.frame ={
                 x: 0, //note: max x frame for the ship = 60; // sx: 0, //frame position on x axis
                 y: 0, //only one y frame for the ship  // sy: 0, // frame position on y axis
-            } 
-        }
+        } 
+        
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
@@ -86,9 +85,9 @@ class Spaceship{
                 x: this.position.x,
                 y: this.position.y,
             },
-            radius: this.ship.width/3,
-            width: this.ship.width/1.5,
-            height: this.ship.height/1.5,
+            radius: this.width/3,
+            width: this.width/1.5,
+            height: this.height/1.5,
 
         } 
         this.camRadius = this.game.height * 0.25,
@@ -119,12 +118,12 @@ class Spaceship{
             if (this.blinkOn) {
                 context.save();
                 context.translate(this.position.x, this.position.y); //rotate the direction of the ship to face up
-                context.rotate(this.angle); // set the rotatio angle
-                context.drawImage(this.ship.image, 
-                    this.ship.sw * this.ship.frame.x, this.ship.sh * this.ship.frame.y, 
-                    this.ship.sw, this.ship.sh,
-                -this.ship.radius, -this.ship.radius, 
-                this.ship.width, this.ship.height); 
+                context.rotate(this.angle); // set the rotation angle
+                context.drawImage(this.image, 
+                    this.sw * this.frame.x, this.sh * this.frame.y, 
+                    this.sw, this.sh,
+                -this.radius, -this.radius, 
+                this.width, this.height); 
                 context.restore();
             }
             if (this.blinkNum > 0) {
@@ -189,13 +188,13 @@ class Spaceship{
     // }
     animateFrames(deltaTime){
         if (this.thrusting){
-            if(this.ship.image.complete){//go through an animation frame to make the ship look like it is spiraling while thrusting
+            if(this.image.complete){//go through an animation frame to make the ship look like it is spiraling while thrusting
                 if(this.frameTimer > this.frameInterval){ // animate player sprite //used to slow down the speed of the animation between frames
-                    if(this.ship.frame.x < this.maxFrames){
-                        this.ship.frame.x++;
+                    if(this.frame.x < this.maxFrames){
+                        this.frame.x++;
                     }
                     else{
-                        this.ship.frame.x = 0;
+                        this.frame.x = 0;
                     }
                     this.frameTimer = 0;
                 }
@@ -207,8 +206,8 @@ class Spaceship{
         else{
             //go reverse through an animation frame to make the ship look like it is reverse spiraling when not thrusting
             if(this.frameTimer > this.frameInterval){//used to slow down the speed of the animation between frames
-                if(this.ship.frame.x !==0){
-                    this.ship.frame.x--;
+                if(this.frame.x !==0){
+                    this.frame.x--;
                 }
                 // this.frameTimer = 0; 
             }
@@ -227,7 +226,7 @@ class Spaceship{
         context.translate(this.position.x , this.position.y);
         context.rotate(this.angle);
         // Translate context to bottom of image
-        context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the spaceship
+        context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the space ship
         // Draw thruster
         context.drawImage(this.thruster.image, -this.thruster.width / 2, -this.thruster.height / 2, this.thruster.width, this.thruster.height);
         context.restore();
@@ -262,22 +261,22 @@ class Spaceship{
     drawExplodingShip(context){
         context.beginPath()
         context.fillStyle = "darkred";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 1.4, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 1.4, 0 ,degToRad(360))
         context.fill()
         context.fillStyle = "red";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 1.1, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 1.1, 0 ,degToRad(360))
         context.fill()
         context.beginPath()
         context.fillStyle = "orange";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 0.8, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 0.8, 0 ,degToRad(360))
         context.fill()
         context.beginPath()
         context.fillStyle = "yellow";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 0.5, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 0.5, 0 ,degToRad(360))
         context.fill()
         context.beginPath()
         context.fillStyle = "white";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 0.2, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 0.2, 0 ,degToRad(360))
         context.fill()
     }
     drawLaser(context){
@@ -338,7 +337,7 @@ class Spaceship{
                 x: this.position.x ,
                 y: this.position.y,
             },
-            radius: this.ship.width/3,
+            radius: this.width/3,
         }     
     }
     updateCameraBox(){
@@ -410,8 +409,8 @@ class Spaceship{
         for(let i = 0; i < this.game.data.SPACESHIP_LASER_MAX; i++){
             let angle = this.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
             const laser = { //the location you are shooting from is the nose of the ship
-                x: this.position.x + this.ship.radius * Math.cos(angle), // from center of the ship draw a line
-                y: this.position.y + this.ship.radius * Math.sin(angle),
+                x: this.position.x + this.radius * Math.cos(angle), // from center of the ship draw a line
+                y: this.position.y + this.radius * Math.sin(angle),
                 velocity: {
                     x: this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
                     y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,

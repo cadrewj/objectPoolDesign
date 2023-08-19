@@ -9,6 +9,10 @@ export class Player_Standing_Left extends State{
         this.game.player.frame.y = 1; //the row position of the player image you want to use
         this.game.player.maxFrames = 6;  //the max number of columns for the player image
         this.game.player.velocity.x = 0;
+        this.game.player.velocity.y = 0;
+        this.game.background.velocity.x = 0;
+        this.game.background.velocity.y = 0;
+
     }
     handleInput(input){
         if(this.game.player.isInSpace){
@@ -40,6 +44,9 @@ export class Player_Standing_Right extends State{
         this.game.player.frame.y = 0;  //the row position of the player image you want to use
         this.game.player.maxFrames = 6;   //the max number of columns for the player image
         this.game.player.velocity.x = 0;
+        this.game.player.velocity.y = 0;
+        this.game.background.velocity.x = 0;
+        this.game.background.velocity.y = 0;
     }
     handleInput(input){
         if(this.game.player.isInSpace){

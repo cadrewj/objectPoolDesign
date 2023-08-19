@@ -5,20 +5,20 @@ export class SpaceshipUserInterface{
         this.width = width;
         this.height = height;
     }
-    drawSpaceshipHealthBar(context, health, exploding){
+    drawSpaceshipHealthBar(context, spaceship){
         let colorRange = 120;
         context.beginPath()
-        let color = exploding ? "red" :  "rgba(128, 0 , 128, 1)";
+        let color = spaceship.exploding ? "red" :  "rgba(128, 0 , 128, 1)";
         context.strokeStyle = color; 
         context.strokeRect(this.width - this.width * 0.111, this.height - this.height * 0.026, this.height * 0.0130, -this.data.SPACESHIP_MAX_HEALTH) // HEALTH BAR  //160 20 10 
-        if(!exploding){
-            context.fillStyle = this.getColorForPercentage(health / 100, colorRange) 
-            context.fillRect(this.width - this.width * 0.11, this.height -this.height * 0.026, this.height * 0.0117, -health); //159 20 9
+        if(!spaceship.exploding){
+            context.fillStyle = this.getColorForPercentage(spaceship.health / 100, colorRange) 
+            context.fillRect(this.width - this.width * 0.11, this.height -this.height * 0.026, this.height * 0.0117, -spaceship.health); //159 20 9
         }
     }    
-    drawSpaceshipLives(context, lives, exploding, ship){
-        let color = exploding ? "rgb(255,0,0)" : "rgb(225,255,255)"; //red or purple
-        if(lives >= 0){
+    drawSpaceshipLives(context, spaceship){
+        let color = spaceship.exploding ? "rgb(255,0,0)" : "rgb(225,255,255)"; //red or purple
+        if(spaceship.lives >= 0){
             let x = this.width - 175, y = this.height - 160; 
             let shipLifeWidth = this.data.SPACESHIP_SIZE * 0.40;
             let shipLifeHeight = this.data.SPACESHIP_SIZE * 0.40;
@@ -28,12 +28,12 @@ export class SpaceshipUserInterface{
             context.textBaseline = "hanger"
             context.fillStyle = color;
             context.font =  "20px Space Grotesk"//"20px Pacifico" //dejavu sans mono;
-            context.drawImage(ship.image, 
+            context.drawImage(spaceship.image, 
                 0, 0, 
-                ship.sw, ship.sh, // crop width and height
+                spaceship.sw, spaceship.sh, // crop width and height
                 x, y, //where to place it on the screen
                 shipLifeWidth, shipLifeHeight); //size of the image in screen
-            context.fillText(lives + "x", this.width - 185 , this.height - 130)
+            context.fillText(spaceship.lives + "x", this.width - 185 , this.height - 130)
             context.stroke()
         }
     }

@@ -22,7 +22,7 @@ export class Asteroid{
                  x = Math.floor(Math.random() * this.game.width); 
                  y = Math.floor(Math.random() * this.game.height);
                  //used to ensure that no asteroid is place ontop of a ship
-            }while(distanceBetweenPoints(this.game.spaceship.position.x, this.game.spaceship.position.y, x, y) < this.game.data.ASTEROID_SIZE * 2 + this.game.spaceship.ship.radius) 
+            }while(distanceBetweenPoints(this.game.spaceship.position.x, this.game.spaceship.position.y, x, y) < this.game.data.ASTEROID_SIZE * 2 + this.game.spaceship.radius) 
             this.asteroids.push(this.newAsteroid(x,y, Math.ceil(this.game.data.ASTEROID_SIZE / 2)))
         }
     }

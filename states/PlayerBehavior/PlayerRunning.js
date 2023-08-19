@@ -11,7 +11,7 @@ export class Player_Running_Left extends State{
         this.game.player.frame.y = 7; //the row position of the player image you want to use
         this.game.player.maxFrames = 8;  //the max number of columns for the player image
         this.game.player.velocity.x = -this.game.player.maxSpeed;  
-        this.game.universe.velocity.x =  this.game.player.maxSpeed
+        this.game.background.velocity.x =  this.game.player.maxSpeed
     }
     handleInput(input, camera){
         this.game.particles.unshift(new Dust(this.game, this.game.player.position, this.sign))//used to add a new particle when the player runs
@@ -25,7 +25,6 @@ export class Player_Running_Left extends State{
             
         }
         else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_LEFT){ // note: 'a" = left 
-            this.game.universe.velocity.x =  0
             this.game.player.setState(states.PLAYER_STANDING_LEFT); //set the player current state to standing right
         }
 
@@ -48,7 +47,7 @@ export class Player_Running_Right extends State{
         this.game.player.frame.y = 6;  //the row position of the player image you want to use
         this.game.player.maxFrames = 8;   //the max number of columns for the player image
         this.game.player.velocity.x = this.game.player.maxSpeed;   
-        this.game.universe.velocity.x = -this.game.player.maxSpeed
+        this.game.background.velocity.x = -this.game.player.maxSpeed
        
     }
     handleInput(input, camera){
@@ -64,7 +63,6 @@ export class Player_Running_Right extends State{
             
         }
         else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_RIGHT){  // note: "d" = right   //this makes the player stand up if not holding d
-            this.game.universe.velocity.x =  0;
             this.game.player.setState(states.PLAYER_STANDING_RIGHT); //set the player current state to standing right
         } 
 

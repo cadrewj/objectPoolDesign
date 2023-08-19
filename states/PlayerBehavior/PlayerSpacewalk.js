@@ -18,18 +18,17 @@ export class Player_Spacewalk_Left extends State{
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
                 this.game.player.shouldPanCameraToRight(camera)
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_LEFT){ // note: 'a" = left 
-                this.game.universe.velocity.x =  0
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_LEFT){ // note: 'a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_LEFT); //set the player current state to standing right
             }
     
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
                 this.game.player.setState(states.PLAYER_SPACEWALK_RIGHT); //set the player current state to standing right      
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
                 this.game.player.setState(states.PLAYER_SPACEWALK_UP);       
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){
                 this.game.player.setState(states.PLAYER_SPACEWALK_DOWN);     
             }
         }
@@ -56,19 +55,18 @@ export class Player_Spacewalk_Right extends State{
                 this.game.player.shouldPanCameraToLeft(camera) 
             }
 
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_RIGHT){  // note: "d" = right   //this makes the player stand up if not holding d
-                this.game.universe.velocity.x = 0;
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_RIGHT){  // note: "d" = right   //this makes the player stand up if not holding d
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_RIGHT); //set the player current state to standing right
             } 
 
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT); //set the player current state to Running left
                 
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
                 this.game.player.setState(states.PLAYER_SPACEWALK_UP);     
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ 
                 this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); 
                 
             }  
@@ -95,20 +93,19 @@ export class Player_Spacewalk_Up extends State{
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){
                 this.game.player.shouldPanCameraDown(camera) 
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_UP){  // note: "d" = right   //this makes the player stand up if not holding d
-                this.game.universe.velocity.y =  0;
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_UP){  // note: "d" = right   //this makes the player stand up if not holding d
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_UP); //set the player current state to standing right
             } 
 
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT); //set the player current state to Running left
                 
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "a" = left 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_RIGHT); //set the player current state to Running left
                 
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ // note: "a" = left 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); //set the player current state to Running left    
             }          
         }
@@ -132,19 +129,18 @@ export class Player_Spacewalk_Down extends State{
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){
                 this.game.player.shouldPanCameraUp(camera)
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_DOWN){ 
-                this.game.universe.velocity.y =  0
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_DOWN){ 
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_DOWN); 
             }
     
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ 
                 this.game.player.setState(states.PLAYER_SPACEWALK_UP);   
                 
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ 
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT);       
             }
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
                 this.game.player.setState(states.PLAYER_SPACEWALK_RIGHT); //set the player current state to standing right  
                 
             }  

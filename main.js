@@ -58,13 +58,7 @@ export let game;
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-    const playerInfo = {
-        image: document.getElementById("player"),
-        width: gameData.PLAYER_SIZE,
-        height: gameData.PLAYER_SIZE,
-        sw: 200, //72
-        sh: 181.83, //72
-    }
+
     class Game{
         constructor(width, height, miniWidth, miniHeight, data, ctx){
             this.gameOver = false;
@@ -74,7 +68,7 @@ addEventListener("load",()=>{
             this.miniWidth = miniWidth;
             this.miniHeight = miniHeight;
 
-            this.groundMargin = 0
+            this.groundMargin = 0.01;
             this.data = data;
             this.camera = {
                 position: {
@@ -84,8 +78,8 @@ addEventListener("load",()=>{
             }
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
-            this.player = new Player(this, playerInfo);
-            // this.background = new Background(this.width, this.height, this.data)
+            this.player = new Player(this);
+            this.background = new Background(this.width, this.height, this.data)
             this.universe = new Universe(this, ctx);
             
             this.stars = new Stars(this.width, this.height, this.data);
@@ -131,19 +125,24 @@ addEventListener("load",()=>{
             const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
             let selectedEnemy = randomNum(0, enemyTypes.length-1)
             if(this.velocity.x > 0 && Math.random() < 0.2){
-                this.enemies.push(enemyTypes[selectedEnemy]);
-                
+                this.enemies.push(enemyTypes[selectedEnemy]);  
             }
         }
         render(context, miniMapCtx, deltaTime, input){     
             // this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
-            // this.background.update(context);
-            this.universe.draw(context);
-            this.universe.update();
 
-            // this.stars.update(context, deltaTime);
+            if(!this.player.isOnPlanet){
+                this.universe.draw(context);
+                this.universe.update();
+                this.stars.update(context, deltaTime);
+            }
+            else{
+                this.background.update(context);
+            }
+
+            
 
             this.currentState.handleInput(input, context);       //set the game state
 
@@ -154,10 +153,8 @@ addEventListener("load",()=>{
                     reward.update();
                     //delete marked rewards
                     this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
-                })
-                
+                })    
             }
-            
             //draw asteroid
             this.asteroid.draw(context);
             this.asteroid.update(this.spaceship);
@@ -176,7 +173,6 @@ addEventListener("load",()=>{
                 enemy.update(deltaTime)
                 enemy.updateHitCircle()
                 this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion)
-
             })
             
             //draw the spaceship
@@ -205,8 +201,6 @@ addEventListener("load",()=>{
                 //delete marked collision sprites
                 this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
-         
-
             context.restore(); /// content that got panned//////
 
 
@@ -229,9 +223,9 @@ addEventListener("load",()=>{
             this.miniMapUI.draw(miniMapCtx);
 
             const fuelPercentage = this.spaceship.fuel / 100;
-            this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.playerInfo.width * 2.5, this.height - 20);
-            this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
-            this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
+            this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.width * 2.5, this.height - 20);
+            this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship)
+            this.spaceshipUI.drawSpaceshipLives(context, this.spaceship);
             this.gameUI.drawScore(context);
 
             //draw the assistant
@@ -264,8 +258,8 @@ addEventListener("load",()=>{
            
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
-            this.player = new Player(this, playerInfo);
-            // this.background = new Background(this.width, this.height, this.data)
+            this.player = new Player(this);
+            this.background = new Background(this.width, this.height, this.data)
             this.universe = new Universe(this, ctx);
 
             this.stars = new Stars(this.width, this.height, this.data);
