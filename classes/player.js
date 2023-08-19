@@ -30,8 +30,8 @@ class Player{
         this.lives = this.game.data.PLAYER_LIVES;
         this.maxFrames = 6; //set initial max to six cuz the default image is 6 frames long
 
-        this.isOnPlanet = true;
-        this.isInSpace = false;
+        this.isOnPlanet = false;
+        this.playerIsInSpace = true;
         
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
@@ -104,6 +104,8 @@ class Player{
     }
 
     draw(context, deltaTime){
+        if(this.isOnPlanet || this.playerIsInSpace){
+        
         this.animateFrames(deltaTime)
         //draw the player on the screen
         context.drawImage(this.image, 
@@ -114,53 +116,63 @@ class Player{
             this.position.x, 
             this.position.y,
             this.width,
-            this.height);   
+            this.height); 
+        }
+
+      
     }
     update(input, camera){
-        this.checkForCollisions()
-        this.updateHitCircle();
-        this.currentState.handleInput(input, camera); 
-        // console.log(this.velocity.y)
-        // this.handleScreen()  //used to ensure the player doesn't fall off the screen
-        this.updateCameraBox();
+        this.currentState.handleInput(input, camera);
+        if(this.isOnPlanet || this.playerIsInSpace){
+            this.checkForCollisions()
+            this.updateHitCircle();
+            
+            // console.log(this.velocity.y)
+            this.handleScreen()  //used to ensure the player doesn't fall off the screen
+            this.updateCameraBox();
 
-        //check if the player is hurt
-        this.hurt = this.hurtTime > 0
-        if(this.hurt){
-            this.hurtTime--;
-        }
-        
-        ////////horizontal movement////////////////
-        this.position.x += this.velocity.x;
+            //check if the player is hurt
+            this.hurt = this.hurtTime > 0
+            if(this.hurt){
+                this.hurtTime--;
+            }
+            
+            ////////horizontal movement////////////////
+            this.position.x += this.velocity.x;
 
-        ////////Vertical movement////////////////
-        this.position.y += this.velocity.y;
-        if(this.isOnPlanet){
-            if(!this.onGround()){
-                this.velocity.y += this.weight;
+            ////////Vertical movement////////////////
+            this.position.y += this.velocity.y;
+            if(this.isOnPlanet){
+                if(!this.onGround()){
+                    this.velocity.y += this.weight;
+                }
+                else{
+                    this.velocity.y = 0; // make player fall after jump
+                }
+                if(this.position.y > this.game.height - this.height){// ensure player doesn't fall off screen
+                    this.position.y = this.game.height - this.height - this.game.groundMargin;
+                }
+            } 
+            //handle lives
+            if(this.health <= 0 && this.lives > 0){
+                this.lives --;
+                this.health = this.game.data.PLAYER_MAX_HEALTH;
             }
-            else{
-                this.velocity.y = 0; // make player fall after jump
+            else if(this.lives <= 0){
+                this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
+                this.game.setState(1);
             }
-            if(this.position.y > this.game.height - this.height){// ensure player doesn't fall off screen
-                this.position.y = this.game.height - this.height - this.game.groundMargin;
-            }
-        } 
-        //handle lives
-        if(this.health <= 0 && this.lives > 0){
-            this.lives --;
-            this.health = this.game.data.PLAYER_MAX_HEALTH;
-        }
-        else if(this.lives <= 0){
-            this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
-            this.game.setState(1);
-        }
 
+        }
     }
 
     setState(state){ //the passed state is an index number
         this.currentState = this.states[state]; //set the current state
         this.currentState.enter(); // calls the enter method on the current state you are on 
+    }
+    updatePlayerPositionBasedOnShip(position){
+        this.position.x = position.x;
+        this.position.y = position.y;    
     }
     animateFrames(deltaTime){
         if(this.image.complete){
@@ -179,14 +191,29 @@ class Player{
         }
     }
     handleScreen(){ //has small bug
-        if(this.position.x + this.velocity.x >= this.game.universe.width/4 - this.width){   //add the velocity to check a few pixels in advance
-            this.position.x = this.game.universe.width/4 - this.width;
+        if(this.position.x + this.velocity.x + this.width >= this.game.universe.width/2  ){   //add the velocity to check a few pixels in advance
             this.velocity.x = 0;
-            console.log("pass")
+            this.position.x = this.game.universe.width/2 - this.width;
+            
+            
         }
-        else if(this.position.x + this.velocity.x <= 0 - this.game.universe.centerPoint.x/2){ //add the velocity to check a few pixels in advance
-            this.position.x = 0 - this.game.universe.centerPoint.x/2 + Math.abs(this.velocity.x)
+        else if(this.position.x + this.velocity.x <= 0 - this.game.universe.width/2){ //add the velocity to check a few pixels in advance
             this.velocity.x = 0; //stop player from moving and the universe from movings
+            this.position.x = 0 - this.game.universe.width/2
+            console.log("pass left")
+        }
+
+
+        if(this.position.y + this.velocity.y + this.height >= this.game.universe.height/2  ){   //add the velocity to check a few pixels in advance
+            this.velocity.y = 0;
+            this.position.y = this.game.universe.height/2 - this.height;
+            
+            
+        }
+        else if(this.position.y + this.velocity.y <= 0 - this.game.universe.height/2){ //add the velocity to check a few pixels in advance
+            this.velocity.y = 0; //stop player from moving and the universe from movings
+            this.position.y = 0 - this.game.universe.height/2
+            console.log("pass bottom")
         }
     }
     updateHitCircle(){
@@ -209,41 +236,50 @@ class Player{
             height: this.game.height * 0.4,
         } 
     }
-    shouldPanCameraToLeft(camera){
+    shouldPanCameraLeft(camera){
         const cameraBoxRightSide = this.camerabox.position.x + this.camerabox.width;
-        // if(cameraBoxRightSide + this.velocity.x >= this.game.universe.width/4){ //prevent panning beyond width of background
-        //     return
-        // }
-        if(cameraBoxRightSide + this.velocity.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+        if(cameraBoxRightSide + this.velocity.x >= this.game.universe.width/2){ //prevent panning beyond width of background
+            console.log("end of goal post")
+            return
+        }
+
+        //NOTE: Math.abs(camera.position) is the offset distance from the panned distance, used to reposition the goal post 
+        else if(cameraBoxRightSide + this.velocity.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.velocity.x  //translate left
+            console.log("panning left")
         }
     }
-    shouldPanCameraToRight(camera){
+    shouldPanCameraRight(camera){
         const cameraBoxLeftSide = this.camerabox.position.x;
-        // if(cameraBoxLeftSide + this.velocity.x <= 0 - this.game.universe.centerPoint.x/2){ //prevent panning beyond 0
-        //     return
-        // }
-        if(cameraBoxLeftSide + this.velocity.x <= Math.abs(camera.position.x)){
+        if(cameraBoxLeftSide + this.velocity.x <= 0 - this.game.universe.width/2){ //prevent panning beyond 0
+            console.log("reach start post")
+            return
+        }
+        else if(cameraBoxLeftSide + this.velocity.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.velocity.x  // translate right
+            console.log("panning right")
         }
     }
     shouldPanCameraDown(camera){
-        const cameraBoxBottom = this.camerabox.position.y + this.camerabox.height;
-        // if(cameraBoxBottom + this.velocity.y >= this.game.height){ //prevent panning beyond width of background
-        //     return
-        // }
-        if(cameraBoxBottom >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
-            camera.position.y -= this.velocity.y  //translate up
-        }
-    }
-    shouldPanCameraUp(camera){
         const cameraBoxTop = this.camerabox.position.y;
-        // if(cameraBoxTop + this.velocity.y <= 0){ //prevent panning beyond 0
-        //     return
-        // }
+        if(cameraBoxTop + this.velocity.y <= 0  - this.game.universe.width/2){ //prevent panning beyond 0
+            return
+        }
         if(cameraBoxTop + this.velocity.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.velocity.y  // translate down;  note: this.velocity is negative, so two negatives = positive
+            console.log("panning DOWN")
         } 
+
+    }
+    shouldPanCameraUp(camera){
+        const cameraBoxBottom = this.camerabox.position.y + this.camerabox.height;
+        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height){ //prevent panning beyond width of background
+            return
+        }
+        if(cameraBoxBottom  + this.velocity.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+            camera.position.y -= this.velocity.y  //translate up
+            console.log("panning up")
+        }
     }
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{

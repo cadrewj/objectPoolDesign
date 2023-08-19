@@ -70,18 +70,18 @@ addEventListener("load",()=>{
 
             this.groundMargin = 0.01;
             this.data = data;
+            
+            this.spaceship = new Spaceship(this);
+            this.asteroid = new Asteroid(this);
+            this.player = new Player(this);
+            this.background = new Background(this.width, this.height, this.data)
+            this.universe = new Universe(this, ctx);
             this.camera = {
                 position: {
                     x: 0,
                     y: -0,
                 }
             }
-            this.spaceship = new Spaceship(this);
-            this.asteroid = new Asteroid(this);
-            this.player = new Player(this);
-            this.background = new Background(this.width, this.height, this.data)
-            this.universe = new Universe(this, ctx);
-            
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
             this.velocity = {
@@ -135,15 +135,12 @@ addEventListener("load",()=>{
 
             if(!this.player.isOnPlanet){
                 this.universe.draw(context);
-                this.universe.update();
+                // this.universe.update();
                 this.stars.update(context, deltaTime);
             }
             else{
                 this.background.update(context);
             }
-
-            
-
             this.currentState.handleInput(input, context);       //set the game state
 
             //draw in game rewards
@@ -176,7 +173,7 @@ addEventListener("load",()=>{
             })
             
             //draw the spaceship
-            this.spaceship.update(input, context, this.camera, deltaTime)
+            this.spaceship.update(input, context, this.camera, deltaTime, this.player.playerIsInSpace, this.player.isOnPlanet)
 
             //draw game particles
             this.particles.forEach((particle) => {
@@ -190,10 +187,14 @@ addEventListener("load",()=>{
             }
         
             //draw player 
-            if(this.player.isOnPlanet || this.player.isInSpace){
-                this.player.draw(context, deltaTime);
-                this.player.update(input, this.camera)
-            } 
+            this.player.draw(context, deltaTime);
+            this.player.update(input, this.camera)
+            
+            
+            //update player position based on the ship when in ship
+            if(!this.player.playerIsInSpace){
+                this.player.updatePlayerPositionBasedOnShip(this.spaceship.position)
+            }
             //handle collision sprites
             this.collisions.forEach((collision)=>{
                 collision.draw(context);
@@ -289,8 +290,6 @@ addEventListener("load",()=>{
                 (game, x, y)=> new Minerals(game, x, y)
             ];
             
-            // this.enemyPool = [];
-            // this.maxEnemies = 9;
             this.enemies = [];
             this.enemyTimer = 0;
             this.enemyInterval = 6000;

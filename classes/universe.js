@@ -118,7 +118,7 @@ export class Universe{
         //move the universe background 
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
-        console.log(this.position.x, this.position.y)
+        // console.log(this.position.x, this.position.y)
 
         // for(let i = 0; i < this.solarSystem.length; i++){
         //     // this.solarSystem[i].angle += this.solarSystem[i].velocity.angle

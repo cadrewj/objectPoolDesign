@@ -12,12 +12,10 @@ export class Player_Jumping_Left extends State{
         if(this.game.player.onGround()){ // only jump when on the ground
             this.game.player.velocity.y = -this.game.player.maxSpeed * 2 * this.game.player.friction;
         }
-        // this.game.player.velocity.x = -this.game.player.maxSpeed * 0.5;
-       
     }
     handleInput(input, camera){
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
-            this.game.player.shouldPanCameraToRight(camera)
+            this.game.player.shouldPanCameraRight(camera)
         }
       
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
@@ -38,8 +36,8 @@ export class Player_Jumping_Left extends State{
             && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ //// switch state when player is falling to the ground
             this.game.player.setState(states.PLAYER_SHELL_SMASH_LEFT); 
         }
-        else if(!this.game.player.onGround() && this.game.player.velocity.y < 0 ){
-            this.game.player.shouldPanCameraUp(camera)
+        else if(!this.game.player.onGround()){
+            this.game.player.shouldPanCameraDown(camera)
         }
     }
 }
@@ -57,12 +55,10 @@ export class Player_Jumping_Right extends State{
         if(this.game.player.onGround()){ // only jump when on the ground
             this.game.player.velocity.y = -this.game.player.maxSpeed * 2 * this.game.player.friction;
         }
-        // this.game.player.velocity.x = this.game.player.maxSpeed * 0.5;
-      
     }
     handleInput(input, camera){
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
-            this.game.player.shouldPanCameraToLeft(camera)
+            this.game.player.shouldPanCameraLeft(camera)
         }
        
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
@@ -83,8 +79,8 @@ export class Player_Jumping_Right extends State{
             && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ //// switch state when player is falling to the ground
             this.game.player.setState(states.PLAYER_SHELL_SMASH_RIGHT); 
         }
-        else if(!this.game.player.onGround() && this.game.player.velocity.y < 0 ){
-            this.game.player.shouldPanCameraUp(camera)
+        else if(!this.game.player.onGround() ){
+            this.game.player.shouldPanCameraDown(camera)
         }
     }
 }

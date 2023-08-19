@@ -1,3 +1,4 @@
+import { collisionCircleDetection } from "../../utilityFunctions/utilityFunctions.js";
 import { State, states } from  "../state.js";
 
 export class Player_Spacewalk_Standing_Left extends State{
@@ -15,7 +16,14 @@ export class Player_Spacewalk_Standing_Left extends State{
         this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){ 
-        if(this.game.player.isInSpace){
+        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
+            // && this.game.player.playerIsInSpace === true
+            && collisionCircleDetection(this.game.player, this.game.spaceship)){
+            console.log("can enter")
+            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+
+        }
+        else if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT)
             }
@@ -33,6 +41,7 @@ export class Player_Spacewalk_Standing_Left extends State{
                 
             }
         }
+      
     }
 }
 
@@ -53,22 +62,25 @@ export class Player_Spacewalk_Standing_Right extends State{
     }
     handleInput(input, camera){
       
-        if(this.game.player.isInSpace){
+        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
+            // && this.game.player.playerIsInSpace === true
+            && collisionCircleDetection(this.game.player, this.game.spaceship)){
+            console.log("can enter")
+            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+        }
+       
+        else if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT)
             }
-    
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
                 this.game.player.setState(states.PLAYER_SPACEWALK_RIGHT); //set the player current state to standing right  
-                
             }
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ // note: "d" = right
-                this.game.player.setState(states.PLAYER_SPACEWALK_UP); //set the player current state to standing right  
-                
+                this.game.player.setState(states.PLAYER_SPACEWALK_UP); //set the player current state to standing right   
             }
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ // note: "d" = right
-                this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); //set the player current state to standing right  
-                
+                this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); //set the player current state to standing right   
             }
         }
     }
@@ -89,8 +101,13 @@ export class Player_Spacewalk_Standing_Up extends State{
         this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){
-      
-        if(this.game.player.isInSpace){
+        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
+            // && this.game.player.playerIsInSpace === true
+            && collisionCircleDetection(this.game.player, this.game.spaceship)){
+            console.log("can enter")
+            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+        }
+        else if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT); //set the player current state to Running left         
             }
@@ -123,8 +140,15 @@ export class Player_Spacewalk_Standing_Down extends State{
         this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){ 
-        if(this.game.player.isInSpace){
-            if(this.game.player.isInSpace){
+         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
+            // && this.game.player.playerIsInSpace === true
+            && collisionCircleDetection(this.game.player, this.game.spaceship)){
+            console.log("can enter")
+            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+        }
+       
+        else if(this.game.player.playerIsInSpace){
+            if(this.game.player.playerIsInSpace){
                 if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                     this.game.player.setState(states.PLAYER_SPACEWALK_LEFT); //set the player current state to Running left         
                 }
@@ -135,8 +159,7 @@ export class Player_Spacewalk_Standing_Down extends State{
                     this.game.player.setState(states.PLAYER_SPACEWALK_UP); 
                 } 
                 else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ // note: "a" = left 
-                    this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); //set the player current state to Running left
-                    
+                    this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); //set the player current state to Running left   
                 }
             }
         }

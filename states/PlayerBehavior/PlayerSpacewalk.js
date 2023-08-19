@@ -14,9 +14,9 @@ export class Player_Spacewalk_Left extends State{
         this.game.universe.velocity.x = this.game.player.maxSpeed / 2 // move the universe
     }
     handleInput(input, camera){ 
-        if(this.game.player.isInSpace){
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
-                this.game.player.shouldPanCameraToRight(camera)
+                this.game.player.shouldPanCameraRight(camera)
             }
             if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_LEFT){ // note: 'a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_LEFT); //set the player current state to standing right
@@ -50,9 +50,9 @@ export class Player_Spacewalk_Right extends State{
     }
     handleInput(input, camera){
       
-        if(this.game.player.isInSpace){
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
-                this.game.player.shouldPanCameraToLeft(camera) 
+                this.game.player.shouldPanCameraLeft(camera) 
             }
 
             if(input.lastKey === this.game.data.gameKeys.PLAYER_RELEASE_RIGHT){  // note: "d" = right   //this makes the player stand up if not holding d
@@ -89,7 +89,7 @@ export class Player_Spacewalk_Up extends State{
     }
     handleInput(input, camera){
       
-        if(this.game.player.isInSpace){
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){
                 this.game.player.shouldPanCameraDown(camera) 
             }
@@ -125,7 +125,7 @@ export class Player_Spacewalk_Down extends State{
         this.game.universe.velocity.y = -this.game.player.maxSpeed / 2 // move the universe
     }
     handleInput(input, camera){ 
-        if(this.game.player.isInSpace){
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){
                 this.game.player.shouldPanCameraUp(camera)
             }

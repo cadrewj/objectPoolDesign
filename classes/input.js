@@ -57,17 +57,21 @@ class InputHandler{
                 case "v": //use to switch attack type
                     this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_SWITCH_RIGHT;
                 break;
+                case "e": //enter or exit ship
+                    this.lastKey = this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP;
+                break;
 
                 //Game Control keys
-                case "Enter":
+                case "Enter": 
                     this.gameLastKey = this.game.data.gameKeys.PRESS_ENTER;
                 break;
                 case "Escape":
                     this.gameLastKey = this.game.data.gameKeys.PRESS_ESCAPE;
                 break;
-                case "G":
+                case "G": // debug mode
                     this.gameLastKey = this.game.data.gameKeys.PRESS_DEBUG_MODE;
                 break;
+                
               
             }
         })
@@ -129,6 +133,9 @@ class InputHandler{
                 break;
                 case "c": //use to switch attack type
                     this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_SWITCH_LEFT;
+                break;
+                case "e": //enter or exit ship
+                    this.lastKey = this.game.data.gameKeys.PLAYER_RELEASE_ENTER_SHIP;
                 break;
 
                 

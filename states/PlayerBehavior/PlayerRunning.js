@@ -17,7 +17,7 @@ export class Player_Running_Left extends State{
         this.game.particles.unshift(new Dust(this.game, this.game.player.position, this.sign))//used to add a new particle when the player runs
         
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
-            this.game.player.shouldPanCameraToRight(camera)
+            this.game.player.shouldPanCameraRight(camera)
         }
 
         else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
@@ -55,7 +55,7 @@ export class Player_Running_Right extends State{
         this.game.particles.unshift(new Dust(this.game, this.game.player.position, this.sign))//used to add a new particle when the player runs
         
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
-            this.game.player.shouldPanCameraToLeft(camera) 
+            this.game.player.shouldPanCameraLeft(camera) 
         }
 
         else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 

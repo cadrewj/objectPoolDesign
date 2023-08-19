@@ -15,7 +15,7 @@ export class Player_Standing_Left extends State{
 
     }
     handleInput(input){
-        if(this.game.player.isInSpace){
+        if(this.game.player.playerIsInSpace){
             this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_LEFT);
         }
         else {
@@ -49,7 +49,7 @@ export class Player_Standing_Right extends State{
         this.game.background.velocity.y = 0;
     }
     handleInput(input){
-        if(this.game.player.isInSpace){
+        if(this.game.player.playerIsInSpace){
             this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_RIGHT);
         }
         else{
