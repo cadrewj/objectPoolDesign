@@ -19,7 +19,7 @@ import { randomNum} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 
 import StartNewGame from "./states/GameBehavior/NewGame.js";
-import GameOver from "./states/GameBehavior/gameOver.js";
+import GameOver from "./states/GameBehavior/GameOver.js";
 import DebugMode from "./states/GameBehavior/DebugMode.js";
 
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
@@ -60,13 +60,13 @@ addEventListener("load",()=>{
     canvas.height = innerHeight;
 
     class Game{
-        constructor(width, height, miniWidth, miniHeight, data, ctx){
+        constructor(width, height, miniMapWidth, miniMapHeight, data){
             this.gameOver = false;
 
             this.width = width;
             this.height = height;
-            this.miniWidth = miniWidth;
-            this.miniHeight = miniHeight;
+            this.miniMapWidth = miniMapWidth;
+            this.miniMapHeight = miniMapHeight;
 
             this.groundMargin = 0.01;
             this.data = data;
@@ -75,7 +75,7 @@ addEventListener("load",()=>{
             this.asteroid = new Asteroid(this);
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
-            this.universe = new Universe(this, ctx);
+            this.universe = new Universe(this);
             this.camera = {
                 position: {
                     x: 0,
@@ -103,7 +103,7 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniWidth, this.miniHeight, this.player.position.x, this.player.position.y,
+            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
                 this.spaceship.position.x,
                 this.spaceship.position.y
             );
@@ -141,8 +141,11 @@ addEventListener("load",()=>{
             else{
                 this.background.update(context);
             }
+            context.restore()
             this.currentState.handleInput(input, context);       //set the game state
 
+            context.save()
+            context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
             //draw in game rewards
             if(this.rewards.length > 0){
                 this.rewards.forEach((reward)=>{
@@ -240,14 +243,14 @@ addEventListener("load",()=>{
             this.currentState = this.states[state]; //set the current state of the game
             this.currentState.enter(); // calls the enter method on the current state you are on 
         }
-        init(width, height, miniWidth, miniHeight, data, ctx){
+        init(width, height, miniMapWidth, miniMapHeight, data){
             canvas.focus();
             this.gameOver = false;
             
             this.width = width;
             this.height = height;
-            this.miniWidth = miniWidth;
-            this.miniHeight = miniHeight;
+            this.miniMapWidth = miniMapWidth;
+            this.miniMapHeight = miniMapHeight;
             this.data = data;
             this.groundMargin = 0;
             this.camera = {
@@ -300,7 +303,7 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniWidth, this.miniHeight, this.player.position.x, this.player.position.y,
+            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
                 this.spaceship.position.x,
                 this.spaceship.position.y
             );
@@ -320,7 +323,7 @@ addEventListener("load",()=>{
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
 
     }
-    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
+    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
     animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
 })
 

@@ -144,10 +144,9 @@ class Spaceship{
                     }
                 }
                 // move the ship
-                if(!playerIsInSpace){
-                    this.position.x += this.thrust.x;
-                    this.position.y += this.thrust.y;   
-                }
+                this.position.x += this.thrust.x;
+                this.position.y += this.thrust.y;   
+            
                 //draw laser on the screen
                 this.drawLaser(context);
 

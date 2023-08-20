@@ -11,7 +11,7 @@ export class Player_Running_Left extends State{
         this.game.player.frame.y = 7; //the row position of the player image you want to use
         this.game.player.maxFrames = 8;  //the max number of columns for the player image
         this.game.player.velocity.x = -this.game.player.maxSpeed;  
-        this.game.background.velocity.x =  this.game.player.maxSpeed
+        // this.game.background.velocity.x =  this.game.player.maxSpeed
     }
     handleInput(input, camera){
         this.game.particles.unshift(new Dust(this.game, this.game.player.position, this.sign))//used to add a new particle when the player runs
@@ -47,7 +47,7 @@ export class Player_Running_Right extends State{
         this.game.player.frame.y = 6;  //the row position of the player image you want to use
         this.game.player.maxFrames = 8;   //the max number of columns for the player image
         this.game.player.velocity.x = this.game.player.maxSpeed;   
-        this.game.background.velocity.x = -this.game.player.maxSpeed
+        // this.game.background.velocity.x = -this.game.player.maxSpeed
        
     }
     handleInput(input, camera){

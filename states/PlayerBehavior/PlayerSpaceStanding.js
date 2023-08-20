@@ -13,8 +13,8 @@ export class Player_Spacewalk_Standing_Left extends State{
         this.game.player.maxFrames = 8;  //the max number of columns for the player image
         this.game.player.velocity.x = 0;  
         this.game.player.velocity.y = 0;
-        this.game.universe.velocity.x = 0; // move the universe
-        this.game.universe.velocity.y = 0;
+        // this.game.universe.velocity.x = 0; // move the universe
+        // this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){ 
         //toggle in and out of the ship
@@ -68,8 +68,8 @@ export class Player_Spacewalk_Standing_Right extends State{
         this.game.player.maxFrames = 8;   //the max number of columns for the player image
         this.game.player.velocity.x = 0;
         this.game.player.velocity.y = 0;
-        this.game.universe.velocity.x = 0; // move the universe
-        this.game.universe.velocity.y = 0;
+        // this.game.universe.velocity.x = 0; // move the universe
+        // this.game.universe.velocity.y = 0;
        
     }
     handleInput(input, camera){
@@ -119,8 +119,8 @@ export class Player_Spacewalk_Standing_Up extends State{
         this.game.player.maxFrames = 8;   //the max number of columns for the player image
         this.game.player.velocity.x = 0;
         this.game.player.velocity.y = 0;
-        this.game.universe.velocity.x = 0; // move the universe
-        this.game.universe.velocity.y = 0;
+        // this.game.universe.velocity.x = 0; // move the universe
+        // this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){
      this.toggleInAndOutSpaceship(input);
@@ -170,8 +170,8 @@ export class Player_Spacewalk_Standing_Down extends State{
         this.game.player.maxFrames = 8;  //the max number of columns for the player image
         this.game.player.velocity.x = 0;
         this.game.player.velocity.y = 0;
-        this.game.universe.velocity.x = 0; // move the universe
-        this.game.universe.velocity.y = 0;
+        // this.game.universe.velocity.x = 0; // move the universe
+        // this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){ 
         this.toggleInAndOutSpaceship(input)

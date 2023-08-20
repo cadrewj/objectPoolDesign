@@ -10,8 +10,8 @@ export class Player_Standing_Left extends State{
         this.game.player.maxFrames = 6;  //the max number of columns for the player image
         this.game.player.velocity.x = 0;
         this.game.player.velocity.y = 0;
-        this.game.background.velocity.x = 0;
-        this.game.background.velocity.y = 0;
+        // this.game.background.velocity.x = 0;
+        // this.game.background.velocity.y = 0;
 
     }
     handleInput(input){
@@ -30,7 +30,10 @@ export class Player_Standing_Left extends State{
             }
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ // note: "up" = down 
                 this.game.player.setState(states.PLAYER_JUMPING_LEFT); //set the player current state to standing right
-            }    
+            } 
+            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP){ // note: "up" = down 
+                this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_LEFT); //set the player current state to standing right
+            }       
         }
     }
 }
@@ -45,8 +48,8 @@ export class Player_Standing_Right extends State{
         this.game.player.maxFrames = 6;   //the max number of columns for the player image
         this.game.player.velocity.x = 0;
         this.game.player.velocity.y = 0;
-        this.game.background.velocity.x = 0;
-        this.game.background.velocity.y = 0;
+        // this.game.background.velocity.x = 0;
+        // this.game.background.velocity.y = 0;
     }
     handleInput(input){
         if(this.game.player.playerIsInSpace){
@@ -65,6 +68,9 @@ export class Player_Standing_Right extends State{
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_UP){ // note: "up" = down 
                 this.game.player.setState(states.PLAYER_JUMPING_RIGHT); //set the player current state to standing right
             }
+            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP){ // note: "up" = down 
+                this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_RIGHT); //set the player current state to standing right
+            }       
         }
     }
 }

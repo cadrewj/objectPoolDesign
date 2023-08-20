@@ -31,7 +31,7 @@ class Player{
         this.maxFrames = 6; //set initial max to six cuz the default image is 6 frames long
 
         this.isOnPlanet = false;
-        this.playerIsInSpace = true;
+        this.playerIsInSpace = false;
         
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;

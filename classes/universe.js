@@ -17,7 +17,7 @@ class Planet{
     }
 }
 export class Universe{
-    constructor(game, context){
+    constructor(game){
         this.image = document.querySelector("#bg")
         this.game = game;
         this.width = 60000;
@@ -74,15 +74,15 @@ export class Universe{
         this.solarSystem =[]
 
         //used to create a nebula shadow over the black canvas
-        this.gradient = context.createLinearGradient(0,this.height, this.width, 0)
-        this.gradient.addColorStop(0, "red")
-        this.gradient.addColorStop(0.2, "yellow")
-        this.gradient.addColorStop(0.4, "green")
-        this.gradient.addColorStop(0.5, "cyan");
-        this.gradient.addColorStop(0.8, "blue")
-        this.gradient.addColorStop(1, "magenta");
+        // this.gradient = context.createLinearGradient(0,this.height, this.width, 0)
+        // this.gradient.addColorStop(0, "red")
+        // this.gradient.addColorStop(0.2, "yellow")
+        // this.gradient.addColorStop(0.4, "green")
+        // this.gradient.addColorStop(0.5, "cyan");
+        // this.gradient.addColorStop(0.8, "blue")
+        // this.gradient.addColorStop(1, "magenta");
 
-        this.init()
+        // this.init()
         // console.log(this.solarSystem)
     }
 

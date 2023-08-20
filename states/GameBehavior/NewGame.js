@@ -7,7 +7,8 @@ export default class StartNewGame extends State{
         this.alpha = 8; 
     }
     enter(){
-        this.game.init(this.game.width, this.game.height, this.game.data)
+        //    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
+        this.game.init(this.game.width, this.game.height, this.game.miniMapWidth, this.game.miniMapHeight, this.game.data)
         // console.log(this.game, "entered new game")
 
         this.alpha = 8;
