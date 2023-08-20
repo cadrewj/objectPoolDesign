@@ -17,8 +17,8 @@ export default class SpaceshipShootLaser extends State{
                     let angle = this.game.spaceship.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
                      //the location you are shooting from is the nose of the ship
                     laser = {
-                        x: this.game.spaceship.position.x + this.game.spaceship.ship.radius * Math.cos(angle), // from center of the ship draw a line
-                        y: this.game.spaceship.position.y + this.game.spaceship.ship.radius * Math.sin(angle),
+                        x: this.game.spaceship.position.x + this.game.spaceship.radius * Math.cos(angle), // from center of the ship draw a line
+                        y: this.game.spaceship.position.y + this.game.spaceship.radius * Math.sin(angle),
                         velocity: {
                             x:this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
                             y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,

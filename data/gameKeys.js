@@ -23,6 +23,7 @@ export const gameKeys ={
     PLAYER_PRESS_ATTACK: "PRESS Spacebar",
     PLAYER_PRESS_SWITCH_LEFT: "PRESS c",
     PLAYER_PRESS_SWITCH_RIGHT: "PRESS v",
+    PLAYER_PRESS_ENTER_SHIP: "PRESS e",
 
    
     PLAYER_RELEASE_RIGHT: "RELEASE ArrowRight",
@@ -32,6 +33,7 @@ export const gameKeys ={
     PLAYER_RELEASE_ATTACK:"RELEASE Spacebar",
     PLAYER_RELEASE_SWITCH_LEFT: "RELEASE c",
     PLAYER_RELEASE_SWITCH_RIGHT: "RELEASE v",
+    PLAYER_RELEASE_ENTER_SHIP: "RELEASE e",
 
 
     /////////// GAME SYSTEM CONTROLS //////////////

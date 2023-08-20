@@ -22,8 +22,8 @@ export class Dust extends Particle{
         this.size = randomNum(10, 20) // random number between 10 and 20
         this.offset = 5
         this.position ={
-            x: position.x + this.game.player.playerInfo.width / 2 ,
-            y: position.y + this.game.player.playerInfo.height
+            x: position.x + this.game.player.width / 2 ,
+            y: position.y + this.game.player.height
         }
         this.velocity ={
             x: Math.random(),
@@ -54,8 +54,8 @@ export class Fire extends Particle{
         this.image = document.querySelector("#flameTexture")
         this.size = randomNum(50, 200) // random number between 10 and 20
         this.position ={
-            x: position.x +this.game.player.playerInfo.width / 2,
-            y: position.y + this.game.player.playerInfo.height / 2
+            x: position.x +this.game.player.width / 2,
+            y: position.y + this.game.player.height / 2
         }
         this.velocity ={
             x: 1,
@@ -87,8 +87,8 @@ export class Splash  extends Particle{
         this.image = document.querySelector("#flameTexture")
         this.size = randomNum(10, 200) // random number between 10 and 20
         this.position ={
-            x: position.x -this.size * 0.4, //+this.game.player.playerInfo.width / 2,
-            y: position.y  -this.size * 0.4//+ this.game.player.playerInfo.height / 2
+            x: position.x -this.size * 0.4, //+this.game.player.width / 2,
+            y: position.y  -this.size * 0.4//+ this.game.player.height / 2
         }
         this.velocity ={
             x: Math.random() * 6 - 3 , //number between - 3 and +3

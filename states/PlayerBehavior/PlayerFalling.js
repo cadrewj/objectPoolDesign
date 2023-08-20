@@ -12,9 +12,13 @@ export class Player_Falling_Left extends State{
        
     }
     handleInput(input, camera){
-        // if(!this.game.player.onGround()){
-        //     this.game.player.shouldPanCameraDown(camera)
-        // }
+        if(this.game.data.gameKeys.PLAYER_PRESS_LEFT){
+            this.game.player.shouldPanCameraRight(camera)
+        }
+        
+        if(this.game.player.velocity.y > 0){
+            this.game.player.shouldPanCameraUp(camera)
+        }
         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
             this.game.player.setState(states.PLAYER_FALLING_RIGHT); //set the player current state to standing right
         }
@@ -24,6 +28,7 @@ export class Player_Falling_Left extends State{
         else if(!this.game.player.onGround() && input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_DOWN){ //// switch state when player is falling to the ground
             this.game.player.setState(states.PLAYER_SHELL_SMASH_LEFT); 
         }
+      
     }
 }
 
@@ -38,10 +43,14 @@ export class Player_Falling_Right extends State{
       
     }
     handleInput(input, camera){
-        // if(!this.game.player.onGround()){
-        //     this.game.player.shouldPanCameraDown(camera)
-        // }
-        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT ){ // note: "a" = left 
+        if(this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
+            this.game.player.shouldPanCameraLeft(camera)
+        }
+        
+        if(this.game.player.velocity.y > 0){
+            this.game.player.shouldPanCameraUp(camera)
+        }
+        else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT ){ // note: "a" = left 
             this.game.player.setState(states.PLAYER_FALLING_LEFT); //set the player current state to Running left
         } 
         else if(this.game.player.onGround()){

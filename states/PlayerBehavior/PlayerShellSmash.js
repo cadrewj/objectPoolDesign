@@ -30,8 +30,8 @@ export class Player_Shell_Smash_Left extends State{
         else if(this.game.player.onGround()){ // switch state when player touch the ground
             for (let i = 0; i < 30; i++) {
                 const position = {
-                  x: this.game.player.position.x + this.game.player.playerInfo.width / 2,
-                  y: this.game.player.position.y + this.game.player.playerInfo.height / 2
+                  x: this.game.player.position.x + this.game.player.width / 2,
+                  y: this.game.player.position.y + this.game.player.height / 2
                 };
                 this.game.particles.unshift(new Fireworks(this.game, position, this.sign));
                 this.game.particles.unshift(new Splash(this.game, position, this.sign));
@@ -70,8 +70,8 @@ export class Player_Shell_Smash_Right extends State{
         else if(this.game.player.onGround()){ // switch state when player touch the ground
             for (let i = 0; i < 30; i++) {
                 const position = {
-                  x: this.game.player.position.x + this.game.player.playerInfo.width / 2,
-                  y: this.game.player.position.y + this.game.player.playerInfo.height / 2
+                  x: this.game.player.position.x + this.game.player.width / 2,
+                  y: this.game.player.position.y + this.game.player.height / 2
                 };
                 this.game.particles.unshift(new Fireworks(this.game, position, this.sign));
 

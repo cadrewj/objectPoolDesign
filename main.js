@@ -2,11 +2,12 @@ import gameData from "./data/data.json" assert { type: "json" }
 import { gameKeys } from "./data/gameKeys.js";
 // import { REWARDS } from "./data/rewardData.js";
 
-import Meteor from "./classes/meteor.js";
+// import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
 import {Background, Stars} from "./classes/background.js";
+import { Universe } from "./classes/universe.js";
 import {ClimbingEnemy, FlyingEnemy, GroundEnemy} from "./classes/enemy.js";
 import { Asteroid } from "./classes/asteroids.js";
 import { Food } from "./classes/reward.js";
@@ -14,24 +15,31 @@ import { Oxygen } from "./classes/reward.js";
 import { PhantomTriangle } from "./classes/reward.js";
 import { Minerals } from "./classes/reward.js";
 
-import { periodicInterval, createPool, randomNum} from "./utilityFunctions/utilityFunctions.js";
+import { randomNum} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
-import { displayPositionOnMap } from "./utilityFunctions/displayPositionOnMap.js";
 
 import StartNewGame from "./states/GameBehavior/NewGame.js";
-import GameOver from "./states/GameBehavior/gameOver.js";
+import GameOver from "./states/GameBehavior/GameOver.js";
 import DebugMode from "./states/GameBehavior/DebugMode.js";
 
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
 import { GameUserInterface } from "./userInterface/gameUserInterface.js";
 import {PlayerUserInterface} from "./userInterface/playerUserInterface.js";
 import { assistantUI } from "./userInterface/assistantUserInterface.js";
+import { MiniMapUserInterface } from "./userInterface/miniMapUserInterface.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
+const miniMapCanvas = document.getElementById('miniMapCanvas');
+const miniMapCtx = miniMapCanvas.getContext('2d');
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
+miniMapCanvas.width = Math.floor(canvas.width * 0.18);
+miniMapCanvas.height = Math.floor(canvas.height * 0.18);
+// console.log(canvas.width * 0.18, canvas.height * 0.15)
 
 /*This property is useful for games and other apps that use pixel art. 
 When enlarging images, the default resizing algorithm will blur the pixels. 
@@ -50,31 +58,30 @@ export let game;
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-    const playerInfo = {
-        image: document.getElementById("player"),
-        width: gameData.PLAYER_SIZE,
-        height: gameData.PLAYER_SIZE,
-        sw: 200, //72
-        sh: 181.83, //72
-    }
+
     class Game{
-        constructor(width, height, data){
+        constructor(width, height, miniMapWidth, miniMapHeight, data){
             this.gameOver = false;
 
             this.width = width;
             this.height = height;
-            this.groundMargin = 0
+            this.miniMapWidth = miniMapWidth;
+            this.miniMapHeight = miniMapHeight;
+
+            this.groundMargin = 0.01;
             this.data = data;
+            
+            this.spaceship = new Spaceship(this);
+            this.asteroid = new Asteroid(this);
+            this.player = new Player(this);
+            this.background = new Background(this.width, this.height, this.data)
+            this.universe = new Universe(this);
             this.camera = {
                 position: {
                     x: 0,
                     y: -0,
                 }
             }
-            this.spaceship = new Spaceship(this);
-            this.asteroid = new Asteroid(this);
-            this.player = new Player(this, playerInfo);
-            this.background = new Background(this.width, this.height, this.data)
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
             this.velocity = {
@@ -96,7 +103,10 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-
+            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
+                this.spaceship.position.x,
+                this.spaceship.position.y
+            );
             this.debug = true;
             this.states = [ 
                 new StartNewGame(this), 
@@ -104,45 +114,47 @@ addEventListener("load",()=>{
                 new DebugMode(this),
             ];
             this.currentState = this.states[0]; // game state
-            
-            // this.gameFrames = 0;
-            // this.enemyPool;
-            // this.maxEnemies;
             this.enemyTimer;
             this.enemyInterval;
             this.enemies = [];
             
-            // this.coins = new Coins(this.width, this.height, this.data);
-            // this.meteorTimer;
-            // this.meteorInterval; 
-            // this.meteorPool; // used to store meteors created in the game wether they are active or inactive.
-            // this.maxMeteors;// set the max value of meteors to be stored in the pool.  
+            // this.coins = new Coins(this.width, this.height, this.data);  
             this.inventory = [];
-        }
-        createGamePools(){ //create an object pool of meteors  all at once for faster allocation
-            // const  enemyTypes = [Enemy, FlyingEnemy];
-            // createPool(this.meteorPool, this.maxMeteors, Meteor, this) //this is used to pass the game width and height  to the Meteor class
-            // createPool(this.enemyPool, this.maxEnemies, enemyTypes, this) //this is used to pass the game width and height to the enemies class   
         }
         addEnemy(){
             const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
             let selectedEnemy = randomNum(0, enemyTypes.length-1)
             if(this.velocity.x > 0 && Math.random() < 0.2){
-                this.enemies.push(enemyTypes[selectedEnemy]);
-                
+                this.enemies.push(enemyTypes[selectedEnemy]);  
             }
-            // console.log(this.enemies)
-        
-
         }
-        render(context, deltaTime, input){     
+        render(context, miniMapCtx, deltaTime, input){     
             // this.gameFrames++;
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
-            this.background.update(context);
-            this.stars.update(context, deltaTime);
+
+            if(!this.player.isOnPlanet){
+                this.universe.draw(context);
+                // this.universe.update();
+                this.stars.update(context, deltaTime);
+            }
+            else{
+                this.background.update(context);
+            }
+            context.restore()
             this.currentState.handleInput(input, context);       //set the game state
-            
+
+            context.save()
+            context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
+            //draw in game rewards
+            if(this.rewards.length > 0){
+                this.rewards.forEach((reward)=>{
+                    reward.draw(context)
+                    reward.update();
+                    //delete marked rewards
+                    this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
+                })    
+            }
             //draw asteroid
             this.asteroid.draw(context);
             this.asteroid.update(this.spaceship);
@@ -161,11 +173,10 @@ addEventListener("load",()=>{
                 enemy.update(deltaTime)
                 enemy.updateHitCircle()
                 this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion)
-
             })
             
             //draw the spaceship
-            this.spaceship.update(input, context, this.camera, deltaTime)
+            this.spaceship.update(input, context, this.camera, deltaTime, this.player.playerIsInSpace, this.player.isOnPlanet)
 
             //draw game particles
             this.particles.forEach((particle) => {
@@ -179,10 +190,14 @@ addEventListener("load",()=>{
             }
         
             //draw player 
-            if(this.player.isOnPlanet){
-                this.player.draw(context, deltaTime);
-                this.player.update(input, this.camera, context)
-            } 
+            this.player.draw(context, deltaTime);
+            this.player.update(input, this.camera)
+            
+            
+            //update player position based on the ship when in ship
+            if(!this.player.playerIsInSpace){
+                this.player.updatePlayerPositionBasedOnShip(this.spaceship.position)
+            }
             //handle collision sprites
             this.collisions.forEach((collision)=>{
                 collision.draw(context);
@@ -190,64 +205,52 @@ addEventListener("load",()=>{
                 //delete marked collision sprites
                 this.collisions = this.collisions.filter(collision => !collision.markedForDeletion);
             })
+            context.restore(); /// content that got panned//////
 
-            //draw in game floating messages
-            this.floatingMessage.forEach((message)=>{
+
+            /////////////////////game interface ///////////////////// no panning//////////
+
+             //draw in game floating messages
+             this.floatingMessage.forEach((message)=>{
                 message.draw(context)
                 message.update();
                 //delete marked floating messages
                 this.floatingMessage = this.floatingMessage.filter(msg => !msg.markedForDeletion);
             })
             
-            //draw in game rewards
-            if(this.rewards.length > 0){
-                this.rewards.forEach((reward)=>{
-                    reward.draw(context)
-                    reward.update();
-                    //delete marked rewards
-                    this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
-                })
-               
-            }
+           
+
+            //draw player user interface
+            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
+            this.miniMapUI.update(this.player.position.x, this.player.position.y,
+                this.spaceship.position.x, this.spaceship.position.y);
+            this.miniMapUI.draw(miniMapCtx);
 
             const fuelPercentage = this.spaceship.fuel / 100;
-            this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.playerInfo.width * 2.5, this.height - 20);
-            this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship.health, this.spaceship.exploding)
-            this.spaceshipUI.drawSpaceshipLives(context, this.spaceship.lives, this.spaceship.exploding, this.spaceship.ship);
+            this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.width * 2.5, this.height - 20);
+            this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship)
+            this.spaceshipUI.drawSpaceshipLives(context, this.spaceship);
             this.gameUI.drawScore(context);
 
             //draw the assistant
             const angle = (Date.now() / 1000) % (Math.PI * 2);
             assistantUI(context, this.width - this.width* 0.3, -20, angle)
-            
-            //draw player user interface
-            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
-           
-            
 
-            // this.player.oxygenLevel--;
-
-            displayPositionOnMap(context, this.player, this.spaceship, this.width, this.height);
             drawInputKeys(context, input, this);
-            context.restore();
 
-
-
-    
-            //render a new meteor periodically if it's free;
-            // this.meteorTimer = periodicInterval(this.meteorTimer, this.meteorInterval, deltaTime, this.meteorPool, context); 
-           
         }
         setState(state){ //the passed state is an index number
             this.currentState = this.states[state]; //set the current state of the game
             this.currentState.enter(); // calls the enter method on the current state you are on 
         }
-        init(width, height, data){
+        init(width, height, miniMapWidth, miniMapHeight, data){
             canvas.focus();
             this.gameOver = false;
             
             this.width = width;
             this.height = height;
+            this.miniMapWidth = miniMapWidth;
+            this.miniMapHeight = miniMapHeight;
             this.data = data;
             this.groundMargin = 0;
             this.camera = {
@@ -259,8 +262,10 @@ addEventListener("load",()=>{
            
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
-            this.player = new Player(this, playerInfo);
+            this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
+            this.universe = new Universe(this, ctx);
+
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
 
@@ -288,8 +293,6 @@ addEventListener("load",()=>{
                 (game, x, y)=> new Minerals(game, x, y)
             ];
             
-            // this.enemyPool = [];
-            // this.maxEnemies = 9;
             this.enemies = [];
             this.enemyTimer = 0;
             this.enemyInterval = 6000;
@@ -297,35 +300,30 @@ addEventListener("load",()=>{
             this.score = 0;
             
             // this.coins = new Coins(this.width, this.height, this.data);
-            // this.meteorTimer = 0;
-            // this.meteorInterval = 3000; 
-            // this.meteorPool = [] // used to store meteors created in the game wether they are active or inactive.
-            // this.maxMeteors = Math.ceil(this.width * 0.01) // set the max value of meteors to be stored in the pool.
-
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-
-            // this.createGamePools(); // automatically creating the pool as soon as an instance of the game class is created. 
+            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
+                this.spaceship.position.x,
+                this.spaceship.position.y
+            );
             this.inventory = []; // 
         }
     }
     
-    game = new Game(canvas.width, canvas.height, {...gameData, gameKeys});
+    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
     let lastTime = 0;
     // console.log(innerWidth, innerHeight) 
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         canvas.focus();
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;  
-        game.render(ctx, deltaTime, game.input);
+        game.render(ctx, miniMapCtx, deltaTime, game.input);
         stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
 
-
-
     }
-    game.init(canvas.width, canvas.height, {...gameData, gameKeys});
+    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
     animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
 })
 

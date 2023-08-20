@@ -2,27 +2,35 @@ import { randomNum, randomRGB, randomSign, degToRad , handleEdgeOfScreen} from "
 export class Background{
     constructor(width, height, data){
         this.game = {
-            width: width,
-            height: height,
+            width: width * 4,
+            height: height * 4,
             data: data,
         };
-        this.position ={
+        this.position = {
             x: 0, 
             y: 0
         }
-        // this.image = document.querySelector("#bg")  
+        this.velocity = {
+            x: 0, 
+            y: 0
+        } 
     }
     update(context){
         this.draw(context);
+        //move the  background 
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
         // context.restore();    
 
     }
     draw(context){
         // console.log("drawing")
+        context.save()
         context.beginPath()
         context.fillStyle = "black"//this.game.data.SPACE_COLOR;
         context.fillRect(this.position.x, this.position.y, this.game.width, this.game.height)
         // context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
+        context.restore()
     }
 
 }

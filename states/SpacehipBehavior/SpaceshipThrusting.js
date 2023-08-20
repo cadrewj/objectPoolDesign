@@ -8,41 +8,60 @@ export class SpaceshipThrust extends State{
         // this.spaceship = this.game.spaceship;
     }
     enter(){
-        this.game.spaceship.thrusting = true;    
-     
+        if(!this.game.player.playerIsInSpace){
+            this.game.spaceship.thrusting = true;  
+            // this.game.universe.velocity.x = this.game.spaceship.thrust.x; 
+            // this.game.universe.velocity.y = this.game.spaceship.thrust.y;
+        }
     }
-    handleInput(input, context){
-        if(this.game.spaceship.fuel > 0 &&  !this.game.spaceship.exploding){   
-            this.game.spaceship.animate = true; 
-            // console.log("entered thrusting state")
-            // add thrust and friction
-            // acceleration of the ship in pixels per second per second 
-            const thrustAngle = this.game.spaceship.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
-            this.game.spaceship.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle)/ this.game.data.FPS;
-            this.game.spaceship.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle)/ this.game.data.FPS;
-            this.game.spaceship.drawThruster(context) 
+    handleInput(input, context, playerIsInSpace){
+        // console.log(this.game.spaceship.position.x, this.game.spaceship.position.y )
+        if(!playerIsInSpace){
+            if(this.game.spaceship.fuel > 0 &&  !this.game.spaceship.exploding){   
+                this.game.spaceship.animate = true; 
+                // console.log("entered thrusting state")
+                // add thrust and friction
+                // acceleration of the ship in pixels per second per second 
+                const thrustAngle = this.game.spaceship.angle - degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
+                this.game.universe.angle = thrustAngle
+    
+                this.game.spaceship.thrust.x += this.game.data.SPACESHIP_THRUST * Math.cos(thrustAngle)/ this.game.data.FPS;
+                this.game.spaceship.thrust.y += this.game.data.SPACESHIP_THRUST * Math.sin(thrustAngle)/ this.game.data.FPS;
+                this.game.spaceship.drawThruster(context) 
+            }
+            
+            if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_UP){
+                // this.game.universe.velocity.x = -this.game.spaceship.thrust.x; 
+                // this.game.universe.velocity.y = -this.game.spaceship.thrust.y;
+    
+                this.game.spaceship.accelartionTime++;
+                this.fuelConsumption(input);
+            }
+            else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_DOWN){ // note: "d" = right
+                // this.game.universe.velocity.x = -this.game.spaceship.thrust.x; 
+                // this.game.universe.velocity.y = -this.game.spaceship.thrust.y;
+                this.game.spaceship.setState(shipStates.SPACESHIP_REVERSE_THRUST); //set the player current state to standing right
+            }
+            else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT 
+                || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){  
+                this.game.spaceship.setState(shipStates.SPACESHIP_CHANGE_DIRECTION);
+            }
+            else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_RELEASE_UP){
+                // this.game.universe.velocity.x = 0; 
+                // this.game.universe.velocity.y = 0;
+                this.game.spaceship.setState(shipStates.SPACESHIP_IDLE);
+            }
+            else if (input.isMouseDown){
+                this.game.spaceship.setState(shipStates.SPACESHIP_SHOOT);
+            }
+            else if(this.game.spaceship.exploding){
+                this.game.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
+            }
         }
-        
-        if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_UP){
-            this.game.spaceship.accelartionTime++;
-            this.fuelConsumption(input);
-        }
-        if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_DOWN){ // note: "d" = right
-            this.game.spaceship.setState(shipStates.SPACESHIP_REVERSE_THRUST); //set the player current state to standing right
-        }
-        else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT 
-            || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){  
-            this.game.spaceship.setState(shipStates.SPACESHIP_CHANGE_DIRECTION);
-        }
-        else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_RELEASE_UP){
+        else{
             this.game.spaceship.setState(shipStates.SPACESHIP_IDLE);
         }
-        else if (input.isMouseDown){
-            this.game.spaceship.setState(shipStates.SPACESHIP_SHOOT);
-        }
-        else if(this.game.spaceship.exploding){
-            this.game.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
-        }
+
     }
     fuelConsumption(input){
         let burntFuel = 0;
@@ -68,37 +87,47 @@ export class SpaceshipReverseThrust  extends State{
         this.game.spaceship.thrusting = false;
    
     }
-    handleInput(input, context){
-        if(this.game.spaceship.fuel > 0 &&  !this.game.spaceship.exploding){    
-            this.game.spaceship.animate = true; 
-            // console.log("entered  rev thrusting state")
-            // this.game.spaceship.thrust.x = 0;
-            const thrustAngle = this.game.spaceship.angle + Math.PI / 2; // adjust for the image facing upwards
-            this.game.spaceship.thrust.x += this.game.data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) / this.game.data.FPS; 
-            this.game.spaceship.thrust.y += this.game.data.SPACESHIP_THRUST_REV * Math.sin(thrustAngle) / this.game.data.FPS;
-            this.game.spaceship.drawRevThruster(context)
-        }    
-        
+    handleInput(input, context, playerIsInSpace){
+       if(!playerIsInSpace){
+            if(this.game.spaceship.fuel > 0 &&  !this.game.spaceship.exploding){    
+                this.game.spaceship.animate = true; 
+                // console.log("entered  rev thrusting state")
+                // this.game.spaceship.thrust.x = 0;
+                const thrustAngle = this.game.spaceship.angle + degToRad(90)//Math.PI / 2; // adjust for the image facing upwards
+                this.game.universe.angle = thrustAngle;
+                
+                this.game.spaceship.thrust.x += this.game.data.SPACESHIP_THRUST_REV * Math.cos(thrustAngle) / this.game.data.FPS; 
+                this.game.spaceship.thrust.y += this.game.data.SPACESHIP_THRUST_REV * Math.sin(thrustAngle) / this.game.data.FPS;
+                this.game.spaceship.drawRevThruster(context)
+            }    
+            
 
-        if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_DOWN){
-            this.game.spaceship.decelerationTime++;
-            this.fuelConsumption(input);
-        }
-        if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_UP){
-            this.game.spaceship.setState(shipStates.SPACESHIP_THRUST); //set the player current state to standing right
-        }
-        else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT 
-            || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){  
-            this.game.spaceship.setState(shipStates.SPACESHIP_CHANGE_DIRECTION);
-        }
-        else if( input.shipLastKey === this.game.data.gameKeys.SPACESHIP_RELEASE_DOWN){
-            this.game.spaceship.setState(shipStates.SPACESHIP_IDLE);
-        }
-        else if (input.isMouseDown){
-            this.game.spaceship.setState(shipStates.SPACESHIP_SHOOT);
-        }
-        else if(this.game.spaceship.exploding){
-            this.game.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
+            if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_DOWN){
+                // this.game.universe.velocity.x = this.game.spaceship.thrust.x; 
+                // this.game.universe.velocity.y = this.game.spaceship.thrust.y;
+                this.game.spaceship.decelerationTime++;
+                this.fuelConsumption(input);
+            }
+            else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_UP){
+                // this.game.universe.velocity.x = this.game.spaceship.thrust.x; 
+                // this.game.universe.velocity.y = this.game.spaceship.thrust.y;
+                this.game.spaceship.setState(shipStates.SPACESHIP_THRUST); //set the player current state to standing right
+            }
+            else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT 
+                || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){  
+                this.game.spaceship.setState(shipStates.SPACESHIP_CHANGE_DIRECTION);
+            }
+            else if( input.shipLastKey === this.game.data.gameKeys.SPACESHIP_RELEASE_DOWN){
+                // this.game.universe.velocity.x = 0; 
+                // this.game.universe.velocity.y = 0;
+                this.game.spaceship.setState(shipStates.SPACESHIP_IDLE);
+            }
+            else if (input.isMouseDown){
+                this.game.spaceship.setState(shipStates.SPACESHIP_SHOOT);
+            }
+            else if(this.game.spaceship.exploding){
+                this.game.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
+            }
         }
     }
     fuelConsumption(input){

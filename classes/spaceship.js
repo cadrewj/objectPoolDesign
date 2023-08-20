@@ -25,18 +25,17 @@ class Spaceship{
             x: this.game.width / 2, //position the ship at the center of x axis
             y: this.game.height / 2, //position the ship at the center of y axis
         }  
-        this.ship = {
-            image:  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
-            width : this.game.data.SPACESHIP_SIZE,
-            height: this.game.data.SPACESHIP_SIZE,
-            radius: this.game.data.SPACESHIP_SIZE / 2,
-            sw: this.game.data.SPACESHIP_SPRITEWIDTH, //width of each frame
-            sh: this.game.data.SPACESHIP_SPRITEHEIGHT, //height of each frame
-            frame:{
+        this.image =  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
+        this.width = this.game.data.SPACESHIP_SIZE,
+        this.height = this.game.data.SPACESHIP_SIZE,
+        this.radius = this.game.data.SPACESHIP_SIZE / 2,
+        this.sw = this.game.data.SPACESHIP_SPRITEWIDTH, //width of each frame
+        this.sh = this.game.data.SPACESHIP_SPRITEHEIGHT, //height of each frame
+        this.frame ={
                 x: 0, //note: max x frame for the ship = 60; // sx: 0, //frame position on x axis
                 y: 0, //only one y frame for the ship  // sy: 0, // frame position on y axis
-            } 
-        }
+        } 
+        
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
@@ -86,9 +85,9 @@ class Spaceship{
                 x: this.position.x,
                 y: this.position.y,
             },
-            radius: this.ship.width/3,
-            width: this.ship.width/1.5,
-            height: this.ship.height/1.5,
+            radius: this.width/3,
+            width: this.width/1.5,
+            height: this.height/1.5,
 
         } 
         this.camRadius = this.game.height * 0.25,
@@ -102,60 +101,64 @@ class Spaceship{
         }
         this.initLasers();
     }
-    update(input, context, camera, deltaTime){
-        this.checkForCollisions();
-        this.currentState.handleInput(input, context); 
-
-        this.animate = this.fuel > 0
- 
-        if(this.animate){
-            this.animateFrames(deltaTime);
-        }
-
-        this.exploding = this.explodeTime > 0;
-        this.blinkOn = this.blinkNum % 2 == 0;
-
-        if(!this.exploding){
-            if (this.blinkOn) {
-                context.save();
-                context.translate(this.position.x, this.position.y); //rotate the direction of the ship to face up
-                context.rotate(this.angle); // set the rotatio angle
-                context.drawImage(this.ship.image, 
-                    this.ship.sw * this.ship.frame.x, this.ship.sh * this.ship.frame.y, 
-                    this.ship.sw, this.ship.sh,
-                -this.ship.radius, -this.ship.radius, 
-                this.ship.width, this.ship.height); 
-                context.restore();
+    update(input, context, camera, deltaTime, playerIsInSpace, isOnPlanet){
+        if(!isOnPlanet ){
+            this.checkForCollisions();
+            this.currentState.handleInput(input, context, playerIsInSpace); 
+    
+            this.animate = this.fuel > 0
+     
+            if(this.animate && !playerIsInSpace){
+                this.animateFrames(deltaTime);
             }
-            if (this.blinkNum > 0) {
-                this.blinkTime--;
-                if (this.blinkTime == 0) {
-                    this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS);
-                    this.blinkNum--;
+            this.exploding = this.explodeTime > 0;
+            this.blinkOn = this.blinkNum % 2 == 0;
+
+            if(!this.exploding){
+                if (this.blinkOn) {
+                    context.save();
+                    context.translate(this.position.x, this.position.y); //rotate the direction of the ship to face up
+                    context.rotate(this.angle); // set the rotation angle
+                    context.drawImage(this.image, 
+                        this.sw * this.frame.x, this.sh * this.frame.y, 
+                        this.sw, this.sh,
+                    -this.radius, -this.radius, 
+                    this.width, this.height); 
+                    context.restore();
                 }
-            }
-            // //continue game play blinking if you explode
-            if(this.health <= 0 && this.lives > 0){
-                //make the ship explode;
-                this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
-                this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
-                this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
-                if(this.lives > 0 ){
-                    this.health = 100; //reset health of ship
+                if (this.blinkNum > 0) {
+                    this.blinkTime--;
+                    if (this.blinkTime == 0) {
+                        this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS);
+                        this.blinkNum--;
+                    }
                 }
-            }
-            // move the ship
-            this.position.x += this.thrust.x;
-            this.position.y += this.thrust.y; 
-            //draw laser on the screen
-            this.drawLaser(context);
+                // //continue game play blinking if you explode
+                if(this.health <= 0 && this.lives > 0){
+                    //make the ship explode;
+                    this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
+                    this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
+                    this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
+                    if(this.lives > 0 ){
+                        this.health = 100; //reset health of ship
+                    }
+                }
+                // move the ship
+                this.position.x += this.thrust.x;
+                this.position.y += this.thrust.y;   
+            
+                //draw laser on the screen
+                this.drawLaser(context);
 
-            // this.pan(camera) //note should only pan when thrusting
-            this.updateHitCircle();
-            this.updateCameraBox();
-            this.handleScreen(camera) 
-        }
-      
+                if(playerIsInSpace === false && isOnPlanet === false){
+                       // this.pan(camera) //note should only pan when thrusting
+                    this.updateHitCircle();
+                    this.updateCameraBox();
+                    this.handleScreen() 
+                    this.shouldPanCamera(camera)                
+                }          
+            }
+        }    
     }
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{
@@ -176,26 +179,15 @@ class Spaceship{
             }
         })
     }
-    // resetSpaceship(){
-    //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
-    //     this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
-    //     this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
-    //     this.health = 100; //reset health of ship
-    //     this.lives = this.game.data.GAME_LIVES;
-    //     this.position ={
-    //         x: this.game.width / 2, //position the ship at the center of x axis
-    //         y: this.game.height / 2, //position the ship at the center of y axis
-    //     }  
-    // }
     animateFrames(deltaTime){
-        if (this.thrusting){
-            if(this.ship.image.complete){//go through an animation frame to make the ship look like it is spiraling while thrusting
+        if (this.thrusting ){
+            if(this.image.complete){//go through an animation frame to make the ship look like it is spiraling while thrusting
                 if(this.frameTimer > this.frameInterval){ // animate player sprite //used to slow down the speed of the animation between frames
-                    if(this.ship.frame.x < this.maxFrames){
-                        this.ship.frame.x++;
+                    if(this.frame.x < this.maxFrames){
+                        this.frame.x++;
                     }
                     else{
-                        this.ship.frame.x = 0;
+                        this.frame.x = 0;
                     }
                     this.frameTimer = 0;
                 }
@@ -207,8 +199,8 @@ class Spaceship{
         else{
             //go reverse through an animation frame to make the ship look like it is reverse spiraling when not thrusting
             if(this.frameTimer > this.frameInterval){//used to slow down the speed of the animation between frames
-                if(this.ship.frame.x !==0){
-                    this.ship.frame.x--;
+                if(this.frame.x !==0){
+                    this.frame.x--;
                 }
                 // this.frameTimer = 0; 
             }
@@ -227,7 +219,7 @@ class Spaceship{
         context.translate(this.position.x , this.position.y);
         context.rotate(this.angle);
         // Translate context to bottom of image
-        context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the spaceship
+        context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the space ship
         // Draw thruster
         context.drawImage(this.thruster.image, -this.thruster.width / 2, -this.thruster.height / 2, this.thruster.width, this.thruster.height);
         context.restore();
@@ -262,22 +254,22 @@ class Spaceship{
     drawExplodingShip(context){
         context.beginPath()
         context.fillStyle = "darkred";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 1.4, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 1.4, 0 ,degToRad(360))
         context.fill()
         context.fillStyle = "red";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 1.1, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 1.1, 0 ,degToRad(360))
         context.fill()
         context.beginPath()
         context.fillStyle = "orange";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 0.8, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 0.8, 0 ,degToRad(360))
         context.fill()
         context.beginPath()
         context.fillStyle = "yellow";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 0.5, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 0.5, 0 ,degToRad(360))
         context.fill()
         context.beginPath()
         context.fillStyle = "white";
-        context.arc(this.position.x,this.position.y,this.ship.radius * 0.2, 0 ,degToRad(360))
+        context.arc(this.position.x,this.position.y,this.radius * 0.2, 0 ,degToRad(360))
         context.fill()
     }
     drawLaser(context){
@@ -338,7 +330,7 @@ class Spaceship{
                 x: this.position.x ,
                 y: this.position.y,
             },
-            radius: this.ship.width/3,
+            radius: this.width/3,
         }     
     }
     updateCameraBox(){
@@ -351,118 +343,94 @@ class Spaceship{
             height: this.camRadius * 2,
         } 
     }
-    pan(camera){
-        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
-        const cameraBoxLeftSide = this.cameraBox.position.x;
-        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.width;
-        const cameraBoxTop = this.cameraBox.position.y;
-        //right
-        if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
-            camera.position.x -= this.thrust.x  //translate left
-            // console.log("Rgo")
-        }
-       //left
-        if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
-            camera.position.x -= this.thrust.x  // translate right
-            // console.log("Lgo")
-        }     
-        //bottom
-        if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
-                camera.position.y -= this.thrust.y  //translate up
-                // console.log("Bgo")
-        }
-        //top
-        if(cameraBoxTop + this.thrust.y <= Math.abs(camera.position.y)){
-            camera.position.y -= this.thrust.y  // translate down;  note: this.velocity is negative, so two negatives = positive
-            // console.log("Tgo")
-        }
+    handleScreen(){
+        //rightside of handlescreen
+        if(this.hitCircle.position.x  + this.hitCircle.radius + this.thrust.x >= this.game.universe.width/2 ){
+            this.thrust.x = 0;
+            this.position.x = this.game.universe.width/2 - this.width;
+            
+            console.log("reach the end width")
 
-        ////////////////////////////////////// temporary fix /////////////////////////////////////
-        if(cameraBoxRightSide + this.thrust.x >= this.game.width){ //prevent panning beyond width of background
-            return
         }
-         
-        if(cameraBoxLeftSide + this.thrust.x <= 0){ //prevent panning beyond 0
-            return
-        }
-        if(cameraBoxTop + this.thrust.y <= 0){ //prevent panning beyond 0
-            return
-        }
-        if(cameraBoxBottom + this.thrust.y >= this.game.height){ //prevent panning beyond width of background
-            return
-        }
-    }
+        //leftside of the handlescreen
+        else if(this.hitCircle.position.x + this.thrust.x <= 0  - this.game.universe.width/2){
+            this.thrust.x = 0;
+            this.position.x = this.width - this.game.universe.width/2 
+            console.log("reach the start")
+            //need to set the right bounds for player and ship
     
-    handleScreen(camera){ 
-        //rightside of screen
-        if(this.position.x  + this.hitCircle.radius + this.thrust.x >= this.game.width ){
-            this.position.x = this.game.width - this.hitCircle.radius;
-            this.thrust.x = 0;
-            this.revThruster.x = 0;
         }
-        //leftside of the screen
-        else if(this.position.x + this.thrust.x <= 0  ){
-            this.position.x = 0 + Math.abs(this.thrust.x);
-            this.thrust.x = 0;
-            this.revThruster.x = 0;   
-        }
-        //bottom of the screen
-        if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.height){
-            this.position.y = this.game.height - this.hitCircle.radius
+           //bottom of the screen
+           else if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.universe.height/2){
             this.thrust.y = 0;
-            this.revThruster.y = 0;    
+            this.position.y = this.game.universe.height/2 - this.hitCircle.radius
+            console.log("reach the end height")
+      
         }
         //top of the screen
-        else if(this.position.y + this.thrust.y <= 0){
-            this.position.y = 0 + Math.abs(this.thrust.y); //has small bug
+        else if(this.position.y + this.thrust.y <= 0 - this.game.universe.height/2){
             this.thrust.y = 0;
-            this.revThruster.y = 0;   
-        }
-        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
+            this.position.y = this.height - this.game.universe.height/2 ; //has small bug
+            console.log("reach top")
+        }   
+    }  
+    shouldPanCamera(camera){ 
         const cameraBoxLeftSide = this.cameraBox.position.x;
-        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.width;
+        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
         const cameraBoxTop = this.cameraBox.position.y;
+        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.height;
         
-        //////////////////////////////// temporary fix /////////////////////////////////////
-        if(cameraBoxRightSide + this.thrust.x >= this.game.width){ //prevent panning beyond width of background
+        //prevent panning beyond 0
+        if(cameraBoxLeftSide + this.thrust.x <= 0 - this.game.universe.width/2){ 
+            console.log("reach start post")
             return
         }
-        if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
-            camera.position.x -= this.thrust.x  //translate left
-            // console.log("Rgo")
-        }
-        //left
-        if(cameraBoxLeftSide + this.thrust.x <= 0){ //prevent panning beyond 0
-            return
-        }
-        if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
+        //left panRight
+        else if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
-            // console.log("Lgo")
+            console.log("Lgo")
         }  
-        //top
-        if(cameraBoxTop + this.thrust.y <= 0){ //prevent panning beyond 0
+        //prevent panning beyond width of background
+        if(cameraBoxRightSide + this.thrust.x >= this.game.universe.width/2){ 
+            console.log("end of goal post")
             return
         }
-        if(cameraBoxTop + this.thrust.y <= Math.abs(camera.position.y)){
+        //right panLeft
+        else if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
+            camera.position.x -= this.thrust.x  //translate left
+            console.log("Rgo")
+        }
+
+        //prevent panning  Top beyond 0
+        if(cameraBoxTop + this.thrust.y <= 0 - this.game.universe.height/2){
+            console.log("reach top post")
+            return
+        }
+        //top pandown
+        else if(cameraBoxTop + this.thrust.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.thrust.y  // translate down;  note: this.velocity is negative, so two negatives = positive
-            // console.log("Tgo")
+            console.log("Tgo")
         }
-        //bottom
-        if(cameraBoxBottom + this.thrust.y >= this.game.height){ //prevent panning beyond width of background
+    
+        //prevent panning beyond bottom of background
+        if(cameraBoxBottom + this.thrust.y >= this.game.universe.height/2){ 
+            console.log("goal post bottom")
             return
         }
-        if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+        //bottom panUp
+        else if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.thrust.y  //translate up
-            // console.log("Bgo")
-        }        
+            console.log("Bgo")
+        }
+     
     } 
     initLasers(){
         this.lasers =[];
         for(let i = 0; i < this.game.data.SPACESHIP_LASER_MAX; i++){
             let angle = this.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
             const laser = { //the location you are shooting from is the nose of the ship
-                x: this.position.x + this.ship.radius * Math.cos(angle), // from center of the ship draw a line
-                y: this.position.y + this.ship.radius * Math.sin(angle),
+                x: this.position.x + this.radius * Math.cos(angle), // from center of the ship draw a line
+                y: this.position.y + this.radius * Math.sin(angle),
                 velocity: {
                     x: this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
                     y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,
@@ -477,3 +445,19 @@ class Spaceship{
 }
 
 export default Spaceship;
+
+
+
+
+
+   // resetSpaceship(){
+    //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
+    //     this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
+    //     this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
+    //     this.health = 100; //reset health of ship
+    //     this.lives = this.game.data.GAME_LIVES;
+    //     this.position ={
+    //         x: this.game.width / 2, //position the ship at the center of x axis
+    //         y: this.game.height / 2, //position the ship at the center of y axis
+    //     }  
+    // }

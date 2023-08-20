@@ -9,7 +9,8 @@ export default class SpaceshipIDLE extends State{
         this.game.spaceship.thrusting = false;
         this.game.spaceship.accelartionTime = 0;
         this.game.spaceship.decelerationTime = 0;
-       
+        // this.game.universe.velocity.x = 0; 
+        // this.game.universe.velocity.y = 0; 
     }
     handleInput(input, context){
 
