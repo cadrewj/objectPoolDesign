@@ -5,7 +5,7 @@ import {Player_Falling_Left, Player_Falling_Right} from "../states/PlayerBehavio
 import {Player_Sheild_Left, Player_Sheild_Right} from "../states/PlayerBehavior/PlayerSheild.js";
 import {Player_Shell_Smash_Left, Player_Shell_Smash_Right} from "../states/PlayerBehavior/PlayerShellSmash.js";
 import { Player_Collision_Behavior_Left, Player_Collision_Behavior_Right } from "../states/PlayerBehavior/PlayerCollisionBehavior.js";
-import { Player_Spacewalk_Left, Player_Spacewalk_Right, Player_Spacewalk_Up, Player_Spacewalk_Down } from "../states/PlayerBehavior/PlayerSpaceWalk.js";
+import { Player_Spacewalk_Left, Player_Spacewalk_Right, Player_Spacewalk_Up, Player_Spacewalk_Down } from "../states/PlayerBehavior/PlayerSpacewalk.js"
 import { Player_Spacewalk_Standing_Left, Player_Spacewalk_Standing_Right, Player_Spacewalk_Standing_Up, Player_Spacewalk_Standing_Down } from "../states/PlayerBehavior/PlayerSpaceStanding.js";
 
 import { CollisionAnimation } from "./collisionAnimation.js";

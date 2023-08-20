@@ -6,6 +6,7 @@ export class Player_Spacewalk_Standing_Left extends State{
         super("PLAYER SPACEWALK STANDING LEFT", game); // used to access and call method on object's parent. meaning everything in their constructor; 
         this.game = game
         this.sign = 1;
+        this.keyPressed = false;
     }
     enter(){
         this.game.player.frame.y = 7; //the row position of the player image you want to use
@@ -16,14 +17,9 @@ export class Player_Spacewalk_Standing_Left extends State{
         this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){ 
-        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
-            // && this.game.player.playerIsInSpace === true
-            && collisionCircleDetection(this.game.player, this.game.spaceship)){
-            console.log("can enter")
-            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
-
-        }
-        else if(this.game.player.playerIsInSpace){
+        //toggle in and out of the ship
+        this.toggleInAndOutSpaceship(input);
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT)
             }
@@ -41,7 +37,22 @@ export class Player_Spacewalk_Standing_Left extends State{
                 
             }
         }
-      
+    }
+    toggleInAndOutSpaceship(input){
+        //toggle in and out of the ship
+        if (input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP &&
+            collisionCircleDetection(this.game.player, this.game.spaceship)) {
+            // console.log("can enter");
+
+            // Check if the key was not previously pressed
+            if (!this.keyPressed) {
+                this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+                this.keyPressed = true; // Mark the key as pressed
+            }
+        } else {
+            // Reset the keyPressed flag when the key is released
+            this.keyPressed = false;
+        }
     }
 }
 
@@ -50,6 +61,7 @@ export class Player_Spacewalk_Standing_Right extends State{
         super("PLAYER SPACEWALK STANDING RIGHT", game);
         this.game = game
         this.sign = -1;
+        this.keyPressed = false;
     }
     enter(){
         this.game.player.frame.y = 6;  //the row position of the player image you want to use
@@ -61,15 +73,8 @@ export class Player_Spacewalk_Standing_Right extends State{
        
     }
     handleInput(input, camera){
-      
-        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
-            // && this.game.player.playerIsInSpace === true
-            && collisionCircleDetection(this.game.player, this.game.spaceship)){
-            console.log("can enter")
-            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
-        }
-       
-        else if(this.game.player.playerIsInSpace){
+        this.toggleInAndOutSpaceship(input)
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT)
             }
@@ -84,6 +89,22 @@ export class Player_Spacewalk_Standing_Right extends State{
             }
         }
     }
+    toggleInAndOutSpaceship(input){
+        //toggle in and out of the ship
+        if (input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP &&
+            collisionCircleDetection(this.game.player, this.game.spaceship)) {
+            // console.log("can enter");
+
+            // Check if the key was not previously pressed
+            if (!this.keyPressed) {
+                this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+                this.keyPressed = true; // Mark the key as pressed
+            }
+        } else {
+            // Reset the keyPressed flag when the key is released
+            this.keyPressed = false;
+        }
+    }
 }
 
 export class Player_Spacewalk_Standing_Up extends State{
@@ -91,6 +112,7 @@ export class Player_Spacewalk_Standing_Up extends State{
         super("PLAYER SPACEWALK STANDING UP", game);
         this.game = game
         this.sign = -1;
+        this.keyPressed = false;
     }
     enter(){
         this.game.player.frame.y = 6;  //the row position of the player image you want to use
@@ -101,13 +123,8 @@ export class Player_Spacewalk_Standing_Up extends State{
         this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){
-        if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
-            // && this.game.player.playerIsInSpace === true
-            && collisionCircleDetection(this.game.player, this.game.spaceship)){
-            console.log("can enter")
-            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
-        }
-        else if(this.game.player.playerIsInSpace){
+     this.toggleInAndOutSpaceship(input);
+        if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_SPACEWALK_LEFT); //set the player current state to Running left         
             }
@@ -123,6 +140,22 @@ export class Player_Spacewalk_Standing_Up extends State{
             }
         }
     }
+    toggleInAndOutSpaceship(input){
+           //toggle in and out of the ship
+           if (input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP &&
+            collisionCircleDetection(this.game.player, this.game.spaceship)) {
+            // console.log("can enter");
+
+            // Check if the key was not previously pressed
+            if (!this.keyPressed) {
+                this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+                this.keyPressed = true; // Mark the key as pressed
+            }
+            } else {
+            // Reset the keyPressed flag when the key is released
+            this.keyPressed = false;
+        }
+    }
 }
 
 export class Player_Spacewalk_Standing_Down extends State{
@@ -130,6 +163,7 @@ export class Player_Spacewalk_Standing_Down extends State{
         super("PLAYER SPACEWALK STANDING DOWN", game); // used to access and call method on object's parent. meaning everything in their constructor; 
         this.game = game
         this.sign = 1;
+        this.keyPressed = false;
     }
     enter(){
         this.game.player.frame.y = 7; //the row position of the player image you want to use
@@ -140,14 +174,8 @@ export class Player_Spacewalk_Standing_Down extends State{
         this.game.universe.velocity.y = 0;
     }
     handleInput(input, camera){ 
-         if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP
-            // && this.game.player.playerIsInSpace === true
-            && collisionCircleDetection(this.game.player, this.game.spaceship)){
-            console.log("can enter")
-            this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
-        }
-       
-        else if(this.game.player.playerIsInSpace){
+        this.toggleInAndOutSpaceship(input)
+        if(this.game.player.playerIsInSpace){
             if(this.game.player.playerIsInSpace){
                 if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                     this.game.player.setState(states.PLAYER_SPACEWALK_LEFT); //set the player current state to Running left         
@@ -162,6 +190,22 @@ export class Player_Spacewalk_Standing_Down extends State{
                     this.game.player.setState(states.PLAYER_SPACEWALK_DOWN); //set the player current state to Running left   
                 }
             }
+        }
+    }
+    toggleInAndOutSpaceship(input){
+        //toggle in and out of the ship
+        if (input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP &&
+            collisionCircleDetection(this.game.player, this.game.spaceship)) {
+            // console.log("can enter");
+
+            // Check if the key was not previously pressed
+            if (!this.keyPressed) {
+                this.game.player.playerIsInSpace = !this.game.player.playerIsInSpace;
+                this.keyPressed = true; // Mark the key as pressed
+            }
+        } else {
+            // Reset the keyPressed flag when the key is released
+            this.keyPressed = false;
         }
     }
 }
