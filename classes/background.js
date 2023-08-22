@@ -55,18 +55,29 @@ export class Stars extends Background{
             this.stars.push(newStar);
         }
     }
-    update(context, deltaTime){
-            // ctx.fillStyle = data.STAR_COLOR;
-            for(let i = 0; i < this.stars.length; i++){
-                //draw all the stars in the array position.
-                this.draw(context, this.stars[i].position.x, this.stars[i].position.y, this.stars[i].radius / degToRad(100))
-                
-                //update the position of the star
-                this.stars[i].position.x += this.stars[i].velocity.x * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
-                this.stars[i].position.y += this.stars[i].velocity.y * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
-                handleEdgeOfScreen(this.stars[i], this.game.width, this.game.height);
+    update(context, deltaTime, spaceship) {
+        for (let i = 0; i < this.stars.length; i++) {
+            // Draw all the stars in the array position.
+            this.draw(context, this.stars[i].position.x, this.stars[i].position.y, this.stars[i].radius / degToRad(100));
+    
+            // Update the position of the star
+            if (spaceship.thrusting && ((this.stars[i].velocity.y || this.stars[i].velocity.x) < this.speed * 3)) {
+                // Increase star velocity while thrusting
+                this.stars[i].velocity.x *= 1.1;
+                this.stars[i].velocity.y *= 1.1;
+            } else {
+                // Gradually reduce velocity back to original when not thrusting
+                if (this.stars[i].originalVelocity) {
+                    this.stars[i].velocity.x += (this.stars[i].originalVelocity.x - this.stars[i].velocity.x) * 0.02; // You can adjust the interpolation factor
+                    this.stars[i].velocity.y += (this.stars[i].originalVelocity.y - this.stars[i].velocity.y) * 0.02; // You can adjust the interpolation factor
+                }
             }
+            this.stars[i].position.x += this.stars[i].velocity.x * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
+            this.stars[i].position.y += this.stars[i].velocity.y * deltaTime * this.game.data.STAR_VELOCITY_RATIO;
+            // Stars pop up on the opposite side of the screen
+            handleEdgeOfScreen(this.stars[i], this.game.width, this.game.height);
         }
+    } 
     
     draw(context, x,y,radius){ // First star with radius size of 0.005  // size = 500 * 0.018
             // Top triangle
@@ -121,7 +132,11 @@ export class Stars extends Background{
             velocity:{
                 x: starVelocityX * speedMult /this.game.data.FPS,
                 y: starVelocityY * speedMult  /this.game.data.FPS, 
-            }    
+            },
+            originalVelocity:{
+                x: starVelocityX * speedMult /this.game.data.FPS,
+                y: starVelocityY * speedMult  /this.game.data.FPS, 
+            }   
         }
         return this.star;
     }

@@ -7,7 +7,6 @@
     /* google fonts */
     font-family: 'Creepster', cursive;
     font-family: 'Nanum Pen Script', cursive;
-    font-family: 'Press Start 2P', cursive;
     font-family: 'Space Grotesk', sans-serif;
 
 }
@@ -28,13 +27,12 @@ body{
 
 }
 #loading{
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Creepster', cursive;
     position: absolute;
-    top: 30%; /* offset top an left from the edge of the image*/
-    left: 50%;
+    bottom: 4%; /* offset top an left from the edge of the image*/
+    left: 1%;
     text-align: center;
-    font-size: 40px;
-    transform: translate(-50%,-30%); /* used to re align to the absoulte center after offsetting it from the top left hand corner 50%*/
+    font-size: 35px;
 }
 
 img{

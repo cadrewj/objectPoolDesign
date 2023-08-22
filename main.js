@@ -6,10 +6,13 @@ import { gameKeys } from "./data/gameKeys.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
+
 import {Background, Stars} from "./classes/background.js";
 import { Universe } from "./classes/universe.js";
-import {ClimbingEnemy, FlyingEnemy, GroundEnemy} from "./classes/enemy.js";
+import { SolarSystem } from "./classes/solarSystem.js";
 import { Asteroid } from "./classes/asteroids.js";
+import {ClimbingEnemy, FlyingEnemy, GroundEnemy} from "./classes/enemy.js";
+
 import { Food } from "./classes/reward.js";
 import { Oxygen } from "./classes/reward.js";
 import { PhantomTriangle } from "./classes/reward.js";
@@ -53,7 +56,7 @@ Set this property to false to retain the pixels' sharpness.*/
 const loading = document.querySelector("#loading")
 loading.style.display = "none";
 export let stopGame;
-export let game;
+let game;
 
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
@@ -62,7 +65,6 @@ addEventListener("load",()=>{
     class Game{
         constructor(width, height, miniMapWidth, miniMapHeight, data){
             this.gameOver = false;
-
             this.width = width;
             this.height = height;
             this.miniMapWidth = miniMapWidth;
@@ -76,6 +78,7 @@ addEventListener("load",()=>{
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
             this.universe = new Universe(this);
+            this.solarSystem = new SolarSystem(this)
             this.camera = {
                 position: {
                     x: 0,
@@ -105,7 +108,7 @@ addEventListener("load",()=>{
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
             this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
                 this.spaceship.position.x,
-                this.spaceship.position.y
+                this.spaceship.position.y,
             );
             this.debug = true;
             this.states = [ 
@@ -128,24 +131,26 @@ addEventListener("load",()=>{
                 this.enemies.push(enemyTypes[selectedEnemy]);  
             }
         }
-        render(context, miniMapCtx, deltaTime, input){     
-            // this.gameFrames++;
+        render(context, miniMapCtx, deltaTime, input){    
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
 
             if(!this.player.isOnPlanet){
                 this.universe.draw(context);
-                // this.universe.update();
-                this.stars.update(context, deltaTime);
             }
             else{
                 this.background.update(context);
             }
-            context.restore()
-            this.currentState.handleInput(input, context);       //set the game state
+            // Translate back to the original position for elements that shouldn't move
+            context.save();
+            context.translate(-this.camera.position.x, -this.camera.position.y);
 
-            context.save()
-            context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
+            // Elements that should not be translated
+            this.currentState.handleInput(input, context);
+            this.stars.update(context, deltaTime, this.spaceship);
+
+            context.restore(); // Restore the translation
+
             //draw in game rewards
             if(this.rewards.length > 0){
                 this.rewards.forEach((reward)=>{
@@ -158,6 +163,9 @@ addEventListener("load",()=>{
             //draw asteroid
             this.asteroid.draw(context);
             this.asteroid.update(this.spaceship);
+
+            //draw planets
+            this.solarSystem.draw(context)
 
             //handle enemies
             if(this.enemyTimer > this.enemyInterval){
@@ -222,9 +230,11 @@ addEventListener("load",()=>{
 
             //draw player user interface
             this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
-            this.miniMapUI.update(this.player.position.x, this.player.position.y,
-                this.spaceship.position.x, this.spaceship.position.y);
+          
             this.miniMapUI.draw(miniMapCtx);
+            this.miniMapUI.update(this.player.position.x, this.player.position.y,
+                this.spaceship.position.x, this.spaceship.position.y, this.planets
+                );
 
             const fuelPercentage = this.spaceship.fuel / 100;
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.width * 2.5, this.height - 20);
@@ -265,7 +275,7 @@ addEventListener("load",()=>{
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
             this.universe = new Universe(this, ctx);
-
+            this.solarSystem = new SolarSystem(this)
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
 
@@ -305,13 +315,17 @@ addEventListener("load",()=>{
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
             this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
                 this.spaceship.position.x,
-                this.spaceship.position.y
+                this.spaceship.position.y,
+               
             );
             this.inventory = []; // 
+
+
+          
         }
     }
     
-    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
+    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
     let lastTime = 0;
     // console.log(innerWidth, innerHeight) 
     function animate(timeStamp){ //note: timeStamp is automatically generated.
@@ -333,7 +347,7 @@ addEventListener("resize",()=>{
     canvas.width = innerWidth;
     canvas.height = innerHeight;
     game.width = canvas.width;
-    game.health = canvas.height;
+    game.height = canvas.height;
 
 })
 

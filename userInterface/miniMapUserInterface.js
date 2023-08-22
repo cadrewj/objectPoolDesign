@@ -38,6 +38,7 @@ export class MiniMapUserInterface{
             this.shipSize,
             this.shipSize
         );
+        
 
         //add text information to the map
         miniMapCtx.fillStyle = "rgb(255,255,255)";
@@ -45,14 +46,14 @@ export class MiniMapUserInterface{
         miniMapCtx.font =  '10px Space Grotesk'//'10px Helvetica';
         
         //player info
-        miniMapCtx.fillText(`(${this.playerX.toFixed(0)}, ${this.playerY.toFixed(0)})`, 
-        this.playerX * this.mapScale - this.playerSize / 2, 
-        this.playerY * this.mapScale - this.playerSize / 2)
+        // miniMapCtx.fillText(`(${this.playerX.toFixed(0)}, ${this.playerY.toFixed(0)})`, 
+        // this.playerX * this.mapScale - this.playerSize / 2, 
+        // this.playerY * this.mapScale - this.playerSize / 2)
 
-        //ship info
-        miniMapCtx.fillText(`(${this.shipX.toFixed(0)}, ${this.shipY.toFixed(0)})`, 
-        this.shipX * this.mapScale - this.shipSize / 2, 
-        this.shipY * this.mapScale - this.shipSize / 2)
+        // //ship info
+        // miniMapCtx.fillText(`(${this.shipX.toFixed(0)}, ${this.shipY.toFixed(0)})`, 
+        // this.shipX * this.mapScale - this.shipSize / 2, 
+        // this.shipY * this.mapScale - this.shipSize / 2)
     }
     update(playerX, playerY, shipX, shipY){
         // set the new player position
@@ -61,6 +62,6 @@ export class MiniMapUserInterface{
         
         // set the new ship position
         this.shipX =  shipX + this.gameWidth/2;
-        this.shipY = shipY + this.gameHeight/2;
+        this.shipY = shipY + this.gameHeight/2; 
     }
 }

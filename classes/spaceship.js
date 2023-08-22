@@ -60,6 +60,7 @@ class Spaceship{
         this.rotation = 0;
         this.angle = 0;
         this.thrusting = false;
+        this.revThrusting = false;
         this.thrust = { x: 0, y: 0 }; //used to calulate the trusting speed and increase it over time
 
         this.blinkOn;
@@ -349,14 +350,14 @@ class Spaceship{
             this.thrust.x = 0;
             this.position.x = this.game.universe.width/2 - this.width;
             
-            console.log("reach the end width")
+            // console.log("reach the end width")
 
         }
         //leftside of the handlescreen
         else if(this.hitCircle.position.x + this.thrust.x <= 0  - this.game.universe.width/2){
             this.thrust.x = 0;
             this.position.x = this.width - this.game.universe.width/2 
-            console.log("reach the start")
+            // console.log("reach the start")
             //need to set the right bounds for player and ship
     
         }
@@ -364,14 +365,14 @@ class Spaceship{
            else if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.universe.height/2){
             this.thrust.y = 0;
             this.position.y = this.game.universe.height/2 - this.hitCircle.radius
-            console.log("reach the end height")
+            // console.log("reach the end height")
       
         }
         //top of the screen
         else if(this.position.y + this.thrust.y <= 0 - this.game.universe.height/2){
             this.thrust.y = 0;
             this.position.y = this.height - this.game.universe.height/2 ; //has small bug
-            console.log("reach top")
+            // console.log("reach top")
         }   
     }  
     shouldPanCamera(camera){ 
@@ -382,45 +383,45 @@ class Spaceship{
         
         //prevent panning beyond 0
         if(cameraBoxLeftSide + this.thrust.x <= 0 - this.game.universe.width/2){ 
-            console.log("reach start post")
+            // console.log("reach start post")
             return
         }
         //left panRight
         else if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
-            console.log("Lgo")
+            // console.log("Lgo")
         }  
         //prevent panning beyond width of background
         if(cameraBoxRightSide + this.thrust.x >= this.game.universe.width/2){ 
-            console.log("end of goal post")
+            // console.log("end of goal post")
             return
         }
         //right panLeft
         else if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
-            console.log("Rgo")
+            // console.log("Rgo")
         }
 
         //prevent panning  Top beyond 0
         if(cameraBoxTop + this.thrust.y <= 0 - this.game.universe.height/2){
-            console.log("reach top post")
+            // console.log("reach top post")
             return
         }
         //top pandown
         else if(cameraBoxTop + this.thrust.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.thrust.y  // translate down;  note: this.velocity is negative, so two negatives = positive
-            console.log("Tgo")
+            // console.log("Tgo")
         }
     
         //prevent panning beyond bottom of background
         if(cameraBoxBottom + this.thrust.y >= this.game.universe.height/2){ 
-            console.log("goal post bottom")
+            // console.log("goal post bottom")
             return
         }
         //bottom panUp
         else if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.thrust.y  //translate up
-            console.log("Bgo")
+            // console.log("Bgo")
         }
      
     } 
