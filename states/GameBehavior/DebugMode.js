@@ -10,8 +10,10 @@ export default class DebugMode extends State{
     enter(){
         this.game.debug = !this.game.debug;
     }
-    handleInput(input, context){
+    handleInput(input, context){   
         if(this.game.debug){ //used for testing spaceship
+            context.save()
+            context.translate(this.game.camera.position.x, this.game.camera.position.y)
             context.beginPath()
             context.fillStyle = "rgba(234, 233, 0, 0.1)";
             context.fillRect(this.game.spaceship.cameraBox.position.x, this.game.spaceship.cameraBox.position.y, this.game.spaceship.cameraBox.width, this.game.spaceship.cameraBox.height);
@@ -44,8 +46,11 @@ export default class DebugMode extends State{
                     context.stroke();
                 // }
             });
+            context.restore();
           
         }
+        
+        
     }
 
 }

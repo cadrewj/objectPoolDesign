@@ -22,8 +22,8 @@ class Spaceship{
         this.currentState = this.states[6]; //state idle
 
         this.position ={
-            x: this.game.width / 2, //position the ship at the center of x axis
-            y: this.game.height / 2, //position the ship at the center of y axis
+            x: innerHeight/2 , //position the ship at the center of x axis
+            y: innerWidth/2, //position the ship at the center of y axis
         }  
         this.image =  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
         this.width = this.game.data.SPACESHIP_SIZE,
@@ -152,7 +152,6 @@ class Spaceship{
                 this.drawLaser(context);
 
                 if(playerIsInSpace === false && isOnPlanet === false){
-                       // this.pan(camera) //note should only pan when thrusting
                     this.updateHitCircle();
                     this.updateCameraBox();
                     this.handleScreen() 
@@ -175,7 +174,6 @@ class Spaceship{
                     if(this.lives < this.game.data.GAME_LIVES){
                         this.lives++;
                     }
-                    // console.log(this.fuel, this.health, this.lives)
                 }
             }
         })
@@ -217,7 +215,7 @@ class Spaceship{
     drawThruster(context){
         context.save();
         // Translate context to center of image
-        context.translate(this.position.x , this.position.y);
+        context.translate(this.position.x, this.position.y);
         context.rotate(this.angle);
         // Translate context to bottom of image
         context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the space ship
@@ -350,14 +348,14 @@ class Spaceship{
             this.thrust.x = 0;
             this.position.x = this.game.universe.width/2 - this.width;
             
-            // console.log("reach the end width")
+            console.log("reach the end width")
 
         }
         //leftside of the handlescreen
         else if(this.hitCircle.position.x + this.thrust.x <= 0  - this.game.universe.width/2){
             this.thrust.x = 0;
             this.position.x = this.width - this.game.universe.width/2 
-            // console.log("reach the start")
+            console.log("reach the start")
             //need to set the right bounds for player and ship
     
         }
@@ -365,14 +363,14 @@ class Spaceship{
            else if(this.position.y + this.hitCircle.radius + this.thrust.y >= this.game.universe.height/2){
             this.thrust.y = 0;
             this.position.y = this.game.universe.height/2 - this.hitCircle.radius
-            // console.log("reach the end height")
+            console.log("reach the end height")
       
         }
         //top of the screen
         else if(this.position.y + this.thrust.y <= 0 - this.game.universe.height/2){
             this.thrust.y = 0;
             this.position.y = this.height - this.game.universe.height/2 ; //has small bug
-            // console.log("reach top")
+            console.log("reach top")
         }   
     }  
     shouldPanCamera(camera){ 
@@ -383,45 +381,45 @@ class Spaceship{
         
         //prevent panning beyond 0
         if(cameraBoxLeftSide + this.thrust.x <= 0 - this.game.universe.width/2){ 
-            // console.log("reach start post")
+            console.log("reach start post")
             return
         }
         //left panRight
         else if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
-            // console.log("Lgo")
+            console.log("Lgo")
         }  
         //prevent panning beyond width of background
         if(cameraBoxRightSide + this.thrust.x >= this.game.universe.width/2){ 
-            // console.log("end of goal post")
+            console.log("end of goal post")
             return
         }
         //right panLeft
         else if(cameraBoxRightSide + this.thrust.x >= this.game.width + Math.abs(camera.position.x)){ //pan when the right side of the camera collide   
             camera.position.x -= this.thrust.x  //translate left
-            // console.log("Rgo")
+            console.log("Rgo")
         }
 
         //prevent panning  Top beyond 0
         if(cameraBoxTop + this.thrust.y <= 0 - this.game.universe.height/2){
-            // console.log("reach top post")
+            console.log("reach top post")
             return
         }
         //top pandown
         else if(cameraBoxTop + this.thrust.y <= Math.abs(camera.position.y)){
             camera.position.y -= this.thrust.y  // translate down;  note: this.velocity is negative, so two negatives = positive
-            // console.log("Tgo")
+            console.log("Tgo")
         }
     
         //prevent panning beyond bottom of background
         if(cameraBoxBottom + this.thrust.y >= this.game.universe.height/2){ 
-            // console.log("goal post bottom")
+            console.log("goal post bottom")
             return
         }
         //bottom panUp
         else if(cameraBoxBottom + this.thrust.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
             camera.position.y -= this.thrust.y  //translate up
-            // console.log("Bgo")
+            console.log("Bgo")
         }
      
     } 
@@ -446,19 +444,3 @@ class Spaceship{
 }
 
 export default Spaceship;
-
-
-
-
-
-   // resetSpaceship(){
-    //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
-    //     this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
-    //     this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
-    //     this.health = 100; //reset health of ship
-    //     this.lives = this.game.data.GAME_LIVES;
-    //     this.position ={
-    //         x: this.game.width / 2, //position the ship at the center of x axis
-    //         y: this.game.height / 2, //position the ship at the center of y axis
-    //     }  
-    // }

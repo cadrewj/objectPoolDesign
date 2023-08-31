@@ -2,15 +2,15 @@ export class Universe{
     constructor(game){
         this.image = document.querySelector("#bg")
         this.game = game;
-        this.width = 60000;
-        this.height = 60000;
+        this.width = 60000////innerWidth;
+        this.height = 60000//innerHeight;
         this.centerPoint = {
             x:this.width/2,
             y:this.height/2
         };
         this.position = {
-            x: -this.centerPoint.x,
-            y: -this.centerPoint.y,
+            x:-this.centerPoint.x,
+            y:-this.centerPoint.y,
         }
         this.velocity ={
             x: 0,

@@ -67,7 +67,7 @@ export default class SpaceshipShootLaser extends State{
             // console.log(burntFuel)
         }
         else if (this.game.spaceship.fuel <= 0){
-            console.log("cant shoot no fuel")
+            // console.log("cant shoot no fuel")
         }
     }
 }

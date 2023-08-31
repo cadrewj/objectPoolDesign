@@ -61,7 +61,7 @@ export class Stars extends Background{
             this.draw(context, this.stars[i].position.x, this.stars[i].position.y, this.stars[i].radius / degToRad(100));
     
             // Update the position of the star
-            if (spaceship.thrusting && ((this.stars[i].velocity.y || this.stars[i].velocity.x) < this.speed * 3)) {
+            if (spaceship.thrusting && ((this.stars[i].velocity.y || this.stars[i].velocity.x) < this.speed * 10)) {
                 // Increase star velocity while thrusting
                 this.stars[i].velocity.x *= 1.1;
                 this.stars[i].velocity.y *= 1.1;

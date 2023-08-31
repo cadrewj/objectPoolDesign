@@ -1,8 +1,5 @@
 import gameData from "./data/data.json" assert { type: "json" }
 import { gameKeys } from "./data/gameKeys.js";
-// import { REWARDS } from "./data/rewardData.js";
-
-// import Meteor from "./classes/meteor.js";
 import Spaceship from "./classes/spaceship.js";
 import InputHandler from "./classes/input.js";
 import Player from "./classes/player.js";
@@ -41,16 +38,7 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 miniMapCanvas.width = Math.floor(canvas.width * 0.18);
-miniMapCanvas.height = Math.floor(canvas.height * 0.18);
-// console.log(canvas.width * 0.18, canvas.height * 0.15)
-
-/*This property is useful for games and other apps that use pixel art. 
-When enlarging images, the default resizing algorithm will blur the pixels. 
-Set this property to false to retain the pixels' sharpness.*/
-// ctx.mozImageSmoothingEnabled = false;
-// ctx.webkitImageSmoothingEnabled = false;
-// ctx.msImageSmoothingEnabled = false;
-// ctx.imageSmoothingEnabled = false;
+miniMapCanvas.height = Math.floor(canvas.width * 0.18);
 
 //define the loading screen area and set it value to zero since the screen is already loaded
 const loading = document.querySelector("#loading")
@@ -72,17 +60,17 @@ addEventListener("load",()=>{
 
             this.groundMargin = 0.01;
             this.data = data;
-            
+            this.universe = new Universe(this);
             this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
-            this.universe = new Universe(this);
+            
             this.solarSystem = new SolarSystem(this)
             this.camera = {
                 position: {
-                    x: 0,
-                    y: -0,
+                    x: this.spaceship.position.x,
+                    y: this.spaceship.position.y,
                 }
             }
             this.stars = new Stars(this.width, this.height, this.data);
@@ -106,10 +94,7 @@ addEventListener("load",()=>{
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
-                this.spaceship.position.x,
-                this.spaceship.position.y,
-            );
+            this.miniMapUI = new MiniMapUserInterface(this);
             this.debug = true;
             this.states = [ 
                 new StartNewGame(this), 
@@ -120,8 +105,6 @@ addEventListener("load",()=>{
             this.enemyTimer;
             this.enemyInterval;
             this.enemies = [];
-            
-            // this.coins = new Coins(this.width, this.height, this.data);  
             this.inventory = [];
         }
         addEnemy(){
@@ -141,16 +124,22 @@ addEventListener("load",()=>{
             else{
                 this.background.update(context);
             }
-            // Translate back to the original position for elements that shouldn't move
-            context.save();
-            context.translate(-this.camera.position.x, -this.camera.position.y);
+         
+            context.restore()
 
+            
+            context.save(); // Translate back to the original position for elements that shouldn't move     
             // Elements that should not be translated
-            this.currentState.handleInput(input, context);
             this.stars.update(context, deltaTime, this.spaceship);
+            this.currentState.handleInput(input, context);
+            context.restore(); 
 
-            context.restore(); // Restore the translation
-
+            context.save(); // Restore the translation
+            context.translate(this.camera.position.x, this.camera.position.y);
+            
+            //draw planets
+            this.solarSystem.draw(context)
+            this.solarSystem.update();
             //draw in game rewards
             if(this.rewards.length > 0){
                 this.rewards.forEach((reward)=>{
@@ -163,9 +152,6 @@ addEventListener("load",()=>{
             //draw asteroid
             this.asteroid.draw(context);
             this.asteroid.update(this.spaceship);
-
-            //draw planets
-            this.solarSystem.draw(context)
 
             //handle enemies
             if(this.enemyTimer > this.enemyInterval){
@@ -225,17 +211,16 @@ addEventListener("load",()=>{
                 //delete marked floating messages
                 this.floatingMessage = this.floatingMessage.filter(msg => !msg.markedForDeletion);
             })
-            
-           
 
             //draw player user interface
             this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
           
             this.miniMapUI.draw(miniMapCtx);
             this.miniMapUI.update(this.player.position.x, this.player.position.y,
-                this.spaceship.position.x, this.spaceship.position.y, this.planets
-                );
+                this.spaceship.position.x, this.spaceship.position.y, this.solarSystem.planets, this.player.playerIsInSpace
+            );
 
+            // console.log(this.solarSystem)
             const fuelPercentage = this.spaceship.fuel / 100;
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.width * 2.5, this.height - 20);
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship)
@@ -263,18 +248,19 @@ addEventListener("load",()=>{
             this.miniMapHeight = miniMapHeight;
             this.data = data;
             this.groundMargin = 0;
+          
+            this.universe = new Universe(this);
+            this.spaceship = new Spaceship(this);
             this.camera = {
                 position: {
-                    x: 0,
-                    y: -0,
+                    x: this.spaceship.position.x/2,
+                    y: - this.spaceship.position.y/2,
                 }
             }
-           
-            this.spaceship = new Spaceship(this);
             this.asteroid = new Asteroid(this);
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
-            this.universe = new Universe(this, ctx);
+            
             this.solarSystem = new SolarSystem(this)
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
@@ -308,20 +294,12 @@ addEventListener("load",()=>{
             this.enemyInterval = 6000;
             this.enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
             this.score = 0;
-            
-            // this.coins = new Coins(this.width, this.height, this.data);
+        
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
-            this.miniMapUI = new MiniMapUserInterface(this.universe.width, this.universe.height, this.miniMapWidth, this.miniMapHeight, this.player.position.x, this.player.position.y,
-                this.spaceship.position.x,
-                this.spaceship.position.y,
-               
-            );
+            this.miniMapUI = new MiniMapUserInterface(this);
             this.inventory = []; // 
-
-
-          
         }
     }
     

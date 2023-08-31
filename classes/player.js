@@ -124,6 +124,7 @@ class Player{
     update(input, camera){
         this.currentState.handleInput(input, camera);
         if(this.isOnPlanet || this.playerIsInSpace){
+            console.log("im in space")
             this.checkForCollisions()
             this.updateHitCircle();
             
