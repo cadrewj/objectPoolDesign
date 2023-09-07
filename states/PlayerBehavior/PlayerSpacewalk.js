@@ -8,10 +8,12 @@ export class Player_Spacewalk_Left extends State{
         this.sign = 1;
     }
     enter(){
-        this.game.player.frame.y = 7; //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;  //the max number of columns for the player image
-        this.game.player.velocity.x = -this.game.player.maxSpeed / 2;  
-        // this.game.universe.velocity.x = this.game.player.maxSpeed / 2 // move the universe
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 7; //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;  //the max number of columns for the player image
+            this.game.player.velocity.x = -this.game.player.maxSpeed / 2;  
+            // this.game.universe.velocity.x = this.game.player.maxSpeed / 2 // move the universe
+        }
     }
     handleInput(input, camera){ 
         if(this.game.player.playerIsInSpace){
@@ -42,14 +44,14 @@ export class Player_Spacewalk_Right extends State{
         this.sign = -1;
     }
     enter(){
-        this.game.player.frame.y = 6;  //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;   //the max number of columns for the player image
-        this.game.player.velocity.x = this.game.player.maxSpeed / 2;   
-        // this.game.universe.velocity.x = -this.game.player.maxSpeed / 2;
-       
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 6;  //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;   //the max number of columns for the player image
+            this.game.player.velocity.x = this.game.player.maxSpeed / 2;   
+            // this.game.universe.velocity.x = -this.game.player.maxSpeed / 2;
+        }    
     }
-    handleInput(input, camera){
-      
+    handleInput(input, camera){  
         if(this.game.player.playerIsInSpace){
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){
                 this.game.player.shouldPanCameraLeft(camera) 
@@ -81,10 +83,12 @@ export class Player_Spacewalk_Up extends State{
         this.sign = -1;
     }
     enter(){
-        this.game.player.frame.y = 6;  //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;   //the max number of columns for the player image
-        this.game.player.velocity.y = -this.game.player.maxSpeed / 2;   
-        // this.game.universe.velocity.y =  this.game.player.maxSpeed / 2;
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 6;  //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;   //the max number of columns for the player image
+            this.game.player.velocity.y = -this.game.player.maxSpeed / 2;   
+            // this.game.universe.velocity.y =  this.game.player.maxSpeed / 2;
+        }
        
     }
     handleInput(input, camera){
@@ -119,10 +123,12 @@ export class Player_Spacewalk_Down extends State{
         this.sign = 1;
     }
     enter(){
-        this.game.player.frame.y = 7; //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;  //the max number of columns for the player image
-        this.game.player.velocity.y = this.game.player.maxSpeed / 2;  
-        // this.game.universe.velocity.y = -this.game.player.maxSpeed / 2 // move the universe
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 7; //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;  //the max number of columns for the player image
+            this.game.player.velocity.y = this.game.player.maxSpeed / 2;  
+            // this.game.universe.velocity.y = -this.game.player.maxSpeed / 2 // move the universe
+        }
     }
     handleInput(input, camera){ 
         if(this.game.player.playerIsInSpace){

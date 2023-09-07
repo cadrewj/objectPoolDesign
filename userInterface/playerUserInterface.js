@@ -8,13 +8,11 @@ export class PlayerUserInterface{
         this.spacer = 20;
         this.heartWidth = 15; 
         this.heartHeight = 15;
-        // this.x = 10;
-        // this.y = 10;
-        // this.dimension = Math.min(this.heartWidth, this.heartHeight);
+   
         this.oxygenTankColor = "rgba(146,182,213, 0.5)";
         this.handColor = "rgba(86, 124, 67, 1)";
-        this.oxygenTankRadius = 35;
-        this.clockRadius = 35;
+        this.oxygenTankRadius = 30;
+        this.clockRadius = 30;
         
     }
     update(context, player, deltaTime) {  
@@ -89,10 +87,8 @@ export class PlayerUserInterface{
         context.arc(dx, dy, this.oxygenTankRadius, 0, 2 * Math.PI);
         context.fillStyle = this.oxygenTankColor;
         context.fill();
-        context.textAlign = "center"
-        context.fillStyle = "wheat"
-        context.font = "8px Space Grotesk";
-        context.fillText(`${oxygenLevel.toFixed(1)}`, dx ,dy + offset)
+
+       
     
         // Calculate the angle for the oxygen level
         const startAngle = -Math.PI / 2; // 12 o'clock position
@@ -132,6 +128,14 @@ export class PlayerUserInterface{
         this.drawOxygenHand(context, hours * 30 + minutes * 0.5, this.clockRadius * 0.6, 4, dx, dy); // Hour hand
         this.drawOxygenHand(context, minutes * 6, this.clockRadius * 0.8, 2, dx, dy); // Minute hand
         this.drawOxygenHand(context, seconds * 6, this.clockRadius, 1, dx, dy); // Second hand
+
+
+
+        // draw percentage of oxygen left
+        context.textAlign = "center"
+        context.fillStyle = "rgba(245, 222, 179, 1)"
+        context.font = "8px Space Grotesk";
+        context.fillText(`${oxygenLevel.toFixed(0)}%`, dx ,dy + offset)
 
       
     }

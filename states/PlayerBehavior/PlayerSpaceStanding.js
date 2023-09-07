@@ -9,12 +9,14 @@ export class Player_Spacewalk_Standing_Left extends State{
         this.keyPressed = false;
     }
     enter(){
-        this.game.player.frame.y = 7; //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;  //the max number of columns for the player image
-        this.game.player.velocity.x = 0;  
-        this.game.player.velocity.y = 0;
-        // this.game.universe.velocity.x = 0; // move the universe
-        // this.game.universe.velocity.y = 0;
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 7; //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;  //the max number of columns for the player image
+            this.game.player.velocity.x = 0;  
+            this.game.player.velocity.y = 0;
+            // this.game.universe.velocity.x = 0; // move the universe
+            // this.game.universe.velocity.y = 0;
+        }
     }
     handleInput(input, camera){ 
         //toggle in and out of the ship
@@ -64,13 +66,14 @@ export class Player_Spacewalk_Standing_Right extends State{
         this.keyPressed = false;
     }
     enter(){
-        this.game.player.frame.y = 6;  //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;   //the max number of columns for the player image
-        this.game.player.velocity.x = 0;
-        this.game.player.velocity.y = 0;
-        // this.game.universe.velocity.x = 0; // move the universe
-        // this.game.universe.velocity.y = 0;
-       
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 6;  //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;   //the max number of columns for the player image
+            this.game.player.velocity.x = 0;
+            this.game.player.velocity.y = 0;
+            // this.game.universe.velocity.x = 0; // move the universe
+            // this.game.universe.velocity.y = 0;
+        }  
     }
     handleInput(input, camera){
         this.toggleInAndOutSpaceship(input)
@@ -115,12 +118,14 @@ export class Player_Spacewalk_Standing_Up extends State{
         this.keyPressed = false;
     }
     enter(){
-        this.game.player.frame.y = 6;  //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;   //the max number of columns for the player image
-        this.game.player.velocity.x = 0;
-        this.game.player.velocity.y = 0;
-        // this.game.universe.velocity.x = 0; // move the universe
-        // this.game.universe.velocity.y = 0;
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 6;  //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;   //the max number of columns for the player image
+            this.game.player.velocity.x = 0;
+            this.game.player.velocity.y = 0;
+            // this.game.universe.velocity.x = 0; // move the universe
+            // this.game.universe.velocity.y = 0;
+        }
     }
     handleInput(input, camera){
      this.toggleInAndOutSpaceship(input);
@@ -166,12 +171,14 @@ export class Player_Spacewalk_Standing_Down extends State{
         this.keyPressed = false;
     }
     enter(){
-        this.game.player.frame.y = 7; //the row position of the player image you want to use
-        this.game.player.maxFrames = 8;  //the max number of columns for the player image
-        this.game.player.velocity.x = 0;
-        this.game.player.velocity.y = 0;
-        // this.game.universe.velocity.x = 0; // move the universe
-        // this.game.universe.velocity.y = 0;
+        if(this.game.player.playerIsInSpace){
+            this.game.player.frame.y = 7; //the row position of the player image you want to use
+            this.game.player.maxFrames = 8;  //the max number of columns for the player image
+            this.game.player.velocity.x = 0;
+            this.game.player.velocity.y = 0;
+            // this.game.universe.velocity.x = 0; // move the universe
+            // this.game.universe.velocity.y = 0;
+        }
     }
     handleInput(input, camera){ 
         this.toggleInAndOutSpaceship(input)

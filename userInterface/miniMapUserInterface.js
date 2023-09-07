@@ -38,7 +38,9 @@ export class MiniMapUserInterface{
 
         //draw the sun
         miniMapCtx.beginPath()
-        miniMapCtx.fillStyle = this.solarSystem.sun.color
+        // miniMapCtx.fillStyle = this.solarSystem.sun.color
+        const pattern = miniMapCtx.createPattern(this.solarSystem.sun.color, "repeat");
+        miniMapCtx.fillStyle = pattern;
         miniMapCtx.arc(
             Math.max(0, Math.min(this.miniMapWidth - this.planetsSize, (this.solarSystem.sun.position.x + this.gameWidth/2)* this.mapScale - this.planetsSize / 2)),
             Math.max(0, Math.min(this.miniMapHeight - this.planetsSize, (this.solarSystem.sun.position.y + this.gameHeight/2) * this.mapScale - this.planetsSize / 2)),
@@ -48,7 +50,9 @@ export class MiniMapUserInterface{
 
         this.solarSystem.planets.forEach(planet => {
             miniMapCtx.beginPath()
-            miniMapCtx.fillStyle = planet.color
+            // miniMapCtx.fillStyle = planet.color
+            const pattern2 = miniMapCtx.createPattern(planet.color, "repeat");
+            miniMapCtx.fillStyle = pattern2;
             miniMapCtx.arc(
                 Math.max(0, Math.min(this.miniMapWidth - this.planetsSize, (planet.position.x + this.gameWidth/2) * this.mapScale - this.planetsSize / 2)),
                 Math.max(0, Math.min(this.miniMapHeight - this.planetsSize, (planet.position.y  + this.gameHeight/2)* this.mapScale - this.planetsSize / 2)),
@@ -68,7 +72,7 @@ export class MiniMapUserInterface{
         );
 
         //add text information to the map
-        miniMapCtx.fillStyle = "rgb(255,255,255)";
+        // miniMapCtx.fillStyle = "rgba(255,255,255, 0.1)";
         miniMapCtx.textAlign ="center"
         miniMapCtx.font =  '10px Space Grotesk'//'10px Helvetica';
         const shipPosition ={
@@ -78,7 +82,7 @@ export class MiniMapUserInterface{
 
         if(!this.playerIsInSpace){
             //ship info
-            miniMapCtx.fillStyle = "white"
+            miniMapCtx.fillStyle = "rgba(255,255,255, 0.3)";
             miniMapCtx.fillText(`(${shipPosition.x.toFixed(1)}, ${shipPosition.y.toFixed(1)})`, 
             this.spaceship.x * this.mapScale - this.spaceship.size / 2, 
             this.spaceship.y * this.mapScale - this.spaceship.size / 2)
@@ -86,7 +90,7 @@ export class MiniMapUserInterface{
         else{
             //player distance from ship info
             const distanceFromShip = (Math.hypot(this.player.x - this.spaceship.x, this.player.y - this.spaceship.y));
-            miniMapCtx.fillStyle = "white"
+            miniMapCtx.fillStyle = "rgba(255,255,255, 0.3)";
             miniMapCtx.fillText(`(${distanceFromShip.toFixed(1)})`, 
             this.player.x * this.mapScale - this.player.size / 2, 
             this.player.y * this.mapScale - this.player.size / 2)
@@ -95,10 +99,10 @@ export class MiniMapUserInterface{
             miniMapCtx.beginPath()
             miniMapCtx.fillStyle = 'red';
             miniMapCtx.fillRect(
-            Math.max(0, Math.min(this.miniMapWidth - this.player.size, this.player.x * this.mapScale - this.player.size / 2)),
-            Math.max(0, Math.min(this.miniMapHeight - this.player.size, this.player.y * this.mapScale - this.player.size / 2)),
-            this.player.size,
-            this.player.size
+                Math.max(0, Math.min(this.miniMapWidth - this.player.size, this.player.x * this.mapScale - this.player.size / 2)),
+                Math.max(0, Math.min(this.miniMapHeight - this.player.size, this.player.y * this.mapScale - this.player.size / 2)),
+                this.player.size,
+                this.player.size
             );
         }  
     }

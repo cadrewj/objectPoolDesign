@@ -70,7 +70,7 @@ class Player{
             new Player_Spacewalk_Standing_Up(this.game), // state 20
             new Player_Spacewalk_Standing_Down(this.game), //state 21
         ]; 
-        this.currentState = this.states[1]; //state standing right (1)
+        this.currentState = this.states[21]; //state standing right (1)
         
         this.friction = 0.99;
         this.weight = 0.5;
