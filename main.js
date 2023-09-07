@@ -184,10 +184,9 @@ addEventListener("load",()=>{
             }
         
             //draw player 
-            this.player.draw(context, deltaTime);
-            this.player.update(input, this.camera)
-            
-            
+            this.player.draw(context);
+            this.player.update(input, this.camera, deltaTime)
+
             //update player position based on the ship when in ship
             if(!this.player.playerIsInSpace){
                 this.player.updatePlayerPositionBasedOnShip(this.spaceship.position)
@@ -203,7 +202,6 @@ addEventListener("load",()=>{
 
 
             /////////////////////game interface ///////////////////// no panning//////////
-
              //draw in game floating messages
              this.floatingMessage.forEach((message)=>{
                 message.draw(context)
@@ -213,7 +211,7 @@ addEventListener("load",()=>{
             })
 
             //draw player user interface
-            this.playerUI.update(context, this.player.lives, this.player.health/100, this.player.hurt, this.player.oxygenLevel);
+            this.playerUI.update(context, this.player, deltaTime)
           
             this.miniMapUI.draw(miniMapCtx);
             this.miniMapUI.update(this.player.position.x, this.player.position.y,

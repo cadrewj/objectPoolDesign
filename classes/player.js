@@ -36,7 +36,12 @@ class Player{
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
-        this.oxygenLevel = 6000//this.game.data.PLAYER_OXYGEN_LEVEL;
+        
+        this.oxygenLevel = this.game.data.PLAYER_OXYGEN_LEVEL;
+        this.oxygenTimer = 0;
+        this.oxygenInterval = 10000/this.FPS;
+        this.consumptionPerMinute = 0.1;
+        this.oxygenMax = 100//this.game.data.PLAYER_OXYGEN_LEVEL;
 
         this.hurt = false;
         this.hurtTime = 0;
@@ -103,10 +108,8 @@ class Player{
         return(this.position.y >= this.game.height - this.height - this.game.groundMargin)
     }
 
-    draw(context, deltaTime){
+    draw(context){
         if(this.isOnPlanet || this.playerIsInSpace){
-        
-        this.animateFrames(deltaTime)
         //draw the player on the screen
         context.drawImage(this.image, 
             this.frame.x * this.sw, 
@@ -117,14 +120,13 @@ class Player{
             this.position.y,
             this.width,
             this.height); 
-        }
-
-      
+        } 
     }
-    update(input, camera){
+    update(input, camera, deltaTime){
         this.currentState.handleInput(input, camera);
+        this.animateFrames(deltaTime)
         if(this.isOnPlanet || this.playerIsInSpace){
-            console.log("im in space")
+            // console.log("im in space")
             this.checkForCollisions()
             this.updateHitCircle();
             
@@ -159,11 +161,10 @@ class Player{
                 this.lives --;
                 this.health = this.game.data.PLAYER_MAX_HEALTH;
             }
-            else if(this.lives <= 0){
+            else if(this.lives <= 0 || this.oxygenLevel <= 0){
                 this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
                 this.game.setState(1);
             }
-
         }
     }
 
@@ -353,6 +354,13 @@ class Player{
                 }  
             }
         });
+    }
+    // Function to update the oxygen level based on consumption rate
+    updateOxygenLevel(sign) {
+        this.oxygenLevel += this.consumptionPerMinute * sign;
+        if (this.oxygenLevel < 0) {
+            this.oxygenLevel = 0;
+        }
     }
 }
 
