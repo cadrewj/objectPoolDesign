@@ -91,14 +91,23 @@ class Player{
             width: this.width/3,
             height: this.height/3,
         } 
-        this.camerabox = {
+        // this.camerabox = {
+        //     position:{
+        //         x: this.position.x - this.game.width * 0.22,
+        //         y: this.position.y - this.height
+        //     },
+        //     width: this.game.width * 0.6,
+        //     height: this.game.height * 0.4,
+        // } 
+        this.camRadius = this.game.height * 0.25,
+        this.cameraBox = {
             position:{
-                x: this.position.x - this.game.width * 0.22,
-                y: this.position.y - this.height
-            },
-            width: this.game.width * 0.5,
-            height: this.game.height * 0.4,
-        } 
+                x: this.position.x - (this.camRadius * 1.5),
+                y: this.position.y - this.camRadius,
+            }, 
+            width: this.camRadius * 3,
+            height: this.camRadius * 2,
+        }
         this.velocity = {
             x: 0,
             y: 0
@@ -123,16 +132,19 @@ class Player{
         } 
     }
     update(input, camera, deltaTime){
+        this.updateCameraBox();
+        this.updateHitCircle();
         this.currentState.handleInput(input, camera);
+        this.updateCameraBox();
         this.animateFrames(deltaTime)
         if(this.isOnPlanet || this.playerIsInSpace){
             // console.log("im in space")
             this.checkForCollisions()
-            this.updateHitCircle();
+            
             
             // console.log(this.velocity.y)
             this.handleScreen()  //used to ensure the player doesn't fall off the screen
-            this.updateCameraBox();
+            
 
             //check if the player is hurt
             this.hurt = this.hurtTime > 0
@@ -229,17 +241,17 @@ class Player{
         } 
     }
     updateCameraBox(){
-        this.camerabox = {
+        this.cameraBox = {
             position:{
-                x: this.position.x - this.game.width * 0.22,
-                y: this.position.y - this.height
-            },
-            width: this.game.width * 0.5,
-            height: this.game.height * 0.4,
-        } 
+                x: this.position.x - (this.camRadius * 1.5),
+                y: this.position.y - this.camRadius,
+            }, 
+            width: this.camRadius * 3,
+            height: this.camRadius * 2,
+        }
     }
     shouldPanCameraLeft(camera){
-        const cameraBoxRightSide = this.camerabox.position.x + this.camerabox.width;
+        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
         if(cameraBoxRightSide + this.velocity.x >= this.game.universe.width/2){ //prevent panning beyond width of background
             console.log("end of goal post")
             return
@@ -252,7 +264,7 @@ class Player{
         }
     }
     shouldPanCameraRight(camera){
-        const cameraBoxLeftSide = this.camerabox.position.x;
+        const cameraBoxLeftSide = this.cameraBox.position.x;
         if(cameraBoxLeftSide + this.velocity.x <= 0 - this.game.universe.width/2){ //prevent panning beyond 0
             console.log("reach start post")
             return
@@ -263,7 +275,7 @@ class Player{
         }
     }
     shouldPanCameraDown(camera){
-        const cameraBoxTop = this.camerabox.position.y;
+        const cameraBoxTop = this.cameraBox.position.y;
         if(cameraBoxTop + this.velocity.y <= 0  - this.game.universe.width/2){ //prevent panning beyond 0
             return
         }
@@ -274,8 +286,8 @@ class Player{
 
     }
     shouldPanCameraUp(camera){
-        const cameraBoxBottom = this.camerabox.position.y + this.camerabox.height;
-        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height){ //prevent panning beyond width of background
+        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.height;
+        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height/2){ //prevent panning beyond width of background
             return
         }
         if(cameraBoxBottom  + this.velocity.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   

@@ -33,7 +33,7 @@ export class MiniMapUserInterface{
         miniMapCtx.clearRect(0,0,this.miniMapWidth, this.miniMapHeight)
         miniMapCtx.strokeStyle = "rgba(255,255,255, 0.5)";
         miniMapCtx.lineWidth = 0.5
-        miniMapCtx.arc(88,88,this.miniMapWidth/2, 0, degToRad(360), false)
+        miniMapCtx.arc(this.miniMapWidth/2,this.miniMapWidth/2,this.miniMapWidth/2, 0, degToRad(360), false)
         miniMapCtx.stroke();
 
         //draw the sun

@@ -27,7 +27,7 @@ export class Player_Running_Left extends State{
                 this.game.player.shouldPanCameraRight(camera)
             }
 
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
                 this.game.player.setState(states.PLAYER_RUNNING_RIGHT); //set the player current state to standing right  
                 
             }
@@ -71,7 +71,7 @@ export class Player_Running_Right extends State{
                 this.game.player.shouldPanCameraLeft(camera) 
             }
     
-            else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
+            if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){ // note: "a" = left 
                 this.game.player.setState(states.PLAYER_RUNNING_LEFT); //set the player current state to Running left
                 
             }

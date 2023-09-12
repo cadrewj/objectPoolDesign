@@ -69,8 +69,9 @@ addEventListener("load",()=>{
             this.solarSystem = new SolarSystem(this)
             this.camera = {
                 position: {
-                    x: this.spaceship.position.x,
-                    y: this.spaceship.position.y,
+                    x: this.spaceship.cameraBox.position.x,
+                    y: this.spaceship.cameraBox.position.y,
+                   
                 }
             }
             this.stars = new Stars(this.width, this.height, this.data);
@@ -95,7 +96,7 @@ addEventListener("load",()=>{
             this.gameUI = new GameUserInterface(this)
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
             this.miniMapUI = new MiniMapUserInterface(this);
-            this.debug = true;
+            this.debug = false;
             this.states = [ 
                 new StartNewGame(this), 
                 new GameOver(this),
@@ -146,7 +147,7 @@ addEventListener("load",()=>{
                     reward.draw(context)
                     reward.update();
                     //delete marked rewards
-                    this.rewards = this.rewards.filter(rwd => !rwd.markedForDeletion);
+                    this.rewards = this.rewards.filter(reward => !reward.markedForDeletion);
                 })    
             }
             //draw asteroid
@@ -263,7 +264,7 @@ addEventListener("load",()=>{
             this.stars = new Stars(this.width, this.height, this.data);
             this.input = new InputHandler(this);
 
-            this.debug = true;
+            this.debug = false;
             this.states =[ 
                 new StartNewGame(this), 
                 new GameOver(this),
