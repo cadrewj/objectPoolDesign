@@ -306,6 +306,16 @@ addEventListener("load",()=>{
         resize(canvas){
             this.width = canvas.width;
             this.height = canvas.height;
+            this.miniMapWidth = Math.floor(canvas.width * 0.18);
+            this.miniMapHeight = Math.floor(canvas.width * 0.18);
+
+            this.miniMapUI.resize(this.width, this.height, this.miniMapWidth, this.miniMapHeight);
+            this.spaceshipUI.resize(this.width, this.height);
+            this.gameUI.resize(this.width, this.height);
+            this.playerUI.resize(this.width, this.height);
+            this.solarSystem.resize(this.width, this.height)
+
+
             this.asteroid.resize(this.width, this.height);
             this.spaceship.resize(this.width, this.height)
             this.player.resize(this.width, this.height);
@@ -343,6 +353,8 @@ addEventListener("resize",()=>{
     canvas.width = innerWidth;
     canvas.height = innerHeight;
     game.resize(canvas);
+    miniMapCanvas.width = Math.floor(canvas.width * 0.18);
+    miniMapCanvas.height = Math.floor(canvas.width * 0.18); 
     
 
 

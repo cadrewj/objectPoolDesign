@@ -10,12 +10,16 @@ export class GameUserInterface{
         context.textBaseline = "middle"
         context.fillStyle = "rgba(255,255,255, 0.5)";
         context.fillText(this.game.score, this.game.width/2 , 20)
-    } 
+    }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
+    }   
 }
 
-export class FloatingMessage{
+export class FloatingMessage extends GameUserInterface{
     constructor (game, value, floatingX, floatingY, targetX, targetY, textSize = "40px", speed = 0.03, maxFloatTime = 100){
-        this.game = game;
+        // this.game = game;
         this.floatingX = floatingX;
         this.floatingY = floatingY;
         this.targetX = targetX;

@@ -171,6 +171,10 @@ export class PlayerUserInterface{
             }
         }
     }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.width = width;
+        this.height = height;
+    }  
       
 
       

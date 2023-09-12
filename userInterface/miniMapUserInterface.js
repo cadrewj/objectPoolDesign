@@ -125,4 +125,12 @@ export class MiniMapUserInterface{
             planet.position.y = planet.position.y; 
         });
     }
+    resize(width, height, miniMapWidth, miniMapHeight){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
+        this.miniMapWidth = miniMapWidth;
+        this.miniMapHeight = miniMapHeight;   
+        this.mapScale = this.miniMapWidth / this.gameWidth;
+         
+    }  
 }

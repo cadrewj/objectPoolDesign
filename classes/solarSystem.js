@@ -115,6 +115,10 @@ export class SolarSystem {
         });
   
     }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
+    }  
 }
   
   

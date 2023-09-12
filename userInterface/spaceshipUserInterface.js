@@ -118,4 +118,8 @@ export class SpaceshipUserInterface{
         // console.log(hue, color)
         return color;
     }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.width = width;
+        this.height = height;
+    }  
 }
