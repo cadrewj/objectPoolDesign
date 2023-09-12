@@ -303,6 +303,22 @@ addEventListener("load",()=>{
             this.miniMapUI = new MiniMapUserInterface(this);
             this.inventory = []; // 
         }
+        resize(canvas){
+            this.width = canvas.width;
+            this.height = canvas.height;
+            this.asteroid.resize(this.width, this.height);
+            this.spaceship.resize(this.width, this.height)
+            this.player.resize(this.width, this.height);
+            // this.background.resize(this.width, this.height);
+            this.stars.resize(this.width, this.height);
+
+            this.enemies.forEach(enemy => {
+                enemy.resize(this.width, this.height)   
+            });
+            this.particles.forEach(particle => {
+                particle.resize(this.width, this.height)   
+            });
+        }
     }
     
     game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
@@ -326,8 +342,9 @@ addEventListener("resize",()=>{
     // console.log(innerWidth, innerHeight)
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-    game.width = canvas.width;
-    game.height = canvas.height;
+    game.resize(canvas);
+    
+
 
 })
 

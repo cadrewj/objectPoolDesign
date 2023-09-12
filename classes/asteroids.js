@@ -14,6 +14,11 @@ export class Asteroid{
         this.initAsteroids()
         this.image = document.querySelector("#Desert");
     }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
+        this.initAsteroids()
+    }
     initAsteroids(){
         let x, y;
         this.asteroids = [];

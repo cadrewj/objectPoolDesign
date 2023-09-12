@@ -32,6 +32,10 @@ export class Background{
         // context.drawImage(this.image,this.position.x, this.position.y, this.game.width, this.game.height)
         context.restore()
     }
+    // resize(width, height){ // used to resize the effect when the window size changes
+    //     this.game.width = width;
+    //     this.game.height = height;
+    // }
 
 }
 
@@ -47,13 +51,15 @@ export class Stars extends Background{
         this.stars = []; // define the stars array here
         this.star; // define a single star
         this.starSpeed = this.game.data.STAR_SPEED * this.game.width; // set the speed of the stars
+        this.init();
    
       
-        //initialize all the startw
-        for (let i = 0; i < this.game.data.STAR_NUM; i++) {
-            let newStar = this.init()
-            this.stars.push(newStar);
-        }
+      
+    }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
+        this.init();
     }
     update(context, deltaTime, spaceship) {
         for (let i = 0; i < this.stars.length; i++) {
@@ -119,25 +125,29 @@ export class Stars extends Background{
 
     
     init(){
-        const speedMult =  randomNum(this.game.data.STAR_SPEED_MULT_MIN, this.game.data.STAR_SPEED_MULT_MAX) //set the speed of the star to a number between 0.2 - 1.2
-        const starVelocityX = this.starSpeed * randomSign() * Math.random();
-        const starVelocityY =  Math.sqrt(Math.pow(this.starSpeed, 2) - Math.pow(starVelocityX, 2) * randomSign()); //using pythagoras theorem yv = sqrt(starspeed^2 - xv^2)
+        //initialize all the start
+        this.stars=[];
+        for (let i = 0; i < this.game.data.STAR_NUM; i++) {
+            const speedMult =  randomNum(this.game.data.STAR_SPEED_MULT_MIN, this.game.data.STAR_SPEED_MULT_MAX) //set the speed of the star to a number between 0.2 - 1.2
+            const starVelocityX = this.starSpeed * randomSign() * Math.random();
+            const starVelocityY =  Math.sqrt(Math.pow(this.starSpeed, 2) - Math.pow(starVelocityX, 2) * randomSign()); //using pythagoras theorem yv = sqrt(starspeed^2 - xv^2)
 
-        this.star={
-            radius: this.game.data.STAR_SIZE * Math.random() * this.game.width / 2, 
-            position:{
-                x: Math.floor(Math.random() * this.game.width), // assign a random number in the x direction
-                y: Math.floor(Math.random() * this.game.width), // assign a random number in the y direction
-            },
-            velocity:{
-                x: starVelocityX * speedMult /this.game.data.FPS,
-                y: starVelocityY * speedMult  /this.game.data.FPS, 
-            },
-            originalVelocity:{
-                x: starVelocityX * speedMult /this.game.data.FPS,
-                y: starVelocityY * speedMult  /this.game.data.FPS, 
-            }   
+            this.star={
+                radius: this.game.data.STAR_SIZE * Math.random() * this.game.width / 2, 
+                position:{
+                    x: Math.floor(Math.random() * this.game.width), // assign a random number in the x direction
+                    y: Math.floor(Math.random() * this.game.width), // assign a random number in the y direction
+                },
+                velocity:{
+                    x: starVelocityX * speedMult /this.game.data.FPS,
+                    y: starVelocityY * speedMult  /this.game.data.FPS, 
+                },
+                originalVelocity:{
+                    x: starVelocityX * speedMult /this.game.data.FPS,
+                    y: starVelocityY * speedMult  /this.game.data.FPS, 
+                }   
+            }
+            this.stars.push(this.star);
         }
-        return this.star;
     }
 }

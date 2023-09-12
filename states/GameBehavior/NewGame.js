@@ -18,7 +18,7 @@ export default class StartNewGame extends State{
         if(!this.game.gameOver && this.alpha > 0){
             do{
                 this.displayMessage(context)
-                this.alpha -= 0.1
+                // this.alpha -= 0.1
             }while(!this.alpha === 0)
         }
 
@@ -32,10 +32,12 @@ export default class StartNewGame extends State{
         context.textAlign = "center"
         context.fillText("Forage Snail", this.game.width/2, this.game.height/2 - 130)
      
+     
         context.fillStyle = `rgba(255,255,255,${this.alpha})`
         context.textAlign = "center"
         context.font = `${this.game.data.FONT_DISPLAY_SUBTEXT_SIZE} ${this.game.data.FONT_DISPLAY_SUBTEXT}`;
-        context.fillText("New Game", this.game.width/2 , this.game.height/2 - 70)
+        // context.fillText("New Game", this.game.width/2 , this.game.height/2 - 70)
+        context.fillText("New Game", this.game.camera.position.x/2 , this.game.camera.position.y/2 - 70)
     }
 }
 
