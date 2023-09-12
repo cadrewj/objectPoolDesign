@@ -11,7 +11,8 @@ import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
 class Spaceship{
     constructor(game){
         this.game = game;
-        this.states =[ new SpaceshipIDLE(this.game), 
+        this.states =[ 
+            new SpaceshipIDLE(this.game), 
             new SpaceshipThrust(this.game),
             new SpaceshipReverseThrust(this.game),
             new SpaceshipChangeDirection(this.game),
@@ -22,8 +23,8 @@ class Spaceship{
         this.currentState = this.states[6]; //state idle
 
         this.position ={
-            x: innerHeight/2 , //position the ship at the center of x axis
-            y: innerWidth/2, //position the ship at the center of y axis
+            x: innerWidth/2 , //position the ship at the center of x axis
+            y: innerHeight/2, //position the ship at the center of y axis
         }  
         this.image =  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
         this.width = this.game.data.SPACESHIP_SIZE,
@@ -385,7 +386,7 @@ class Spaceship{
             return
         }
         //left panRight
-        else if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
+        else if(cameraBoxLeftSide + this.thrust.x <=0 -  Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
             console.log("Lgo")
         }  

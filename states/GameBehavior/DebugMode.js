@@ -57,7 +57,6 @@ export default class DebugMode extends State{
             if (!this.keyPressed) {
                 this.game.debug = !this.game.debug;
                 this.keyPressed = true; // Mark the key as pressed
-                // this.game.setState(gameStates.DEBUG_MODE)
             }
             
         } else {

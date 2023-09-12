@@ -274,6 +274,16 @@ class Player{
             console.log("panning right")
         }
     }
+    shouldPanCameraUp(camera){
+        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.height;
+        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height/2){ //prevent panning beyond width of background
+            return
+        }
+        if(cameraBoxBottom  + this.velocity.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+            camera.position.y -= this.velocity.y  //translate up
+            console.log("panning up")
+        }
+    }
     shouldPanCameraDown(camera){
         const cameraBoxTop = this.cameraBox.position.y;
         if(cameraBoxTop + this.velocity.y <= 0  - this.game.universe.width/2){ //prevent panning beyond 0
@@ -284,16 +294,6 @@ class Player{
             console.log("panning DOWN")
         } 
 
-    }
-    shouldPanCameraUp(camera){
-        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.height;
-        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height/2){ //prevent panning beyond width of background
-            return
-        }
-        if(cameraBoxBottom  + this.velocity.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
-            camera.position.y -= this.velocity.y  //translate up
-            console.log("panning up")
-        }
     }
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{

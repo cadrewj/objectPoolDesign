@@ -21,6 +21,7 @@ import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 import StartNewGame from "./states/GameBehavior/NewGame.js";
 import GameOver from "./states/GameBehavior/GameOver.js";
 import DebugMode from "./states/GameBehavior/DebugMode.js";
+import Loading from "./states/GameBehavior/Loading.js";
 
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
 import { GameUserInterface } from "./userInterface/gameUserInterface.js";
@@ -69,8 +70,8 @@ addEventListener("load",()=>{
             this.solarSystem = new SolarSystem(this)
             this.camera = {
                 position: {
-                    x: this.spaceship.cameraBox.position.x,
-                    y: this.spaceship.cameraBox.position.y,
+                    x: 0,
+                    y: 0,
                    
                 }
             }
@@ -101,8 +102,9 @@ addEventListener("load",()=>{
                 new StartNewGame(this), 
                 new GameOver(this),
                 new DebugMode(this),
+                new Loading(this)
             ];
-            this.currentState = this.states[0]; // game state
+            this.currentState = this.states[3]; // game state
             this.enemyTimer;
             this.enemyInterval;
             this.enemies = [];
@@ -252,8 +254,8 @@ addEventListener("load",()=>{
             this.spaceship = new Spaceship(this);
             this.camera = {
                 position: {
-                    x: this.spaceship.position.x/2,
-                    y: - this.spaceship.position.y/2,
+                    x: 0,
+                    y: 0,
                 }
             }
             this.asteroid = new Asteroid(this);
@@ -268,9 +270,10 @@ addEventListener("load",()=>{
             this.states =[ 
                 new StartNewGame(this), 
                 new GameOver(this),
-                new DebugMode(this)
+                new DebugMode(this),
+                new Loading(this)
             ]
-            this.currentState = this.states[0]; //state new game
+            this.currentState = this.states[3]; //state new game
 
             this.velocity = {
                 x: 10,
