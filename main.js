@@ -21,7 +21,7 @@ import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 import StartNewGame from "./states/GameBehavior/NewGame.js";
 import GameOver from "./states/GameBehavior/GameOver.js";
 import DebugMode from "./states/GameBehavior/DebugMode.js";
-import Loading from "./states/GameBehavior/Loading.js";
+import Loading from "./states/GameBehavior/LoadGame.js";
 
 import { SpaceshipUserInterface } from "./userInterface/spaceshipUserInterface.js";
 import { GameUserInterface } from "./userInterface/gameUserInterface.js";
@@ -29,23 +29,33 @@ import {PlayerUserInterface} from "./userInterface/playerUserInterface.js";
 import { assistantUI } from "./userInterface/assistantUserInterface.js";
 import { MiniMapUserInterface } from "./userInterface/miniMapUserInterface.js";
 
+
+// Loading UI
+import { RainEffect } from "./classes/rainingSymbols.js";
+import { SlimeEffect } from "./classes/slimeEffect.js";
+import { ShootSlimeBall } from "./classes/shootSlimeBall.js";
+
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
 const ctx = canvas.getContext("2d");
 const miniMapCanvas = document.getElementById('miniMapCanvas');
 const miniMapCtx = miniMapCanvas.getContext('2d');
+const userInterface = document.querySelector("#userInterface");
+const startUpButtons = document.querySelector("#startUpButtons");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
-
-miniMapCanvas.width = Math.floor(canvas.width * 0.18);
-miniMapCanvas.height = Math.floor(canvas.width * 0.18);
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+miniMapCanvas.width = innerWidth;
+miniMapCanvas.height = innerHeight;
 
 //define the loading screen area and set it value to zero since the screen is already loaded
 const loading = document.querySelector("#loading")
 loading.style.display = "none";
 export let stopGame;
 let game;
+let clickedMonster = false;
 
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
@@ -109,6 +119,7 @@ addEventListener("load",()=>{
             this.enemyInterval;
             this.enemies = [];
             this.inventory = [];
+            this.isLoading = true;
         }
         addEnemy(){
             const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
@@ -227,7 +238,6 @@ addEventListener("load",()=>{
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship);
             this.gameUI.drawScore(context);
-
             //draw the assistant
             const angle = (Date.now() / 1000) % (Math.PI * 2);
             assistantUI(context, this.width - this.width* 0.3, -20, angle)
@@ -293,7 +303,7 @@ addEventListener("load",()=>{
             
             this.enemies = [];
             this.enemyTimer = 0;
-            this.enemyInterval = 6000;
+            this.enemyInterval = 8000;
             this.enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
             this.score = 0;
         
@@ -302,63 +312,230 @@ addEventListener("load",()=>{
             this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
             this.miniMapUI = new MiniMapUserInterface(this);
             this.inventory = []; // 
+            this.isLoading = true;
+            
         }
-        resize(canvas){
-            this.width = canvas.width;
-            this.height = canvas.height;
-            this.miniMapWidth = Math.floor(canvas.width * 0.18);
-            this.miniMapHeight = Math.floor(canvas.width * 0.18);
+        resize(canvas, miniMapCanvas){    
+            if(!this.isLoading){
+                this.width = canvas.width;
+                this.height = canvas.height;
+                this.miniMapWidth = Math.floor(canvas.width * 0.18);
+                this.miniMapHeight = Math.floor(canvas.width * 0.18);
+    
+                this.miniMapUI.resize(this.width, this.height, this.miniMapWidth, this.miniMapHeight);
+                this.spaceshipUI.resize(this.width, this.height);
+                this.gameUI.resize(this.width, this.height);
+                this.playerUI.resize(this.width, this.height);
+                this.solarSystem.resize(this.width, this.height)
+    
+    
+                this.asteroid.resize(this.width, this.height);
+                this.spaceship.resize(this.width, this.height)
+                this.player.resize(this.width, this.height);
+                // this.background.resize(this.width, this.height);
+                this.stars.resize(this.width, this.height);
+    
+                this.enemies.forEach(enemy => {
+                    enemy.resize(this.width, this.height)   
+                });
+                this.particles.forEach(particle => {
+                    particle.resize(this.width, this.height)   
+                });
+                this.rewards.forEach(reward => {
+                    reward.resize(this.width, this.height)   
+                });
+    
+            }
+            else{
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                miniMapCanvas.width = innerWidth;
+                miniMapCanvas.height = innerHeight;
 
-            this.miniMapUI.resize(this.width, this.height, this.miniMapWidth, this.miniMapHeight);
-            this.spaceshipUI.resize(this.width, this.height);
-            this.gameUI.resize(this.width, this.height);
-            this.playerUI.resize(this.width, this.height);
-            this.solarSystem.resize(this.width, this.height)
-
-
-            this.asteroid.resize(this.width, this.height);
-            this.spaceship.resize(this.width, this.height)
-            this.player.resize(this.width, this.height);
-            // this.background.resize(this.width, this.height);
-            this.stars.resize(this.width, this.height);
-
-            this.enemies.forEach(enemy => {
-                enemy.resize(this.width, this.height)   
-            });
-            this.particles.forEach(particle => {
-                particle.resize(this.width, this.height)   
-            });
+                slime.reset(canvas.width, canvas.height);
+                rain.resize(miniMapCanvas.width, miniMapCanvas.height);
+                rain.gradient = miniMapCtx.createRadialGradient(
+                    miniMapCanvas.width / 2,
+                    miniMapCanvas.height / 2,
+                    miniMapCanvas.width * 0.05,
+                    miniMapCanvas.width / 2,
+                    miniMapCanvas.height / 2,
+                    miniMapCanvas.width / 2
+                );
+                rain.gradient.addColorStop(0, "red");
+                rain.gradient.addColorStop(0.5, "cyan");
+                rain.gradient.addColorStop(1, "magenta");
+            }
         }
     }
     
     game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
+    const slime = new SlimeEffect(canvas.width, canvas.height);
+    slime.init(25);
+
+    const rain = new RainEffect(miniMapCanvas.width, miniMapCanvas.height, miniMapCtx);
+    const shootSlime = new ShootSlimeBall(canvas.width, canvas.height);
+
     let lastTime = 0;
-    // console.log(innerWidth, innerHeight) 
+    let timer = 0;
+    const FPS = 30;
+    const frameInterval = 1000 / FPS;
+
+    //// define start up buttons
+    let enableButtons= false;
+    //Note: need the space for this part of code: button.id = buttonName[i].slice(0, buttonName[i].indexOf(" "));
+    let buttonArray = [];
+    const buttonName = ["Continue ","New Game ", "Options "];
+    
+
+    for(let i = 0; i < buttonName.length; i ++) {
+        const button = document.createElement("button");
+        button.textContent = buttonName[i];
+        button.className = "button";
+        button.id = buttonName[i].slice(0, buttonName[i].indexOf(" "));
+        button.style.display = "none"; // Set the display property to "none" initially
+        buttonArray.push(button);
+        startUpButtons.append(button);
+        userInterface.style.display = "block";
+    }
+    const startNewGameButton = document.querySelector("#New");
+
     function animate(timeStamp){ //note: timeStamp is automatically generated.
         canvas.focus();
         const deltaTime = timeStamp - lastTime;
-        lastTime = timeStamp;  
-        game.render(ctx, miniMapCtx, deltaTime, game.input);
+        lastTime = timeStamp;
+        if(!game.isLoading){
+         
+            game.render(ctx, miniMapCtx, deltaTime, game.input);
+        }
+        else{
+            startNewGameButton.addEventListener("click",()=>{
+                cancelAnimationFrame(stopGame);
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                miniMapCanvas.width = Math.floor(canvas.width * 0.18);
+                miniMapCanvas.height = Math.floor(canvas.width * 0.18);
+    
+                
+                // miniMapCanvas.style.border ="1px solid rgba(255, 255, 255, 0.2)";
+                miniMapCanvas.style.bottom = "180px";
+                miniMapCanvas.style.right = "0";
+                miniMapCanvas.style.margin = "20px";
+                game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
+                game.isLoading = false;
+                game.setState(0);
+                slime.toggleSlimeEffect(false, miniMapCanvas);
+                userInterface.style.display = "none";
+              
+                animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
+            })
+            // Calculate the distance of shootSlime from the center of the canvas
+            const distanceToCenter = Math.sqrt((shootSlime.dx - shootSlime.canvasWidth/2) ** 2 + (shootSlime.dy - shootSlime.canvasHeight/2) ** 2);
+            //clear canvas to create a transparent background
+            miniMapCtx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            //rain need
+            if (timer > frameInterval) {
+                ctx.fillStyle = "rgba(0,0,0, 0.07)"; // clear the screen
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#0aff0a";
+                ctx.font = rain.fontSize + "px monospace";
+                rain.symbols.forEach((symbol) => {
+                // Calculate the distance from symbol's y-coordinate to the center y-coordinate
+                const distanceToCenterX = Math.abs(symbol.x * rain.fontSize - canvas.width / 2);
+                const distanceToCenterY = Math.abs(symbol.y * rain.fontSize - canvas.height / 2);
+                
+                // Define the threshold (adjust this value as needed to control the eye shade effect)
+                const threshold = 100; //canvas.width * 0.11;
+
+                // Determine whether to apply the gradient based on the distance to the center
+                const applyGradient = distanceToCenterY < threshold && distanceToCenterX < threshold;
+
+                symbol.draw(ctx, applyGradient); // Pass the applyGradient value to the draw method
+                symbol.update();
+                });
+
+                timer = 0;
+            } 
+            else {
+                    timer += deltaTime;
+            }
+            ctx.restore();
+
+            slime.toggleSlimeEffect(false, miniMapCanvas);
+            // set canvas to black again for slime effect
+            miniMapCtx.fillStyle = "rgba(0,0,0, 0.5)";
+            miniMapCtx.fillRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
+            //center if hit center of screen
+            if (distanceToCenter > shootSlime.radius && enableButtons === false && clickedMonster) {
+                // The shootSlime hasn't reached the center yet
+                shootSlime.draw(miniMapCtx);
+                shootSlime.update();
+            } 
+            else if (clickedMonster === true) {
+                // The shootSlime has reached the center
+                slime.toggleSlimeEffect(true, miniMapCanvas);
+                slime.draw(miniMapCtx);
+                slime.update();
+        
+                // Change the display to "block" for each button
+                buttonArray.forEach(button => {
+                    button.style.display = "block";
+                });
+                // Fix the typo here, use single "=" instead of "==="
+                enableButtons = true;
+            }
+        }
         stopGame = requestAnimationFrame(animate)
         const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
-
+      
     }
-    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
-    animate(0) //set a default value for timestamp to avoid NaN error on the first call of the animation loop, cuz its undefined at that time.   
+    animate(0) 
+
+  
+
 })
+
+
 
 //note: resizing doesnt really work well why
 addEventListener("resize",()=>{
     // console.log(innerWidth, innerHeight)
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-    game.resize(canvas);
-    miniMapCanvas.width = Math.floor(canvas.width * 0.18);
-    miniMapCanvas.height = Math.floor(canvas.width * 0.18); 
-    
-
-
+    if(game.isLoading){
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        miniMapCanvas.width = innerWidth;
+        miniMapCanvas.height = innerHeight;
+    }
+    else{
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        miniMapCanvas.width =  Math.floor(canvas.width * 0.18);
+        miniMapCanvas.height = Math.floor(canvas.width * 0.18);
+    }
+   
+    game.resize(canvas, miniMapCanvas);
 })
+
+
+addEventListener("click",(e)=>{
+    if(clickedMonster === false){
+        const x = e.clientX;
+        const y = e.clientY;
+        // console.log(x,y);
+        const distanceToCenterY = Math.abs(y - canvas.height / 2);
+        const distanceToCenterX = Math.abs(x - canvas.width / 2);
+        const threshold = 100//size of the clickable area
+    
+        if(distanceToCenterY < threshold && distanceToCenterX < threshold){
+            clickedMonster = true;
+        }
+    } 
+     
+})
+
+
 
 
 

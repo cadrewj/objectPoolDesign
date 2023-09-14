@@ -1,4 +1,4 @@
-import { degToRad } from "../utilityFunctions/utilityFunctions.js";
+import { degToRad, randomSign } from "../utilityFunctions/utilityFunctions.js";
 export class SolarSystem {
     constructor(game) {
         this.game = game;
@@ -38,19 +38,19 @@ export class SolarSystem {
         // Define planets with realistic properties
         // Define planets and celestial bodies with realistic properties
         this.planets = [
-            { name: 'Mercury', radius: 40, distance: this.dist, angle: 0, speed: 0.00006, color: this.patterns[1], rotationSpeed: 0.0005, position:{x:0,y:0} },
-            { name: 'Venus', radius: 45, distance: this.dist * 2, angle: 0, speed: -0.000045, color: this.patterns[2], rotationSpeed: -0.0002, position:{x:0,y:0} },
-            { name: 'Earth', radius: 45, distance: this.dist * 3, angle: 0, speed: 0.00003, color: this.patterns[3], rotationSpeed: 0.0003, position:{x:0,y:0} },
-            { name: 'Mars', radius: 42, distance: this.dist * 4, angle: 0, speed: 0.000024, color: this.patterns[4], rotationSpeed: 0.0002 , position:{x:0,y:0}},
-            { name: 'Jupiter', radius: 60, distance: this.dist * 5, angle: 0, speed: 0.000015, color: this.patterns[5], rotationSpeed: 0.0001 , position:{x:0,y:0}},
-            { name: 'Saturn', radius: 58, distance: this.dist * 6, angle: 0, speed: 0.000012, color:this.patterns[6], rotationSpeed: 0.0001 , position:{x:0,y:0}},
-            { name: 'Uranus', radius: 52, distance: this.dist * 7, angle: 0, speed: 0.000015, color:this.patterns[7], rotationSpeed: -0.0002 , position:{x:0,y:0}},
-            { name: 'Neptune', radius: 50, distance: this.dist * 8, angle: 0, speed: 0.0000075, color:this.patterns[8], rotationSpeed: 0.0002 , position:{x:0,y:0}},
-            { name: 'Pluto', radius: 38, distance: this.dist * 9, angle: 0, speed: 0.000006, color:this.patterns[9], rotationSpeed: -0.0001, position:{x:0,y:0} },
-            { name: 'Ceres', radius: 35, distance: this.dist * 10, angle: 0, speed: 0.0000045, color:this.patterns[10], rotationSpeed: 0.00015 , position:{x:0,y:0}},
-            { name: 'Eris', radius: 40, distance: this.dist * 11, angle: 0, speed: 0.0000036, color:this.patterns[11], rotationSpeed: -0.00012 , position:{x:0,y:0}},
-            { name: 'Haumea', radius: 39, distance: this.dist * 12, angle: 0, speed: 0.000003, color:this.patterns[12], rotationSpeed: 0.00011, position:{x:0,y:0} },
-            { name: 'Makemake', radius: 38, distance: this.dist * 13, angle: 0, speed: 0.0000018, color:this.patterns[13], rotationSpeed: -0.0001, position:{x:0,y:0} },
+            { name: 'Mercury', radius: 40, distance: this.dist * randomSign(), angle: 0, speed: 0.00006, color: this.patterns[1], rotationSpeed: 0.0005, position:{x:0,y:0}, isKnown: false },
+            { name: 'Venus', radius: 45, distance: this.dist  * randomSign() * 2, angle: 0, speed: -0.000045, color: this.patterns[2], rotationSpeed: -0.0002, position:{x:0,y:0}, isKnown: false },
+            { name: 'Earth', radius: 45, distance: this.dist  * randomSign() * 3, angle: 0, speed: 0.00003, color: this.patterns[3], rotationSpeed: 0.0003, position:{x:0,y:0}, isKnown: false },
+            { name: 'Mars', radius: 42, distance: this.dist  * randomSign() * 4, angle: 0, speed: 0.000024, color: this.patterns[4], rotationSpeed: 0.0002 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Jupiter', radius: 60, distance: this.dist  * randomSign() * 5, angle: 0, speed: 0.000015, color: this.patterns[5], rotationSpeed: 0.0001 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Saturn', radius: 58, distance: this.dist  * randomSign() * 6, angle: 0, speed: 0.000012, color:this.patterns[6], rotationSpeed: 0.0001 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Uranus', radius: 52, distance: this.dist  * randomSign() * 7, angle: 0, speed: 0.000015, color:this.patterns[7], rotationSpeed: -0.0002 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Neptune', radius: 50, distance: this.dist  * randomSign() * 8, angle: 0, speed: 0.0000075, color:this.patterns[8], rotationSpeed: 0.0002 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Pluto', radius: 38, distance: this.dist  * randomSign() * 9, angle: 0, speed: 0.000006, color:this.patterns[9], rotationSpeed: -0.0001, position:{x:0,y:0}, isKnown: false },
+            { name: 'Ceres', radius: 35, distance: this.dist  * randomSign() * 10, angle: 0, speed: 0.0000045, color:this.patterns[10], rotationSpeed: 0.00015 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Eris', radius: 40, distance: this.dist  * randomSign() * 11, angle: 0, speed: 0.0000036, color:this.patterns[11], rotationSpeed: -0.00012 , position:{x:0,y:0}, isKnown: false},
+            { name: 'Haumea', radius: 39, distance: this.dist  * randomSign() * 12, angle: 0, speed: 0.000003, color:this.patterns[12], rotationSpeed: 0.00011, position:{x:0,y:0}, isKnown: false },
+            { name: 'Makemake', radius: 38, distance: this.dist  * randomSign() * 13, angle: 0, speed: 0.0000018, color:this.patterns[13], rotationSpeed: -0.0001, position:{x:0,y:0}, isKnown: false },
             // You can continue to add more celestial bodies here...
         ];
     }
@@ -118,6 +118,15 @@ export class SolarSystem {
     resize(width, height){ // used to resize the effect when the window size changes
         this.game.width = width;
         this.game.height = height;
+    }
+    randomizePlanetsPosition(){
+        this.planets.forEach((planet) => {
+            planet.position.x = planet.position.x * randomSign();
+            planet.position.y = planet.position.y  * randomSign();
+
+        });
+        console.log("done")
+
     }  
 }
   

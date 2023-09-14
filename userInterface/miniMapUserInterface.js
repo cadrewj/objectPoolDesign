@@ -28,6 +28,7 @@ export class MiniMapUserInterface{
 
         this.planetsSize = 3;
         this.solarSystem = this.game.solarSystem;
+        
     }
     draw(miniMapCtx){
         miniMapCtx.clearRect(0,0,this.miniMapWidth, this.miniMapHeight)

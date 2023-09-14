@@ -14,11 +14,7 @@ export class Asteroid{
         this.initAsteroids()
         this.image = document.querySelector("#Desert");
     }
-    resize(width, height){ // used to resize the effect when the window size changes
-        this.game.width = width;
-        this.game.height = height;
-        this.initAsteroids()
-    }
+  
     initAsteroids(){
         let x, y;
         this.asteroids = [];
@@ -228,24 +224,33 @@ export class Asteroid{
                 ar = this.asteroids[i].radius;
 
                 for(let j = 0; j < spaceship.lasers.length; j++){
-                    //grab laser properties
-                    lx = spaceship.lasers[j].x;
-                    ly = spaceship.lasers[j].y;
-                    // console.log("laser info: ", lx, ly)
-                    //detect hit
-                    if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
-                        // remove asteroid
-                        this.destroyAsteroid(i, this.game.data)
-                        this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", ax, ay, this.game.width/2, 40))
-                        //increase game score if destroy asteroid
-                        this.game.score++; 
+                    if(!spaceship.lasers[j].free){
+                        //grab laser properties
+                        lx = spaceship.lasers[j].x;
+                        ly = spaceship.lasers[j].y;
+                        // console.log("laser info: ", lx, ly)
+                        //detect hit
+                        if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
+                            // remove asteroid
+                            this.destroyAsteroid(i, this.game.data)
+                            this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", ax, ay, this.game.width/2, 40))
+                            //increase game score if destroy asteroid
+                            this.game.score++; 
 
-                        spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
-                        break;
-                    } 
+                            spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
+                            break;
+                        } 
+                    }
+
                 }
+
             }
            
         }  
+    }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
+        // this.initAsteroids()
     }
 }

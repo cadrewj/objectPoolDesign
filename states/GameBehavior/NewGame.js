@@ -8,7 +8,12 @@ export default class StartNewGame extends State{
     }
     enter(){
         //    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
-        this.game.init(this.game.width, this.game.height, this.game.miniMapWidth, this.game.miniMapHeight, this.game.data)
+        if(this.game.gameOver){
+            this.game.init(this.game.width, this.game.height, this.game.miniMapWidth, this.game.miniMapHeight, this.game.data)
+            this.game.isLoading = false;
+            this.game.setState(gameStates.NEW_GAME);
+            // console.log("done ......")
+        }
         // console.log(this.game, "entered new game")
 
         this.alpha = 8;
@@ -18,7 +23,7 @@ export default class StartNewGame extends State{
         if(!this.game.gameOver && this.alpha > 0){
             do{
                 this.displayMessage(context)
-                // this.alpha -= 0.1
+                this.alpha -= 0.1
             }while(!this.alpha === 0)
         }
 

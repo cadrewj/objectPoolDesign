@@ -19,7 +19,8 @@ export class GameUserInterface{
 
 export class FloatingMessage extends GameUserInterface{
     constructor (game, value, floatingX, floatingY, targetX, targetY, textSize = "40px", speed = 0.03, maxFloatTime = 100){
-        // this.game = game;
+        super(game);
+        this.game = game;
         this.floatingX = floatingX;
         this.floatingY = floatingY;
         this.targetX = targetX;
