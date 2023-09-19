@@ -15,7 +15,7 @@ import { Oxygen } from "./classes/reward.js";
 import { PhantomTriangle } from "./classes/reward.js";
 import { Minerals } from "./classes/reward.js";
 
-import { randomNum} from "./utilityFunctions/utilityFunctions.js";
+import { randomNum, sigmoid} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 
 import StartNewGame from "./states/GameBehavior/NewGame.js";
@@ -29,11 +29,13 @@ import {PlayerUserInterface} from "./userInterface/playerUserInterface.js";
 import { assistantUI } from "./userInterface/assistantUserInterface.js";
 import { MiniMapUserInterface } from "./userInterface/miniMapUserInterface.js";
 
-
 // Loading UI
 import { RainEffect } from "./classes/rainingSymbols.js";
 import { SlimeEffect } from "./classes/slimeEffect.js";
 import { ShootSlimeBall } from "./classes/shootSlimeBall.js";
+
+import { Matrix } from "./classes/matrix.js";
+import { NeuralNetwork } from "./classes/neuralNetwork.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -55,19 +57,22 @@ const loading = document.querySelector("#loading")
 loading.style.display = "none";
 export let stopGame;
 let game;
-let clickedMonster = false;
 
 addEventListener("load",()=>{ 
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 
     class Game{
-        constructor(width, height, miniMapWidth, miniMapHeight, data){
+        constructor(width, height, miniMapWidth, miniMapHeight, data, canvas, miniMapCanvas){
             this.gameOver = false;
             this.width = width;
             this.height = height;
             this.miniMapWidth = miniMapWidth;
             this.miniMapHeight = miniMapHeight;
+
+            this.canvas = canvas;
+            this.miniMapCanvas = miniMapCanvas;
+            this.clickedMonster = false;
 
             this.groundMargin = 0.01;
             this.data = data;
@@ -81,8 +86,7 @@ addEventListener("load",()=>{
             this.camera = {
                 position: {
                     x: 0,
-                    y: 0,
-                   
+                    y: 0,      
                 }
             }
             this.stars = new Stars(this.width, this.height, this.data);
@@ -120,6 +124,16 @@ addEventListener("load",()=>{
             this.enemies = [];
             this.inventory = [];
             this.isLoading = true;
+            this.automationOn = true;
+
+            //neural network parameters
+            this.numOfInputs = 2;
+            this.numOfHidden = 5; //note the high the more complicated processing it can do
+            this.numOfOutputs = 1;
+            this.numOfSamples = 10000;
+
+      
+          
         }
         addEnemy(){
             const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
@@ -131,26 +145,48 @@ addEventListener("load",()=>{
         render(context, miniMapCtx, deltaTime, input){    
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
-
             if(!this.player.isOnPlanet){
                 this.universe.draw(context);
             }
             else{
                 this.background.update(context);
             }
-         
             context.restore()
 
-            
             context.save(); // Translate back to the original position for elements that shouldn't move     
             // Elements that should not be translated
             this.stars.update(context, deltaTime, this.spaceship);
             this.currentState.handleInput(input, context);
+
+            let nn; 
+            //automation is on 
+            if(this.automationOn){
+                //todo neural network
+                nn = new NeuralNetwork(this.numOfInputs, this.numOfHidden, this.numOfOutputs)
+                //train the network
+                for(let i = 0; i < this.numOfSamples; i ++){
+                    //TEST XOR gate logic
+                    // 00 = 0
+                    // 01 = 1
+                    // 10 = 1
+                    // 11 = 0
+                    let input0 = Math.round(Math.random()); //0 or 1 value
+                    let input1 = Math.round(Math.random()); //0 or 1 value
+                    let output = input0 === input1 ? 0 : 1
+                    nn.trainNetwork([input0, input1], [output])
+                }
+                console.log("00 = ", nn.feedForward([0,0]).data)
+                console.log("01 = ", nn.feedForward([0,1]).data)
+                console.log("10 = ", nn.feedForward([1,0]).data)
+                console.log("11 = ", nn.feedForward([1,1]).data)
+                
+                
+            }
+
             context.restore(); 
 
             context.save(); // Restore the translation
             context.translate(this.camera.position.x, this.camera.position.y);
-            
             //draw planets
             this.solarSystem.draw(context)
             this.solarSystem.update();
@@ -214,7 +250,6 @@ addEventListener("load",()=>{
             })
             context.restore(); /// content that got panned//////
 
-
             /////////////////////game interface ///////////////////// no panning//////////
              //draw in game floating messages
              this.floatingMessage.forEach((message)=>{
@@ -244,6 +279,7 @@ addEventListener("load",()=>{
 
             drawInputKeys(context, input, this);
 
+           
         }
         setState(state){ //the passed state is an index number
             this.currentState = this.states[state]; //set the current state of the game
@@ -313,6 +349,14 @@ addEventListener("load",()=>{
             this.miniMapUI = new MiniMapUserInterface(this);
             this.inventory = []; // 
             this.isLoading = true;
+            this.automationOn = true;
+
+            //neural network parameters
+            this.numOfInputs = 2;
+            this.numOfHidden = 5; //note the high the more complicated processing it can do
+            this.numOfOutputs = 1;
+            this.numOfSamples = 10000;
+            
             
         }
         resize(canvas, miniMapCanvas){    
@@ -327,14 +371,11 @@ addEventListener("load",()=>{
                 this.gameUI.resize(this.width, this.height);
                 this.playerUI.resize(this.width, this.height);
                 this.solarSystem.resize(this.width, this.height)
-    
-    
                 this.asteroid.resize(this.width, this.height);
                 this.spaceship.resize(this.width, this.height)
                 this.player.resize(this.width, this.height);
                 // this.background.resize(this.width, this.height);
                 this.stars.resize(this.width, this.height);
-    
                 this.enemies.forEach(enemy => {
                     enemy.resize(this.width, this.height)   
                 });
@@ -344,7 +385,6 @@ addEventListener("load",()=>{
                 this.rewards.forEach(reward => {
                     reward.resize(this.width, this.height)   
                 });
-    
             }
             else{
                 canvas.width = innerWidth;
@@ -369,7 +409,7 @@ addEventListener("load",()=>{
         }
     }
     
-    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
+    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, canvas, miniMapCanvas);
     const slime = new SlimeEffect(canvas.width, canvas.height);
     slime.init(25);
 
@@ -387,7 +427,6 @@ addEventListener("load",()=>{
     let buttonArray = [];
     const buttonName = ["Continue ","New Game ", "Options "];
     
-
     for(let i = 0; i < buttonName.length; i ++) {
         const button = document.createElement("button");
         button.textContent = buttonName[i];
@@ -415,7 +454,6 @@ addEventListener("load",()=>{
                 canvas.height = innerHeight;
                 miniMapCanvas.width = Math.floor(canvas.width * 0.18);
                 miniMapCanvas.height = Math.floor(canvas.width * 0.18);
-    
                 
                 // miniMapCanvas.style.border ="1px solid rgba(255, 255, 255, 0.2)";
                 miniMapCanvas.style.bottom = "180px";
@@ -459,7 +497,7 @@ addEventListener("load",()=>{
                 timer = 0;
             } 
             else {
-                    timer += deltaTime;
+                timer += deltaTime;
             }
             ctx.restore();
 
@@ -468,12 +506,12 @@ addEventListener("load",()=>{
             miniMapCtx.fillStyle = "rgba(0,0,0, 0.5)";
             miniMapCtx.fillRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
             //center if hit center of screen
-            if (distanceToCenter > shootSlime.radius && enableButtons === false && clickedMonster) {
+            if (distanceToCenter > shootSlime.radius && enableButtons === false && game.clickedMonster) {
                 // The shootSlime hasn't reached the center yet
                 shootSlime.draw(miniMapCtx);
                 shootSlime.update();
             } 
-            else if (clickedMonster === true) {
+            else if (game.clickedMonster === true) {
                 // The shootSlime has reached the center
                 slime.toggleSlimeEffect(true, miniMapCanvas);
                 slime.draw(miniMapCtx);
@@ -488,52 +526,12 @@ addEventListener("load",()=>{
             }
         }
         stopGame = requestAnimationFrame(animate)
-        const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds
-      
+        const framesPerSecond = 1 / deltaTime * 1000 // one frame divided by time in milliseconds 
     }
     animate(0) 
-
-  
-
 })
 
 
-
-//note: resizing doesnt really work well why
-addEventListener("resize",()=>{
-    // console.log(innerWidth, innerHeight)
-    if(game.isLoading){
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-        miniMapCanvas.width = innerWidth;
-        miniMapCanvas.height = innerHeight;
-    }
-    else{
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-        miniMapCanvas.width =  Math.floor(canvas.width * 0.18);
-        miniMapCanvas.height = Math.floor(canvas.width * 0.18);
-    }
-   
-    game.resize(canvas, miniMapCanvas);
-})
-
-
-addEventListener("click",(e)=>{
-    if(clickedMonster === false){
-        const x = e.clientX;
-        const y = e.clientY;
-        // console.log(x,y);
-        const distanceToCenterY = Math.abs(y - canvas.height / 2);
-        const distanceToCenterX = Math.abs(x - canvas.width / 2);
-        const threshold = 100//size of the clickable area
-    
-        if(distanceToCenterY < threshold && distanceToCenterX < threshold){
-            clickedMonster = true;
-        }
-    } 
-     
-})
 
 
 

@@ -12,10 +12,7 @@ export default class StartNewGame extends State{
             this.game.init(this.game.width, this.game.height, this.game.miniMapWidth, this.game.miniMapHeight, this.game.data)
             this.game.isLoading = false;
             this.game.setState(gameStates.NEW_GAME);
-            // console.log("done ......")
         }
-        // console.log(this.game, "entered new game")
-
         this.alpha = 8;
         // console.log("enter new game state", this.game)
     }
@@ -42,7 +39,7 @@ export default class StartNewGame extends State{
         context.textAlign = "center"
         context.font = `${this.game.data.FONT_DISPLAY_SUBTEXT_SIZE} ${this.game.data.FONT_DISPLAY_SUBTEXT}`;
         // context.fillText("New Game", this.game.width/2 , this.game.height/2 - 70)
-        context.fillText("New Game", this.game.camera.position.x/2 , this.game.camera.position.y/2 - 70)
+        context.fillText("New Game", this.game.width/2 , this.game.height/2 - 70)
     }
 }
 

@@ -5,10 +5,10 @@ class InputHandler{
         this.shipLastKey = "";
         this.gameLastKey = "";
         this.isMouseDown = false;
-        window.addEventListener("keydown", (e)=>{      
+        window.addEventListener("keydown", (e)=>{  
             const pressedKey = e.key;
             //spaceship keys
-            if (this.game.currentState.state === "GAME OVER"|| this.game.data.AUTOMATION_ON === true){ //stop player from playing when game over
+            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn === true){ //stop player from playing when game over
                 if(pressedKey !== "Enter"){
                     return
                 }   
@@ -77,7 +77,11 @@ class InputHandler{
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
-       
+            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn === true){ //stop player from playing when game over
+                if(releasedKey !== "Enter"){
+                    return
+                }   
+            }
             switch(releasedKey){
                  //Game Control keys
                  case "Enter":
@@ -141,11 +145,47 @@ class InputHandler{
                 
             }
         });
+        if (this.game.automationOn){ //stop player from playing when automate is on 
+            return
+        }
         window.addEventListener("mousedown", (e)=>{
-           this.isMouseDown = true;
+            this.isMouseDown = true;
         })
         window.addEventListener("mouseup", (e)=>{
             this.isMouseDown = false;
+        })
+        //note: resizing doesnt really work well why
+        addEventListener("resize",()=>{
+            // console.log(innerWidth, innerHeight)
+            if(this.game.isLoading){
+                this.game.canvas.width = innerWidth;
+                this.game.canvas.height = innerHeight;
+                this.game.miniMapCanvas.width = innerWidth;
+                this.game.miniMapCanvas.height = innerHeight;
+            }
+            else{
+                this.game.canvas.width = innerWidth;
+                this.game.canvas.height = innerHeight;
+                this.game.miniMapCanvas.width =  Math.floor(this.game.canvas.width * 0.18);
+                this.game.miniMapCanvas.height = Math.floor(this.game.canvas.width * 0.18);
+            }
+        
+            this.game.resize(this.game.canvas, this.game.miniMapCanvas);
+        })
+
+        addEventListener("click",(e)=>{
+            if(this.game.clickedMonster === false){
+                const x = e.clientX;
+                const y = e.clientY;
+                // console.log(x,y);
+                const distanceToCenterY = Math.abs(y - this.game.canvas.height / 2);
+                const distanceToCenterX = Math.abs(x - this.game.canvas.width / 2);
+                const threshold = 100//size of the clickable area
+            
+                if(distanceToCenterY < threshold && distanceToCenterX < threshold){
+                    this.game.clickedMonster = true;
+                }
+            }    
         })
     }
 }

@@ -134,4 +134,16 @@ export function periodicInterval(timer, interval, deltaTime, arrayPool, context,
     return timer;
 }
 
+export function sigmoid(x, derivative = false){
+    if(derivative){
+        return x * (1 - x) //where x = sigmoid(x)
+    }
+    return 1 / (1 + Math.exp(-x))
+    /*A sigmoid function is a mathematical function having a characteristic 
+    "S"-shaped curve or sigmoid curve.
+    Sigmoid functions most often show a return value (y axis) in the range 0 to 1. 
+    Another commonly used range is from −1 to 1.
+    */
+}
+
 

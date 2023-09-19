@@ -9,7 +9,8 @@ export default class GameOver extends State{
     }
     enter(){
         this.game.gameOver = true;
-        // console.log("enter gameover state", this.game)
+        this.game.spaceship.exploding = true;
+        this.game.spaceship.explodeTime = 1;
     }
     handleInput(input, context){
         if(this.game.gameOver && this.alpha > 0){
