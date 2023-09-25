@@ -1,7 +1,7 @@
 {
     "AUTOMATION_ON": false,
 
-    "ASTEROID_NUM": 3,
+    "ASTEROID_NUM": 1,
     "ASTEROID_SPEED": 50,
     "ASTEROID_SIZE": 100,
     "ASTEROID_STROKE_COLOR": "blue",
@@ -53,13 +53,13 @@
     "NEW_GAME_TEXT_PX_SIZE": 40,
 
     "NN_NUM_INPUTS": 4,
-    "NN_NUM_HIDDEN": 20,
+    "NN_NUM_HIDDEN": 30,
     "NN_NUM_OUTPUTS": 1, 
     "NN_NUM_SAMPLES": 500000,
     "NN_OUTPUT_LEFT": 0,
     "NN_OUTPUT_RIGHT": 1,
-    "NN_OUTPUT_THRESHOLD": 0.05,
-    "NN_LOG_ON": false,
+    "NN_OUTPUT_THRESHOLD": 0.01,
+    "NN_LOG_ON": true,
     "NN_LOG_FREQ":10000,
     
     "PLAYER_SIZE": 80,
@@ -124,8 +124,8 @@
     "SPACE_COLOR":"rgba(0,0,0,0.5)",
 
     "STAR_COLOR": "white",
-    "STAR_NUM": 100,
-    "STAR_SIZE": 0.005,
+    "STAR_NUM": 300,
+    "STAR_SIZE": 0.007,
     "STAR_SPEED": 0.05,
     "STAR_SPEED_MULT_MAX": 1.2,
     "STAR_SPEED_MULT_MIN":0.2,

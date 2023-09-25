@@ -76,8 +76,9 @@ export function calculateProbability(probability) {
 
 // function to generate random number
 export function randomNum(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.round(Math.random() * (max - min) + min);
 }
+
 export function randomDecimal(min, max) {
     return Math.random() * (max - min) + min;
   }
@@ -134,16 +135,30 @@ export function periodicInterval(timer, interval, deltaTime, arrayPool, context,
     return timer;
 }
 
-export function sigmoid(x, derivative = false){
-    if(derivative){
-        return x * (1 - x) //where x = sigmoid(x)
-    }
-    return 1 / (1 + Math.exp(-x))
-    /*A sigmoid function is a mathematical function having a characteristic 
+ /*A sigmoid function is a mathematical function having a characteristic 
     "S"-shaped curve or sigmoid curve.
     Sigmoid functions most often show a return value (y axis) in the range 0 to 1. 
     Another commonly used range is from −1 to 1.
     */
+export function sigmoid(x, derivative = false){
+    if(derivative){
+        return (x * (1 - x))//where x = sigmoid(x)
+    }
+    return (1 / (1 + Math.exp(-x)))
 }
-
+export function angleToPoint(x, y, bearing, targetX, targetY){
+    let angleToTarget = Math.atan2(-targetY + y, targetX - x) // angleToTarget can be negative
+    let diff = bearing - angleToTarget; //this can be negative but if we add 360 to it the angle will remain the same just positive
+    return (diff + degToRad(360)) % (degToRad(360))//thus convert and find remainer. making result between 0 & 360 degrees
+}
+export function normaliseInput(asteroidSize, canvas ,asteroidX, asteroidY, asteroidAngle, spaceshipAngle){
+    //normalise the values between 0 and 1
+    let input = [];
+    input[0] = (asteroidX + asteroidSize / 2) / (canvas.width + asteroidSize)
+    input[1] = (asteroidY + asteroidSize / 2) / (canvas.height + asteroidSize)
+    input[2] = asteroidAngle / degToRad(360);
+    input[3] = spaceshipAngle / degToRad(360);
+    return input;
+}
+ 
 

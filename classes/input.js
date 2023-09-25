@@ -8,7 +8,7 @@ class InputHandler{
         window.addEventListener("keydown", (e)=>{  
             const pressedKey = e.key;
             //spaceship keys
-            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn === true){ //stop player from playing when game over
+            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn){ //stop player from playing when game over
                 if(pressedKey !== "Enter"){
                     return
                 }   
@@ -77,7 +77,7 @@ class InputHandler{
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
-            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn === true){ //stop player from playing when game over
+            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn){ //stop player from playing when game over
                 if(releasedKey !== "Enter"){
                     return
                 }   

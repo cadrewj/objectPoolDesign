@@ -1,5 +1,4 @@
 import { degToRad } from "../utilityFunctions/utilityFunctions.js";
-import { collisionCircleDetection } from "../utilityFunctions/utilityFunctions.js";
 
 import SpaceshipIDLE from "../states/SpacehipBehavior/SpaceshipIDLE.js";
 import { SpaceshipReverseThrust, SpaceshipThrust } from "../states/SpacehipBehavior/SpaceshipThrusting.js";
@@ -7,6 +6,7 @@ import SpaceshipChangeDirection from "../states/SpacehipBehavior/SpaceshipChange
 import SpaceshipShootLaser from "../states/SpacehipBehavior/SpaceshipShootLaser.js";
 import SpaceshipExploding from "../states/SpacehipBehavior/SpaceshipExploding.js";
 import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
+import SpaceshipAutopilot from "../states/SpacehipBehavior/SpaceshipAutoPilot.js";
 
 class Spaceship{
     constructor(game){
@@ -19,6 +19,7 @@ class Spaceship{
             new SpaceshipShootLaser(this.game),
             new SpaceshipExploding(this.game),
             new SpaceshipBlinking(this.game),
+            new SpaceshipAutopilot(this.game)
         ];
         this.currentState = this.states[6]; //state idle
 
@@ -59,7 +60,8 @@ class Spaceship{
         }
         this.animate = false;
         this.rotation = 0;
-        this.angle = 0;
+        // this.angle = 0;
+        this.angle = degToRad(0);
         this.thrusting = false;
         this.revThrusting = false;
         this.thrust = { x: 0, y: 0 }; //used to calulate the trusting speed and increase it over time
@@ -81,6 +83,8 @@ class Spaceship{
         this.canShoot = true;
         this.lasers = [];
         this.shooting = false;
+
+        this.automationOn = this.game.data.AUTOMATION_ON;
 
         this.hitCircle = {
             position:{
@@ -106,7 +110,7 @@ class Spaceship{
     update(input, context, camera, deltaTime, playerIsInSpace, isOnPlanet){
         if(!isOnPlanet ){
             this.checkForCollisions();
-            this.currentState.handleInput(input, context, playerIsInSpace); 
+            this.currentState.handleInput(input, context, playerIsInSpace, this.automationOn); 
     
             this.animate = this.fuel > 0
      
@@ -156,11 +160,54 @@ class Spaceship{
                     this.updateHitCircle();
                     this.updateCameraBox();
                     this.handleScreen() 
-                    this.shouldPanCamera(camera)                
+                    this.shouldPanCamera(camera);
+                    this.changeDirection();    
+                    
                 }          
             }
         }    
     }
+   
+    changeDirection() {
+        this.angle += this.rotation; // Accumulate rotation
+    
+        // Keep the angle between 0 and 360 degrees
+        if (this.angle < 0) {
+            this.angle += degToRad(360);
+        } else if (this.angle >= degToRad(360)) {
+            this.angle -= degToRad(360);
+        }
+    }
+    rotateShip(turnRight) {
+        const sign = turnRight ? 1 : -1;
+        // const rotationSpeed = this.game.data.SPACESHIP_TURN_SPEED / 180 * Math.PI / this.game.data.FPS * sign;
+        // this.rotation = rotationSpeed;
+        this.rotation = 0.05 * sign
+        
+        // Add a damping effect to gradually reduce rotation
+        // const damping = 0.98; // Adjust the damping factor as needed (between 0 and 1)
+        // this.rotation *= damping;
+    }
+    // rotateShip(turnRight) {
+    //     const sign = turnRight ? 1 : -1;
+    //     this.rotation += 0.05 * sign;
+    //     // Update the ship's angle based on rotation
+    //     this.angle += 0.05 * sign;
+    // }
+    
+    
+    // changeDirection() {
+    //     this.angle += this.rotation;
+    
+    //     // Ensure the angle remains within the range [0, 2 * Math.PI]
+    //     if (this.angle < 0) {
+    //         this.angle += 2 * Math.PI;
+    //     } else if (this.angle >= 2 * Math.PI) {
+    //         this.angle -= 2 * Math.PI;
+    //     }
+    // }
+    
+    
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{
             if(reward.type === "recovery"){

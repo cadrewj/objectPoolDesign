@@ -11,6 +11,7 @@ export class SpaceshipThrust extends State{
         this.game.spaceship.revThrusting = false;
         if(!this.game.player.playerIsInSpace){
             this.game.spaceship.thrusting = true;  
+            this.game.spaceship.rotation = 0; //stop rotating
             // this.game.universe.velocity.x = this.game.spaceship.thrust.x; 
             // this.game.universe.velocity.y = this.game.spaceship.thrust.y;
         }
@@ -87,6 +88,7 @@ export class SpaceshipReverseThrust  extends State{
     enter(){  
         this.game.spaceship.thrusting = false;
         if(!this.game.player.playerIsInSpace){
+            this.game.spaceship.rotation = 0; //stop rotating
             this.game.spaceship.revThrusting = true;  
         }
    

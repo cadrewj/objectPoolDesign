@@ -39,7 +39,7 @@ export const shipStates = {
     SPACESHIP_SHOOT: 4,
     SPACESHIP_EXPLODING: 5,
     SPACESHIP_BLINKING: 6,
-    // SPACESHIP_AUTOPILOT: 7,
+    SPACESHIP_AUTOPILOT: 7,
 }
 
 export const gameStates = {

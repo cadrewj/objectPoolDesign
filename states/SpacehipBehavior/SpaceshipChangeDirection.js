@@ -11,15 +11,17 @@ export default class SpaceshipChangeDirection extends State{
     }
     handleInput(input, context, playerIsInSpace){
         if(!this.game.spaceship.exploding){
-            this.changeDirection();
+            this.game.spaceship.changeDirection();
         }
 
        if(!playerIsInSpace){
             if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){ // rotate right
-                this.game.spaceship.rotation = 0.05; 
+                // this.game.spaceship.rotation = 0.05; 
+                this.game.spaceship.rotateShip(true) // equals equals right
             }
             else if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT){ // rotate left
-                this.game.spaceship.rotation = -0.05; 
+                // this.game.spaceship.rotation = -0.05; 
+                this.game.spaceship.rotateShip(false) // false equals left
             }
             else if (input.shipLastKey === this.game.data.gameKeys.SPACESHIP_RELEASE_LEFT 
                 || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_RELEASE_RIGHT){
@@ -42,19 +44,8 @@ export default class SpaceshipChangeDirection extends State{
         }
     }
         
-    changeDirection(){ 
-        if(this.game.spaceship.lives === 0){ // if dead return and don't rotate the ship
-            return
-        } 
-        //keep the ship angle between 0 and 360 (two pie)
-        if(this.game.spaceship.angle < 0){
-            this.game.spaceship.angle +=(degToRad(360))
-        }
-        else if(this.game.spaceship.angle >= degToRad(360)){
-            this.game.spaceship.angle -= (degToRad(360))
-        }   
-        this.game.spaceship.angle += this.game.spaceship.rotation;  //rotation the ship  
-    }
+  
+   
 }
 
 

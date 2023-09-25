@@ -15,7 +15,7 @@ import { Oxygen } from "./classes/reward.js";
 import { PhantomTriangle } from "./classes/reward.js";
 import { Minerals } from "./classes/reward.js";
 
-import { randomNum, sigmoid} from "./utilityFunctions/utilityFunctions.js";
+import {randomNum} from "./utilityFunctions/utilityFunctions.js";
 import drawInputKeys from "./utilityFunctions/drawInputKeys.js";
 
 import StartNewGame from "./states/GameBehavior/NewGame.js";
@@ -33,9 +33,6 @@ import { MiniMapUserInterface } from "./userInterface/miniMapUserInterface.js";
 import { RainEffect } from "./classes/rainingSymbols.js";
 import { SlimeEffect } from "./classes/slimeEffect.js";
 import { ShootSlimeBall } from "./classes/shootSlimeBall.js";
-
-import { Matrix } from "./classes/matrix.js";
-import { NeuralNetwork } from "./classes/neuralNetwork.js";
 
 //define the canvas and it's dimensions
 const canvas = document.querySelector("#main");
@@ -78,7 +75,7 @@ addEventListener("load",()=>{
             this.data = data;
             this.universe = new Universe(this);
             this.spaceship = new Spaceship(this);
-            this.asteroid = new Asteroid(this);
+            this.asteroids = new Asteroid(this);
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
             
@@ -124,17 +121,8 @@ addEventListener("load",()=>{
             this.enemies = [];
             this.inventory = [];
             this.isLoading = true;
-            this.automationOn = true;
-
-            //neural network parameters
-            this.numOfInputs = 2;
-            this.numOfHidden = 5; //note the high the more complicated processing it can do
-            this.numOfOutputs = 1;
-            this.numOfSamples = 10000;
-
-      
-          
         }
+   
         addEnemy(){
             const enemyTypes = [new FlyingEnemy(this), new GroundEnemy(this), new ClimbingEnemy(this)]
             let selectedEnemy = randomNum(0, enemyTypes.length-1)
@@ -143,6 +131,7 @@ addEventListener("load",()=>{
             }
         }
         render(context, miniMapCtx, deltaTime, input){    
+    
             context.save()
             context.translate(this.camera.position.x, this.camera.position.y) //used to move the screen when panning 
             if(!this.player.isOnPlanet){
@@ -158,31 +147,6 @@ addEventListener("load",()=>{
             this.stars.update(context, deltaTime, this.spaceship);
             this.currentState.handleInput(input, context);
 
-            let nn; 
-            //automation is on 
-            if(this.automationOn){
-                //todo neural network
-                nn = new NeuralNetwork(this.numOfInputs, this.numOfHidden, this.numOfOutputs)
-                //train the network
-                for(let i = 0; i < this.numOfSamples; i ++){
-                    //TEST XOR gate logic
-                    // 00 = 0
-                    // 01 = 1
-                    // 10 = 1
-                    // 11 = 0
-                    let input0 = Math.round(Math.random()); //0 or 1 value
-                    let input1 = Math.round(Math.random()); //0 or 1 value
-                    let output = input0 === input1 ? 0 : 1
-                    nn.trainNetwork([input0, input1], [output])
-                }
-                console.log("00 = ", nn.feedForward([0,0]).data)
-                console.log("01 = ", nn.feedForward([0,1]).data)
-                console.log("10 = ", nn.feedForward([1,0]).data)
-                console.log("11 = ", nn.feedForward([1,1]).data)
-                
-                
-            }
-
             context.restore(); 
 
             context.save(); // Restore the translation
@@ -190,7 +154,7 @@ addEventListener("load",()=>{
             //draw planets
             this.solarSystem.draw(context)
             this.solarSystem.update();
-            //draw in game rewards
+            // draw in game rewards
             if(this.rewards.length > 0){
                 this.rewards.forEach((reward)=>{
                     reward.draw(context)
@@ -200,8 +164,8 @@ addEventListener("load",()=>{
                 })    
             }
             //draw asteroid
-            this.asteroid.draw(context);
-            this.asteroid.update(this.spaceship);
+            this.asteroids.draw(context);
+            this.asteroids.update(this.spaceship);
 
             //handle enemies
             if(this.enemyTimer > this.enemyInterval){
@@ -241,7 +205,7 @@ addEventListener("load",()=>{
             if(!this.player.playerIsInSpace){
                 this.player.updatePlayerPositionBasedOnShip(this.spaceship.position)
             }
-            //handle collision sprites
+            // handle collision sprites
             this.collisions.forEach((collision)=>{
                 collision.draw(context);
                 collision.update(deltaTime);
@@ -259,7 +223,7 @@ addEventListener("load",()=>{
                 this.floatingMessage = this.floatingMessage.filter(msg => !msg.markedForDeletion);
             })
 
-            //draw player user interface
+            // draw player user interface
             this.playerUI.update(context, this.player, deltaTime)
           
             this.miniMapUI.draw(miniMapCtx);
@@ -304,7 +268,7 @@ addEventListener("load",()=>{
                     y: 0,
                 }
             }
-            this.asteroid = new Asteroid(this);
+            this.asteroids = new Asteroid(this);
             this.player = new Player(this);
             this.background = new Background(this.width, this.height, this.data)
             
@@ -349,15 +313,6 @@ addEventListener("load",()=>{
             this.miniMapUI = new MiniMapUserInterface(this);
             this.inventory = []; // 
             this.isLoading = true;
-            this.automationOn = true;
-
-            //neural network parameters
-            this.numOfInputs = 2;
-            this.numOfHidden = 5; //note the high the more complicated processing it can do
-            this.numOfOutputs = 1;
-            this.numOfSamples = 10000;
-            
-            
         }
         resize(canvas, miniMapCanvas){    
             if(!this.isLoading){
@@ -371,10 +326,10 @@ addEventListener("load",()=>{
                 this.gameUI.resize(this.width, this.height);
                 this.playerUI.resize(this.width, this.height);
                 this.solarSystem.resize(this.width, this.height)
-                this.asteroid.resize(this.width, this.height);
+                this.asteroids.resize(this.width, this.height);
                 this.spaceship.resize(this.width, this.height)
                 this.player.resize(this.width, this.height);
-                // this.background.resize(this.width, this.height);
+                this.background.resize(this.width, this.height);
                 this.stars.resize(this.width, this.height);
                 this.enemies.forEach(enemy => {
                     enemy.resize(this.width, this.height)   

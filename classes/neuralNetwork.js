@@ -4,7 +4,8 @@ import { Matrix } from "./matrix.js";
 import { sigmoid } from "../utilityFunctions/utilityFunctions.js";
 
 export class NeuralNetwork{
-    constructor(numInputs, numHidden, numOutputs){
+    constructor(data, numInputs, numHidden, numOutputs){
+        this.data = data;
         this._inputs = [];
         this._hidden = [];
         this._numInputs = numInputs;
@@ -20,6 +21,9 @@ export class NeuralNetwork{
         this._weights1.randomWeights();
         this._bias0.randomWeights();
         this._bias1.randomWeights();
+
+        this.logOn = this.data.NN_LOG_ON;
+        this.logCount = this.data.NN_LOG_FREQ;
     }
     get weights0(){
         return this._weights0;
@@ -84,6 +88,13 @@ export class NeuralNetwork{
         //calculate the output errors (targets - outputs)
         let targets = Matrix.convertFromArrayToMatrix(targetArray);
         let outputErrors = Matrix.subtractTwoMatrices(targets, outputs);
+        if(this.logOn && this.logCount == this.data.NN_LOG_FREQ){
+            console.log("Output Error = " + outputErrors.data[0][0]);
+            this.logCount --;
+            if(this.logCount == 0){
+                this.logCount = this.data.NN_LOG_FREQ;
+            }
+        }
 
         //calculate the deltas (errors * derivative of the outputs)
         let outputDerivatives = Matrix.mapMatrix(outputs, x => sigmoid(x, true));
