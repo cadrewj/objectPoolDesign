@@ -162,3 +162,51 @@ export function normaliseInput(asteroidSize, canvas ,asteroidX, asteroidY, aster
 }
  
 
+// Basic Perlin noise function
+export function perlin(x, y) {
+    // Define the permutation table (you can use any random permutation)
+    const permutation = [...Array(512)].map(() => Math.floor(Math.random() * 255));
+    
+    // Function to fade curves for smooth interpolation
+    function fade(t) {
+        return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
+    // Function to lerp (linearly interpolate) between values
+    function lerp(t, a, b) {
+        return a + t * (b - a);
+    }
+
+    // Calculate the grid cell coordinates
+    const X = Math.floor(x) & 255;
+    const Y = Math.floor(y) & 255;
+
+    // Calculate the relative coordinates within the cell
+    x -= Math.floor(x);
+    y -= Math.floor(y);
+
+    // Calculate the fade curves
+    const u = fade(x);
+    const v = fade(y);
+
+    // Hash coordinates of the 4 cube corners
+    const A = permutation[X] + Y;
+    const B = permutation[X + 1] + Y;
+    const AA = permutation[A];
+    const AB = permutation[A + 1];
+    const BA = permutation[B];
+    const BB = permutation[B + 1];
+
+    // Blend the results from the 8 cube corners
+    const result = lerp(v, lerp(u, grad(permutation[AA], x, y), grad(permutation[BA], x - 1, y)), lerp(u, grad(permutation[AB], x, y - 1), grad(permutation[BB], x - 1, y - 1)));
+
+    return (result + 1) / 2; // Normalize to the range [0, 1]
+}
+
+// Helper function to calculate gradient vectors
+function grad(hash, x, y) {
+    const h = hash & 15;
+    const u = h < 8 ? x : y;
+    const v = h < 4 ? y : h === 12 || h === 14 ? x : 0;
+    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+}
