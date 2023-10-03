@@ -60,15 +60,16 @@ addEventListener("load",()=>{
     canvas.height = innerHeight;
 
     class Game{
-        constructor(width, height, miniMapWidth, miniMapHeight, data, canvas, miniMapCanvas){
+        constructor(canvas, miniMapCanvas, data){
             this.gameOver = false;
-            this.width = width;
-            this.height = height;
-            this.miniMapWidth = miniMapWidth;
-            this.miniMapHeight = miniMapHeight;
-
             this.canvas = canvas;
             this.miniMapCanvas = miniMapCanvas;
+            this.width = this.canvas.width;
+            this.height = this.canvas.height;
+            this.miniMapWidth = this.miniMapCanvas.width;
+            this.miniMapHeight = this.miniMapCanvas.height;
+
+            
             this.clickedMonster = false;
 
             this.groundMargin = 0.01;
@@ -106,7 +107,7 @@ addEventListener("load",()=>{
             this.score = 0;
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
-            this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
+            this.spaceshipUI = new SpaceshipUserInterface(this.canvas, this.data, this.width, this.height)
             this.miniMapUI = new MiniMapUserInterface(this);
             this.debug = false;
             this.states = [ 
@@ -235,7 +236,9 @@ addEventListener("load",()=>{
             const fuelPercentage = this.spaceship.fuel / 100;
             this.spaceshipUI.drawFuelGauge(context, fuelPercentage, this.width - this.player.width * 2.5, this.height - 20);
             this.spaceshipUI.drawSpaceshipHealthBar(context, this.spaceship)
+            this.spaceshipUI.wifiIconWave(context,  deltaTime, this.spaceship.automationOn, -45, -135)
             this.spaceshipUI.drawSpaceshipLives(context, this.spaceship);
+            
             this.gameUI.drawScore(context);
             //draw the assistant
             const angle = (Date.now() / 1000) % (Math.PI * 2);
@@ -249,14 +252,15 @@ addEventListener("load",()=>{
             this.currentState = this.states[state]; //set the current state of the game
             this.currentState.enter(); // calls the enter method on the current state you are on 
         }
-        init(width, height, miniMapWidth, miniMapHeight, data){
+        init(canvas, miniMapCanvas, data){
             canvas.focus();
             this.gameOver = false;
-            
-            this.width = width;
-            this.height = height;
-            this.miniMapWidth = miniMapWidth;
-            this.miniMapHeight = miniMapHeight;
+            this.canvas = canvas;
+            this.miniMapCanvas = miniMapCanvas
+            this.width = this.canvas.width;
+            this.height = this.canvas.height;
+            this.miniMapWidth = this.miniMapCanvas.width;
+            this.miniMapHeight = this.miniMapCanvas.height;
             this.data = data;
             this.groundMargin = 0;
           
@@ -309,7 +313,7 @@ addEventListener("load",()=>{
         
             this.playerUI = new PlayerUserInterface(this.data, this.width, this.height);
             this.gameUI = new GameUserInterface(this)
-            this.spaceshipUI = new SpaceshipUserInterface(this.data, this.width, this.height);
+            this.spaceshipUI = new SpaceshipUserInterface(this.canvas, this.data, this.width, this.height);
             this.miniMapUI = new MiniMapUserInterface(this);
             this.inventory = []; // 
             this.isLoading = true;
@@ -318,8 +322,10 @@ addEventListener("load",()=>{
             if(!this.isLoading){
                 this.width = canvas.width;
                 this.height = canvas.height;
+                this.canvas = canvas;
                 this.miniMapWidth = Math.floor(canvas.width * 0.18);
                 this.miniMapHeight = Math.floor(canvas.width * 0.18);
+                this.miniMapCanvas = miniMapCanvas;
     
                 this.miniMapUI.resize(this.width, this.height, this.miniMapWidth, this.miniMapHeight);
                 this.spaceshipUI.resize(this.width, this.height);
@@ -340,6 +346,7 @@ addEventListener("load",()=>{
                 this.rewards.forEach(reward => {
                     reward.resize(this.width, this.height)   
                 });
+                this.input.resize(this);
             }
             else{
                 canvas.width = innerWidth;
@@ -364,7 +371,7 @@ addEventListener("load",()=>{
         }
     }
     
-    game = new Game(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, canvas, miniMapCanvas);
+    game = new Game(canvas, miniMapCanvas, {...gameData, gameKeys} );
     const slime = new SlimeEffect(canvas.width, canvas.height);
     slime.init(25);
 
@@ -414,7 +421,7 @@ addEventListener("load",()=>{
                 miniMapCanvas.style.bottom = "180px";
                 miniMapCanvas.style.right = "0";
                 miniMapCanvas.style.margin = "20px";
-                game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys});
+                game.init(canvas, miniMapCanvas, {...gameData, gameKeys});
                 game.isLoading = false;
                 game.setState(0);
                 slime.toggleSlimeEffect(false, miniMapCanvas);

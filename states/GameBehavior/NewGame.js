@@ -9,7 +9,7 @@ export default class StartNewGame extends State{
     enter(){
         //    game.init(canvas.width, canvas.height, miniMapCanvas.width, miniMapCanvas.height, {...gameData, gameKeys}, ctx);
         if(this.game.gameOver){
-            this.game.init(this.game.width, this.game.height, this.game.miniMapWidth, this.game.miniMapHeight, this.game.data)
+            this.game.init(this.game.canvas, this.game.miniMapCanvas, this.game.data)
             this.game.isLoading = false;
             this.game.setState(gameStates.NEW_GAME);
         }
@@ -29,9 +29,9 @@ export default class StartNewGame extends State{
         }
     }
     displayMessage(context){
-        context.font = `${this.game.data.FONT_DISPLAY_TEXT_SIZE} ${this.game.data.FONT_DISPLAY_TEXT}`;
         context.fillStyle = `rgba(255,255,255,${this.alpha})`
         context.textAlign = "center"
+        context.font = `${this.game.data.FONT_DISPLAY_TEXT_SIZE} ${this.game.data.FONT_DISPLAY_TEXT}`;
         context.fillText("Forage Snail", this.game.width/2, this.game.height/2 - 130)
      
      

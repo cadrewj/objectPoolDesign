@@ -1,14 +1,15 @@
 {
-    "AUTOMATION_ON": false,
+    "AUTOMATION_ON": true,
 
-    "ASTEROID_NUM": 2,
+    "ASTEROID_NUM": 1,
     "ASTEROID_SPEED": 50,
-    "ASTEROID_SIZE": 50,
+    "ASTEROID_SIZE": 100,
     "ASTEROID_MAX_RADIUS": 50,
     "ASTEROID_MIN_RADIUS": 20,
-    "ASTEROID_STROKE_COLOR": "blue",
+    "ASTEROID_STROKE_COLOR": "rgba(0, 0, 240, 0.3)",
     "ASTEROID_LINEWIDTH": 2,
-    "ASTEROID_VERTICES": 10,
+    "ASTEROID_VERTICES_MIN": 10,
+    "ASTEROID_VERTICES_MAX": 20,
     "ASTEROID_JAG": 0.4,
     "ASTEROID_COLOR": "gray",
     "ASTEROID_DAMAGE_IMPACT": -60,
@@ -18,7 +19,6 @@
     "GAME_DISPLAY_MESSAGE_TIME": 300,
     "GUAGE_SIZE": 40,
 
-
     "FOOD_NUM": 15,
     "FOOD_SPEED": 50,
     "FOOD_SIZE": 30,
@@ -27,8 +27,6 @@
     "FOOD_VERTICES": 9,
     "FOOD_JAG": 0.4,
     "FOOD_COLOR": "green",
-
-   
     
     "FONT_BODY_TEXT": "Pacifico",
     "FONT_BODY_TEXT_SIZE": "18px",
@@ -43,8 +41,6 @@
     "FONT_DISPLAY_SUBTEXT": "Comic Sans MS",
     "FONT_DISPLAY_SUBTEXT_SIZE": "36px",
 
-
-
     "FPS" : 60, 
     "FRICTION" : 0.3, 
 
@@ -55,14 +51,14 @@
     "NEW_GAME_TEXT_PX_SIZE": 40,
 
     "NN_NUM_INPUTS": 4,
-    "NN_NUM_HIDDEN": 30,
+    "NN_NUM_HIDDEN": 20,
     "NN_NUM_OUTPUTS": 1, 
     "NN_NUM_SAMPLES": 500000,
     "NN_OUTPUT_LEFT": 0,
     "NN_OUTPUT_RIGHT": 1,
-    "NN_OUTPUT_THRESHOLD": 0.01,
+    "NN_OUTPUT_THRESHOLD": 0.01, 
     "NN_LOG_ON": true,
-    "NN_LOG_FREQ":10000,
+    "NN_LOG_FREQ": 10000,
     
     "PLAYER_SIZE": 80,
     "PLAYER_HURT_DURATION": 0.5,
@@ -92,7 +88,6 @@
     "OXYGEN_BALL_TEXT": "o2",
     "OXYGEN_BALL_GRADIENTCOLOR1": "#02f8fb",
     "OXYGEN_BALL_GRADIENTCOLOR2": "#04d4ff",
-
 
     "SPACESHIP_SPRITEWIDTH": 256,
     "SPACESHIP_SPRITEHEIGHT": 256,

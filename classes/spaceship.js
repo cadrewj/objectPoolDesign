@@ -60,8 +60,7 @@ class Spaceship{
         }
         this.animate = false;
         this.rotation = 0;
-        // this.angle = 0;
-        this.angle = degToRad(0);
+        this.angle = 0//degToRad(90);
         this.thrusting = false;
         this.revThrusting = false;
         this.thrust = { x: 0, y: 0 }; //used to calulate the trusting speed and increase it over time
@@ -75,12 +74,12 @@ class Spaceship{
         this.lives = this.game.data.GAME_LIVES;
         this.health = 100;
 
-        this.fuel = 100;
+        this.fuel = 1000;
         this.accelartionTime = 0; // used for calculating fuel consumption for thrusting over time
         this.decelerationTime = 0; // used for calculating fuel consumption for thrusting over time
         this.shots = 0 // used for calculating fuel consumption per shot.
 
-        this.canShoot = true;
+        this.canShoot = false;
         this.lasers = [];
         this.shooting = false;
 
@@ -110,7 +109,7 @@ class Spaceship{
     update(input, context, camera, deltaTime, playerIsInSpace, isOnPlanet){
         if(!isOnPlanet ){
             this.checkForCollisions();
-            this.currentState.handleInput(input, context, playerIsInSpace, this.automationOn); 
+            this.currentState.handleInput(input, context, playerIsInSpace); 
     
             this.animate = this.fuel > 0
      
@@ -188,25 +187,44 @@ class Spaceship{
         // const damping = 0.98; // Adjust the damping factor as needed (between 0 and 1)
         // this.rotation *= damping;
     }
-    // rotateShip(turnRight) {
-    //     const sign = turnRight ? 1 : -1;
-    //     this.rotation += 0.05 * sign;
-    //     // Update the ship's angle based on rotation
-    //     this.angle += 0.05 * sign;
-    // }
-    
-    
-    // changeDirection() {
-    //     this.angle += this.rotation;
-    
-    //     // Ensure the angle remains within the range [0, 2 * Math.PI]
-    //     if (this.angle < 0) {
-    //         this.angle += 2 * Math.PI;
-    //     } else if (this.angle >= 2 * Math.PI) {
-    //         this.angle -= 2 * Math.PI;
-    //     }
-    // }
-    
+    shootLaser(){
+        console.log("shooting asteroid")
+        for(let i = 0; i < this.lasers.length; i++){
+          
+            let laser = this.lasers[i]
+            if(this.canShoot && laser.free){
+                let angle = this.angle - degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
+                 //the location you are shooting from is the nose of the ship
+                laser = {
+                    x: this.position.x + this.radius * Math.cos(angle), // from center of the ship draw a line
+                    y: this.position.y + this.radius * Math.sin(angle),
+                    velocity: {
+                        x:this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
+                        y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,
+                    },
+                    dist: 0,
+                    explodeTime: 0,
+                    free: false
+                }
+                this.lasers[i] = laser;
+                this.shots++;
+                return;
+            }
+        }
+
+    }
+    fuelConsumption(isShooting){
+        let burntFuel = 0;
+ 
+        if(isShooting && this.fuel > 0){
+            burntFuel = this.game.data.SPACESHIP_LASER_CONSUMPTION * (this.shots * this.game.data.SPACESHIP_LASER_CONSUMPTION_RATIO)
+            this.fuel -= burntFuel;
+            console.log("burntFuel" + burntFuel)
+        }
+        else if (this.fuel <= 0){
+            console.log("No fuel")
+        }
+    }
     
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{

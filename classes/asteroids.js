@@ -4,13 +4,14 @@ import { FloatingMessage } from "../userInterface/gameUserInterface.js";
 import { SelectReward } from "./reward.js";
 
  // Define an array of colors
- const ASTEROIDCOLORS = ["#FF5733", "#FFD733", "#33FF57", "#334DFF", "#FF33E1"];
+//  const ASTEROIDCOLORS = ["#FF5733", "#FFD733", "#33FF57", "#334DFF", "#FF33E1"];
+   // Assign a color based on the asteroid's index (you can use a different criteria if you prefer)
+            // const colorIndex = i % ASTEROIDCOLORS.length;
+            // context.fillStyle = ASTEROIDCOLORS[colorIndex];
 export class Asteroid {
     constructor(game){
         this.game = game;
-       
         this.image = document.querySelector("#Desert");
-
         this.collisionDamage = 0;
         this.maxAsteroids = 5;
         this.timer = 0;
@@ -23,70 +24,36 @@ export class Asteroid {
         this.asteroids = [];
         let x, y;
         for (let i = 0; i < this.game.data.ASTEROID_NUM; i++) {
-            
             do{
                  x = Math.floor(Math.random() * this.game.width); 
                  y = Math.floor(Math.random() * this.game.height);
                 //used to ensure that no asteroid is place ontop of a ship
             }while(distanceBetweenPoints(this.game.spaceship.position.x, this.game.spaceship.position.y, x, y) < this.game.data.ASTEROID_SIZE * 2 + this.game.spaceship.radius) 
             const radius = Math.random() * (this.game.data.ASTEROID_MAX_RADIUS - this.game.data.ASTEROID_MIN_RADIUS) + this.game.data.ASTEROID_MIN_RADIUS;
-            const vertices = 20; // Number of vertices for the asteroid
-            const offsets = [];
-            
-            
-
-            for (let j = 0; j < vertices; j++) {
-                const angle = (j / vertices) * 2 * Math.PI;
-                const noiseValue = perlin(Math.cos(angle), Math.sin(angle)); // Use 2D Perlin noise
-                const offset = radius + radius * noiseValue * 0.4; // Adjust the noise multiplier for irregularity
-                offsets.push(offset);
-            }
-            this.asteroids.push({
-                position: { x, y },
-                radius,
-                vertices,
-                offsets,
-                velocity:{
-                    x: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
-                    y: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
-                },
-                width: radius * 2,
-                height: radius * 2,
-                destructionTime: 0,
-                hasReward: calculateProbability(0.1),
-                free: false
-                    
-            });
+            this.newAsteroid(x, y, radius)
         }
     }
     draw(context) {
-        context.lineWidth = 0.4;
-        context.strokeStyle = "blue";
+        context.strokeStyle = this.game.data.ASTEROID_STROKE_COLOR;
+        context.lineWidth = this.game.data.ASTEROID_LINEWIDTH;
+
         const pattern = context.createPattern(this.image, "repeat");
         context.fillStyle = pattern
         for (let i = 0; i < this.asteroids.length; i++) {
             const asteroid = this.asteroids[i];
             const x = asteroid.position.x;
             const y = asteroid.position.y;
-            const radius = asteroid.radius;
             const vertices = asteroid.vertices;
             const offsets = asteroid.offsets;
 
             context.beginPath();
-
             for (let j = 0; j < vertices; j++) {
                 const angle = (j / vertices) * 2 * Math.PI;
                 const xOffset = offsets[j] * Math.cos(angle);
                 const yOffset = offsets[j] * Math.sin(angle);
                 context.lineTo(x + xOffset, y + yOffset);
             }
-
             context.closePath();
-
-            // Assign a color based on the asteroid's index (you can use a different criteria if you prefer)
-            // const colorIndex = i % ASTEROIDCOLORS.length;
-            // context.fillStyle = ASTEROIDCOLORS[colorIndex];
-
             context.fill();
             context.stroke();
         }
@@ -104,8 +71,7 @@ export class Asteroid {
         //used to limit laser check for only when their is an asteriod and when the ship has fuel or canShoot
         if(spaceship.canShoot && this.asteroids.length > 0){//to avoid unnecessary checks for collision
             this.laserHitAsteroid(spaceship);
-        }
-            
+        } 
         //move the asteriods
         for(let i = 0; i < this.asteroids.length; i++){
             if(!this.asteroids[i].free){
@@ -139,8 +105,8 @@ export class Asteroid {
             }
         } 
     }
-    newAsteroid(x,y, radius){
-        const vertices = 20; // Number of vertices for the asteroid
+    newAsteroid(x, y, radius){
+        const vertices = randomNum(this.game.data.ASTEROID_VERTICES_MIN, this.game.data.ASTEROID_VERTICES_MAX); // Number of vertices for the asteroid
         const offsets = [];
         
         for (let j = 0; j < vertices; j++) {
@@ -156,24 +122,24 @@ export class Asteroid {
             vertices,
             offsets,
             velocity:{
-                x: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
-                y: Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS * randomSign(),
+                x: (Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS) * randomSign(),
+                y: (Math.random() * this.game.data.ASTEROID_SPEED / this.game.data.FPS) * randomSign(),
             },
             width: radius * 2,
             height: radius * 2,
-            direction: Math.random() * Math.PI /2,//degToRad(Math.random()),
+            // direction: Math.random() * Math.PI /2,//degToRad(Math.random()),
             destructionTime: 0,
             hasReward: calculateProbability(0.1),
             free: false
                 
         });
-        }
+    }
     
     start(){ /// used to create a new asteroid after the time interval has passed and the asteroid array is empty
         if(this.asteroids.length <= 0){
             for (let i = 0; i < this.game.data.ASTEROID_NUM; i++) {
                 let x, y;
-                const direction = Math.floor(Math.random() * 4); // Randomly select a direction (0, 1, 2, or 3)
+                const direction = Math.floor(Math.random() * 3); // Randomly select a direction (0, 1, 2, or 3)
                 
                 switch (direction) { //make the asteroid pop up in a random direction offscreen
                   case 0: // Top of the screen
@@ -193,7 +159,7 @@ export class Asteroid {
                     y = Math.floor(Math.random() * this.game.height);
                     break;
                 }
-                this.newAsteroid(x, y, Math.ceil(this.game.data.ASTEROID_SIZE / 2));
+                this.newAsteroid(x, y, Math.ceil(this.game.data.ASTEROID_SIZE * Math.random()));
             }     
         }  
     }
@@ -221,7 +187,6 @@ export class Asteroid {
                         damage = data.ASTEROID_DAMAGE_IMPACT/8
                         // console.log("eight: ",damage);
                     }
-                    
                     this.destroyAsteroid(index, data)
                     return damage;
                 }      
@@ -235,13 +200,13 @@ export class Asteroid {
         let radius = this.asteroids[index].radius;
         //split asteroids in two
         if (radius >= Math.ceil(data.ASTEROID_SIZE/2)){ // if original size split
-            this.newAsteroid(x,y, Math.ceil(data.ASTEROID_SIZE / 4));  // new asteroid one
-            this.newAsteroid(x,y, Math.ceil(data.ASTEROID_SIZE / 4));  // new asteroid two
+            this.newAsteroid(x,y, Math.ceil(data.ASTEROID_SIZE / randomNum(2,4)));  // new asteroid one
+            this.newAsteroid(x,y, Math.ceil(data.ASTEROID_SIZE / randomNum(2,4)));  // new asteroid two
         }
         else if (radius >= Math.ceil(data.ASTEROID_SIZE / 4)){ // if medium size split
-            this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / 8));  // new asteroid one
-            this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / 8));  // new asteroid two
-            this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / 8));  // new asteroid three
+            this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / randomNum(4,8)));  // new asteroid one
+            this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / randomNum(4,8)));  // new asteroid two
+            this.newAsteroid(x,y,Math.ceil(data.ASTEROID_SIZE / randomNum(4,8)));  // new asteroid three
         }
         if(this.asteroids[index].hasReward){
             //create a function to give a random reward 
@@ -267,7 +232,6 @@ export class Asteroid {
                         //grab laser properties
                         lx = spaceship.lasers[j].x;
                         ly = spaceship.lasers[j].y;
-                        // console.log("laser info: ", lx, ly)
                         //detect hit
                         if(spaceship.lasers[j].explodeTime === 0 && distanceBetweenPoints(ax, ay, lx,ly) < ar){ 
                             // remove asteroid
@@ -275,16 +239,12 @@ export class Asteroid {
                             this.game.floatingMessage.push(new FloatingMessage(this.game, "+1", ax, ay, this.game.width/2, 40))
                             //increase game score if destroy asteroid
                             this.game.score++; 
-
                             spaceship.lasers[j].explodeTime = Math.ceil(this.game.data.SPACESHIP_LASER_EXPLODE_DUR * this.game.data.FPS); //reset the explotime time 
                             break;
                         } 
                     }
-
                 }
-
-            }
-           
+            }  
         }  
     }
     resize(width, height){ // used to resize the effect when the window size changes

@@ -1,5 +1,4 @@
 "use strict"
-
 import { Matrix } from "./matrix.js";
 import { sigmoid } from "../utilityFunctions/utilityFunctions.js";
 
@@ -16,7 +15,7 @@ export class NeuralNetwork{
         this._weights0 = new Matrix(this._numInputs, this._numHidden)//the weights between the input and the hidden layer
         this._weights1 = new Matrix(this._numHidden, this._numOutputs)//the weight between the hidden and the output layer
     
-        //randomize the initial weights
+        //randomize the initial weights and bias
         this._weights0.randomWeights();
         this._weights1.randomWeights();
         this._bias0.randomWeights();
@@ -67,9 +66,7 @@ export class NeuralNetwork{
 
         //find the hidden values and apply the activation function
         this.hidden = Matrix.dotProductTwoMatrices(this.inputs, this.weights0) //used to return a value between zero and one
-        
         this.hidden = Matrix.addTwoMatrices(this.hidden, this.bias0) //apply bias
-
         this.hidden = Matrix.mapMatrix(this.hidden, x => sigmoid(x))
 
         //find the output values and apply the activation function
@@ -78,7 +75,6 @@ export class NeuralNetwork{
         outputs = Matrix.mapMatrix(outputs, x => sigmoid(x));
 
         return outputs;
-
     }
     trainNetwork(inputArray, targetArray){
 
@@ -89,13 +85,12 @@ export class NeuralNetwork{
         let targets = Matrix.convertFromArrayToMatrix(targetArray);
         let outputErrors = Matrix.subtractTwoMatrices(targets, outputs);
         if(this.logOn && this.logCount == this.data.NN_LOG_FREQ){
-            console.log("Output Error = " + outputErrors.data[0][0]);
+            // console.log("Output Error = " + outputErrors.data[0][0]);
             this.logCount --;
             if(this.logCount == 0){
                 this.logCount = this.data.NN_LOG_FREQ;
             }
         }
-
         //calculate the deltas (errors * derivative of the outputs)
         let outputDerivatives = Matrix.mapMatrix(outputs, x => sigmoid(x, true));
         let outputDeltas = Matrix.multiplyTwoMatrices(outputErrors, outputDerivatives);
@@ -107,8 +102,6 @@ export class NeuralNetwork{
         //calculate the hidden delta errors (errors * derivative of hidden)
         let hiddenDerivatives = Matrix.mapMatrix(this.hidden, x => sigmoid(x, true));
         let hiddenDeltas = Matrix.multiplyTwoMatrices(hiddenErrors, hiddenDerivatives);
-        // console.log("hidden Deltas")
-        // console.table(hiddenDeltas.data)
 
         //update the weights (add hidden transpose of layers "dot" output deltas)
         let hiddenTransposed = Matrix.transposeMatrix(this.hidden);
@@ -120,8 +113,7 @@ export class NeuralNetwork{
 
         //update bias
         this.bias1 = Matrix.addTwoMatrices(this.bias1, outputDeltas);
-        this.bias0 = Matrix.addTwoMatrices(this.bias0, hiddenDeltas);
-        
+        this.bias0 = Matrix.addTwoMatrices(this.bias0, hiddenDeltas);   
     }
 }
 

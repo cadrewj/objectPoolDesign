@@ -1,7 +1,6 @@
 "use strict";
 
 import { randomDecimal } from "../utilityFunctions/utilityFunctions.js";
-
 /********************* Matrix Functions ********************/
 
 export class Matrix{
@@ -27,7 +26,6 @@ export class Matrix{
                 throw new Error("Invalid Matrix --> Incorrect data Dimensions!");
             }
         }
-
     }
     get rows(){ //use to get the information
         return this._rows;
@@ -71,7 +69,6 @@ export class Matrix{
         }
         return matrix;
     }
-
     static dotProductTwoMatrices(m0, m1){ //multiply two Matrices (the dot product)
         if(m0.columns !== m1.rows){
             throw new Error("dot product Matrix --> Matrices are of dot compatible!");
@@ -104,7 +101,6 @@ export class Matrix{
             }
         }
         return matrix
-
     }
     //find the transpose of the given matrix 
     static transposeMatrix(m0){
@@ -116,14 +112,11 @@ export class Matrix{
         }
         return matrix;
     }
-
     static checkMatricesDimensions(m0, m1){
         if(m0.rows !== m1.rows || m0.columns !== m1.columns){
             throw new Error("Invalid Matrix --> Matrices are of different Dimensions!");
         }
-
     }
-
     //apply random weight between -1 and 1
     randomWeights(){
         for(let i = 0; i < this.rows; i++){
@@ -132,5 +125,4 @@ export class Matrix{
             }
         }
     }
-
 }

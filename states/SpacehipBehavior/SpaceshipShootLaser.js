@@ -9,34 +9,15 @@ export default class SpaceshipShootLaser extends State{
     }
     enter(){
         if(!this.game.spaceship.exploding){
-            for(let i = 0; i < this.game.spaceship.lasers.length; i++){
-                const canShoot = this.game.spaceship.fuel > 0;
-                this.game.spaceship.canShoot = canShoot;
-                let laser = this.game.spaceship.lasers[i]
-                if(canShoot && laser.free){
-                    let angle = this.game.spaceship.angle -  degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
-                     //the location you are shooting from is the nose of the ship
-                    laser = {
-                        x: this.game.spaceship.position.x + this.game.spaceship.radius * Math.cos(angle), // from center of the ship draw a line
-                        y: this.game.spaceship.position.y + this.game.spaceship.radius * Math.sin(angle),
-                        velocity: {
-                            x:this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
-                            y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,
-                        },
-                        dist: 0,
-                        explodeTime: 0,
-                        free: false
-                    }
-                    this.game.spaceship.lasers[i] = laser;
-                    return;
-                }
-            }     
+            const canShoot = this.game.spaceship.fuel > 0;
+            this.game.spaceship.canShoot = canShoot;
         } 
     }
     handleInput(input, context){
         if(input.isMouseDown){
-            this.game.spaceship.shots++;
-            this.fuelConsumption(input);
+            this.game.spaceship.shootLaser();
+            
+            this.game.spaceship.fuelConsumption(this.game.spaceship.canShoot);
         }
         if(input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_LEFT 
             || input.shipLastKey === this.game.data.gameKeys.SPACESHIP_PRESS_RIGHT){ 
@@ -56,20 +37,7 @@ export default class SpaceshipShootLaser extends State{
             this.game.spaceship.setState(shipStates.SPACESHIP_EXPLODING);
         }
     }
-    fuelConsumption(input, context){
-        let burntFuel = 0;
- 
-        if(input.isMouseDown){
-            burntFuel = this.game.data.SPACESHIP_LASER_CONSUMPTION * (this.game.spaceship.shots * this.game.data.SPACESHIP_LASER_CONSUMPTION_RATIO)
-        } 
-        if (this.game.spaceship.fuel > 0){
-            this.game.spaceship.fuel -= burntFuel;
-            // console.log(burntFuel)
-        }
-        else if (this.game.spaceship.fuel <= 0){
-            // console.log("cant shoot no fuel")
-        }
-    }
+   
 }
 
 

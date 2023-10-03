@@ -1,6 +1,6 @@
 export default function drawInputKeys(context, input, game ){
     context.fillStyle = "lime";
-    context.textAlign ="left"
+    context.textAlign = "left"
     context.font =  '10px Helvetica';
     context.fillText("Player Last Input: " + input.lastKey, 20, 120)
     context.fillText("Active State: " + game.player.currentState.state, 20, 140)

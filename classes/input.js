@@ -5,6 +5,7 @@ class InputHandler{
         this.shipLastKey = "";
         this.gameLastKey = "";
         this.isMouseDown = false;
+        this.clicked = false;
         window.addEventListener("keydown", (e)=>{  
             const pressedKey = e.key;
             //spaceship keys
@@ -149,13 +150,14 @@ class InputHandler{
             return
         }
         window.addEventListener("mousedown", (e)=>{
+            // e.preventDefault(); // Prevent default behavior
             this.isMouseDown = true;
         })
         window.addEventListener("mouseup", (e)=>{
             this.isMouseDown = false;
         })
         //note: resizing doesnt really work well why
-        addEventListener("resize",()=>{
+        window.addEventListener("resize",()=>{
             // console.log(innerWidth, innerHeight)
             if(this.game.isLoading){
                 this.game.canvas.width = innerWidth;
@@ -173,11 +175,10 @@ class InputHandler{
             this.game.resize(this.game.canvas, this.game.miniMapCanvas);
         })
 
-        addEventListener("click",(e)=>{
+        window.addEventListener("click",(e)=>{
+            const x = e.clientX;
+            const y = e.clientY;
             if(this.game.clickedMonster === false){
-                const x = e.clientX;
-                const y = e.clientY;
-                // console.log(x,y);
                 const distanceToCenterY = Math.abs(y - this.game.canvas.height / 2);
                 const distanceToCenterX = Math.abs(x - this.game.canvas.width / 2);
                 const threshold = 100//size of the clickable area
@@ -185,8 +186,30 @@ class InputHandler{
                 if(distanceToCenterY < threshold && distanceToCenterX < threshold){
                     this.game.clickedMonster = true;
                 }
-            }    
-        })
+            } //toggle autopolit on click
+            else if (!this.game.gameOver && !this.game.spaceship.exploding) {
+                let offsetX = 0.1112 * this.game.canvas.width;
+                let offsetY = 0.2112 * this.game.canvas.height;
+                
+                const distanceToCenterY = Math.abs(y - (this.game.canvas.height - offsetY));
+                const distanceToCenterX = Math.abs(x - (this.game.canvas.width - offsetX));
+                const threshold = (this.game.data.SPACESHIP_SIZE * 0.40); // Size of the clickable area
+                
+                if (!this.clicked && distanceToCenterY < threshold && distanceToCenterX < threshold) {
+                    console.log("Before toggle: ", this.game.spaceship.automationOn);
+                    this.game.spaceship.automationOn = !this.game.spaceship.automationOn;
+                    console.log("After toggle: ", this.game.spaceship.automationOn);
+                    this.clicked = true;
+                    console.log("clicked: " + this.clicked); // Mark the clicked as pressed
+                } else {
+                    this.clicked = false; // Reset the clicked flag when the spot is released
+                }
+            }
+        });
+    }
+    resize(game){
+        this.game = game;
+
     }
 }
 export default InputHandler;
