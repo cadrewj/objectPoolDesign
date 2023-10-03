@@ -36,7 +36,12 @@ class Player{
         this.FPS = this.game.data.FPS;
         this.frameTimer = 0;
         this.frameInterval = 1000/this.FPS;
-        this.oxygenLevel = 6000//this.game.data.PLAYER_OXYGEN_LEVEL;
+        
+        this.oxygenLevel = this.game.data.PLAYER_OXYGEN_LEVEL;
+        this.oxygenTimer = 0;
+        this.oxygenInterval = 10000/this.FPS;
+        this.consumptionPerMinute = 0.1;
+        this.oxygenMax = 100//this.game.data.PLAYER_OXYGEN_LEVEL;
 
         this.hurt = false;
         this.hurtTime = 0;
@@ -65,7 +70,7 @@ class Player{
             new Player_Spacewalk_Standing_Up(this.game), // state 20
             new Player_Spacewalk_Standing_Down(this.game), //state 21
         ]; 
-        this.currentState = this.states[1]; //state standing right (1)
+        this.currentState = this.states[21]; //state standing right (1)
         
         this.friction = 0.99;
         this.weight = 0.5;
@@ -86,14 +91,23 @@ class Player{
             width: this.width/3,
             height: this.height/3,
         } 
-        this.camerabox = {
+        // this.camerabox = {
+        //     position:{
+        //         x: this.position.x - this.game.width * 0.22,
+        //         y: this.position.y - this.height
+        //     },
+        //     width: this.game.width * 0.6,
+        //     height: this.game.height * 0.4,
+        // } 
+        this.camRadius = this.game.height * 0.25,
+        this.cameraBox = {
             position:{
-                x: this.position.x - this.game.width * 0.22,
-                y: this.position.y - this.height
-            },
-            width: this.game.width * 0.5,
-            height: this.game.height * 0.4,
-        } 
+                x: this.position.x - (this.camRadius * 1.5),
+                y: this.position.y - this.camRadius,
+            }, 
+            width: this.camRadius * 3,
+            height: this.camRadius * 2,
+        }
         this.velocity = {
             x: 0,
             y: 0
@@ -103,10 +117,8 @@ class Player{
         return(this.position.y >= this.game.height - this.height - this.game.groundMargin)
     }
 
-    draw(context, deltaTime){
+    draw(context){
         if(this.isOnPlanet || this.playerIsInSpace){
-        
-        this.animateFrames(deltaTime)
         //draw the player on the screen
         context.drawImage(this.image, 
             this.frame.x * this.sw, 
@@ -117,19 +129,22 @@ class Player{
             this.position.y,
             this.width,
             this.height); 
-        }
-
-      
+        } 
     }
-    update(input, camera){
+    update(input, camera, deltaTime){
+        this.updateCameraBox();
+        this.updateHitCircle();
         this.currentState.handleInput(input, camera);
+        this.updateCameraBox();
+        this.animateFrames(deltaTime)
         if(this.isOnPlanet || this.playerIsInSpace){
+            // console.log("im in space")
             this.checkForCollisions()
-            this.updateHitCircle();
+            
             
             // console.log(this.velocity.y)
             this.handleScreen()  //used to ensure the player doesn't fall off the screen
-            this.updateCameraBox();
+            
 
             //check if the player is hurt
             this.hurt = this.hurtTime > 0
@@ -158,11 +173,10 @@ class Player{
                 this.lives --;
                 this.health = this.game.data.PLAYER_MAX_HEALTH;
             }
-            else if(this.lives <= 0){
+            else if(this.lives <= 0 || this.oxygenLevel <= 0){
                 this.hurtTime = Math.ceil(this.game.data.PLAYER_HURT_DURATION * this.game.data.FPS); 
                 this.game.setState(1);
             }
-
         }
     }
 
@@ -227,17 +241,17 @@ class Player{
         } 
     }
     updateCameraBox(){
-        this.camerabox = {
+        this.cameraBox = {
             position:{
-                x: this.position.x - this.game.width * 0.22,
-                y: this.position.y - this.height
-            },
-            width: this.game.width * 0.5,
-            height: this.game.height * 0.4,
-        } 
+                x: this.position.x - (this.camRadius * 1.5),
+                y: this.position.y - this.camRadius,
+            }, 
+            width: this.camRadius * 3,
+            height: this.camRadius * 2,
+        }
     }
     shouldPanCameraLeft(camera){
-        const cameraBoxRightSide = this.camerabox.position.x + this.camerabox.width;
+        const cameraBoxRightSide = this.cameraBox.position.x + this.cameraBox.width;
         if(cameraBoxRightSide + this.velocity.x >= this.game.universe.width/2){ //prevent panning beyond width of background
             console.log("end of goal post")
             return
@@ -250,7 +264,7 @@ class Player{
         }
     }
     shouldPanCameraRight(camera){
-        const cameraBoxLeftSide = this.camerabox.position.x;
+        const cameraBoxLeftSide = this.cameraBox.position.x;
         if(cameraBoxLeftSide + this.velocity.x <= 0 - this.game.universe.width/2){ //prevent panning beyond 0
             console.log("reach start post")
             return
@@ -260,8 +274,18 @@ class Player{
             console.log("panning right")
         }
     }
+    shouldPanCameraUp(camera){
+        const cameraBoxBottom = this.cameraBox.position.y + this.cameraBox.height;
+        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height/2){ //prevent panning beyond width of background
+            return
+        }
+        if(cameraBoxBottom  + this.velocity.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
+            camera.position.y -= this.velocity.y  //translate up
+            console.log("panning up")
+        }
+    }
     shouldPanCameraDown(camera){
-        const cameraBoxTop = this.camerabox.position.y;
+        const cameraBoxTop = this.cameraBox.position.y;
         if(cameraBoxTop + this.velocity.y <= 0  - this.game.universe.width/2){ //prevent panning beyond 0
             return
         }
@@ -270,16 +294,6 @@ class Player{
             console.log("panning DOWN")
         } 
 
-    }
-    shouldPanCameraUp(camera){
-        const cameraBoxBottom = this.camerabox.position.y + this.camerabox.height;
-        if(cameraBoxBottom + this.velocity.y >= this.game.universe.height){ //prevent panning beyond width of background
-            return
-        }
-        if(cameraBoxBottom  + this.velocity.y >= this.game.height + Math.abs(camera.position.y)){ //pan when the bottom side of the camera collide   
-            camera.position.y -= this.velocity.y  //translate up
-            console.log("panning up")
-        }
     }
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{
@@ -352,6 +366,17 @@ class Player{
                 }  
             }
         });
+    }
+    // Function to update the oxygen level based on consumption rate
+    updateOxygenLevel(sign) {
+        this.oxygenLevel += this.consumptionPerMinute * sign;
+        if (this.oxygenLevel < 0) {
+            this.oxygenLevel = 0;
+        }
+    }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
     }
 }
 

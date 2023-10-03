@@ -5,10 +5,11 @@ class InputHandler{
         this.shipLastKey = "";
         this.gameLastKey = "";
         this.isMouseDown = false;
-        window.addEventListener("keydown", (e)=>{      
+        this.clicked = false;
+        window.addEventListener("keydown", (e)=>{  
             const pressedKey = e.key;
             //spaceship keys
-            if (this.game.currentState.state === "GAME OVER"|| this.game.data.AUTOMATION_ON === true){ //stop player from playing when game over
+            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn){ //stop player from playing when game over
                 if(pressedKey !== "Enter"){
                     return
                 }   
@@ -77,7 +78,11 @@ class InputHandler{
         })
         window.addEventListener("keyup", (e)=>{
             const releasedKey = e.key;
-       
+            if (this.game.currentState.state === "GAME OVER"|| this.game.automationOn){ //stop player from playing when game over
+                if(releasedKey !== "Enter"){
+                    return
+                }   
+            }
             switch(releasedKey){
                  //Game Control keys
                  case "Enter":
@@ -141,12 +146,70 @@ class InputHandler{
                 
             }
         });
+        if (this.game.automationOn){ //stop player from playing when automate is on 
+            return
+        }
         window.addEventListener("mousedown", (e)=>{
-           this.isMouseDown = true;
+            // e.preventDefault(); // Prevent default behavior
+            this.isMouseDown = true;
         })
         window.addEventListener("mouseup", (e)=>{
             this.isMouseDown = false;
         })
+        //note: resizing doesnt really work well why
+        window.addEventListener("resize",()=>{
+            // console.log(innerWidth, innerHeight)
+            if(this.game.isLoading){
+                this.game.canvas.width = innerWidth;
+                this.game.canvas.height = innerHeight;
+                this.game.miniMapCanvas.width = innerWidth;
+                this.game.miniMapCanvas.height = innerHeight;
+            }
+            else{
+                this.game.canvas.width = innerWidth;
+                this.game.canvas.height = innerHeight;
+                this.game.miniMapCanvas.width =  Math.floor(this.game.canvas.width * 0.18);
+                this.game.miniMapCanvas.height = Math.floor(this.game.canvas.width * 0.18);
+            }
+        
+            this.game.resize(this.game.canvas, this.game.miniMapCanvas);
+        })
+
+        window.addEventListener("click",(e)=>{
+            const x = e.clientX;
+            const y = e.clientY;
+            if(this.game.clickedMonster === false){
+                const distanceToCenterY = Math.abs(y - this.game.canvas.height / 2);
+                const distanceToCenterX = Math.abs(x - this.game.canvas.width / 2);
+                const threshold = 100//size of the clickable area
+            
+                if(distanceToCenterY < threshold && distanceToCenterX < threshold){
+                    this.game.clickedMonster = true;
+                }
+            } //toggle autopolit on click
+            else if (!this.game.gameOver && !this.game.spaceship.exploding) {
+                let offsetX = 0.1112 * this.game.canvas.width;
+                let offsetY = 0.2112 * this.game.canvas.height;
+                
+                const distanceToCenterY = Math.abs(y - (this.game.canvas.height - offsetY));
+                const distanceToCenterX = Math.abs(x - (this.game.canvas.width - offsetX));
+                const threshold = (this.game.data.SPACESHIP_SIZE * 0.40); // Size of the clickable area
+                
+                if (!this.clicked && distanceToCenterY < threshold && distanceToCenterX < threshold) {
+                    console.log("Before toggle: ", this.game.spaceship.automationOn);
+                    this.game.spaceship.automationOn = !this.game.spaceship.automationOn;
+                    console.log("After toggle: ", this.game.spaceship.automationOn);
+                    this.clicked = true;
+                    console.log("clicked: " + this.clicked); // Mark the clicked as pressed
+                } else {
+                    this.clicked = false; // Reset the clicked flag when the spot is released
+                }
+            }
+        });
+    }
+    resize(game){
+        this.game = game;
+
     }
 }
 export default InputHandler;

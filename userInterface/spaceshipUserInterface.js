@@ -1,9 +1,29 @@
-//1440 764
+//1440 758
+
 export class SpaceshipUserInterface{
-    constructor(data, width, height){
+    constructor(canvas, data, width, height){
         this.data = data;
         this.width = width;
         this.height = height;
+        this.canvas = canvas;
+
+
+        //define wifiIcon wave
+        this.positionX1 = 0;
+        this.positionX2 = 0;
+        this.barSpacing = 6.25;
+        this.centerX = 0;
+        this.centerY = 0;
+        this.totalBars = 3;
+        this.filledBars = 0;
+        this.FPS = 60;
+        this.frameInterval = 50000 / this.FPS;
+        this.barWidth = 2.5;
+        this.initialHeight = 15;
+        this.lineWidth = 3.75
+        this.heightIncrementValue = 15/4;
+        this.curveAmount = 10; // Adjust the curve amount as needed
+        this.lastFrameTime = 0;
     }
     drawSpaceshipHealthBar(context, spaceship){
         let colorRange = 120;
@@ -16,12 +36,21 @@ export class SpaceshipUserInterface{
             context.fillRect(this.width - this.width * 0.11, this.height -this.height * 0.026, this.height * 0.0117, -spaceship.health); //159 20 9
         }
     }    
-    drawSpaceshipLives(context, spaceship){
+    drawSpaceshipLives(context, spaceship, deltaTime){
         let color = spaceship.exploding ? "rgb(255,0,0)" : "rgb(225,255,255)"; //red or purple
         if(spaceship.lives >= 0){
-            let x = this.width - 175, y = this.height - 160; 
+            let offsetX = 0.1112 * this.width;
+            let offsetY = 0.222 * this.height
+            let offsetLivesX = 0.1285 * this.width;
+            let offsetLivesY = 0.18151 * this.height
+            let autoButtonX = this.width - offsetX;
+            let autoButtonY = this.height - offsetY; 
             let shipLifeWidth = this.data.SPACESHIP_SIZE * 0.40;
             let shipLifeHeight = this.data.SPACESHIP_SIZE * 0.40;
+            let radii = 5;
+
+            this.autopilotButton(context, spaceship, autoButtonX, autoButtonY, shipLifeWidth, shipLifeHeight, radii);
+
             context.strokeStyle = color;
             context.beginPath()
             context.textAlign = "center";
@@ -31,12 +60,125 @@ export class SpaceshipUserInterface{
             context.drawImage(spaceship.image, 
                 0, 0, 
                 spaceship.sw, spaceship.sh, // crop width and height
-                x, y, //where to place it on the screen
+                autoButtonX, autoButtonY, //where to place it on the screen
                 shipLifeWidth, shipLifeHeight); //size of the image in screen
-            context.fillText(spaceship.lives + "x", this.width - 185 , this.height - 130)
+            context.fillText(spaceship.lives + "x", this.width - offsetLivesX , this.height - offsetLivesY)
             context.stroke()
         }
     }
+    autopilotButton(context, spaceship, x, y, width, height, radii){
+        let lineWidth = 1
+        let offset = 10;
+        let isOnboxWidth = width * 0.25;
+        let isOnboxHeight = height * 0.25;
+        let isOnboxX = x + width - isOnboxWidth;
+        let isOnboxY = y + height - isOnboxHeight;
+
+        //define the position of the wifiWaveIcon
+        this.positionX1 = x;
+        this.positionX2 = isOnboxX + offset;
+        this.centerY = y - offset * 2;
+
+        //define the button text (button name)
+        context.beginPath();
+        context.font = "bold 8px Arial";
+        context.textBaseline = "hanging";
+        context.textAlign = "left";
+        context.fillStyle = "rgba(255,255,255, 0.5)"
+        context.fillText(`AUTO`, x + lineWidth, y + offset / 5)
+        context.fillText(`PILOT`, x + lineWidth, y + offset)
+  
+        if(spaceship.automationOn){//tiny box for on text info
+            context.beginPath();
+            context.fillStyle = "green"
+            context.roundRect( isOnboxX, isOnboxY, isOnboxWidth, isOnboxHeight, [radii/2]);
+            context.fill();
+
+            //define the on text info for autopilot
+            context.font = "bold 4px Arial";
+            context.textBaseline = "middle";
+            context.textAlign = "center";
+            context.fillStyle = "rgba(255,255,255, 0.5)"
+            context.fillText("ON", isOnboxX + isOnboxWidth/2, isOnboxY + isOnboxHeight/2)
+
+            //round box button
+            context.beginPath()
+            context.strokeStyle = "green";
+            context.roundRect(x, y, width, height, [radii]);
+            context.stroke();
+        }
+        else{//tiny box for off text info
+            context.beginPath();
+            context.fillStyle = "purple"
+            context.roundRect( isOnboxX, isOnboxY, isOnboxWidth, isOnboxHeight, [radii/2]);
+            context.fill();
+
+            //define the off text info for autopilot
+            context.font = "bold 4px arial";
+            context.textBaseline = "middle";
+            context.textAlign = "center";
+            context.fillStyle = "rgba(255,255,255, 0.5)"
+            context.fillText("OFF", isOnboxX + isOnboxWidth/2, isOnboxY + isOnboxHeight/2)
+
+            //round box button
+            context.beginPath();
+            context.strokeStyle = "purple";
+            context.roundRect(x, y, width, height, [radii]);
+            context.stroke();
+        }
+    } 
+    wifiIconWave(context, deltaTime, automationOn, angle1 = 0, angle2 = 0) {
+        if(!automationOn){
+            return;
+        }
+        // Apply transformations on the first set of waves
+        context.save() //the right set of wave curves
+        this.centerX = this.positionX2; // position on the x axis
+        context.translate(this.centerX, this.centerY);
+        context.rotate((Math.PI / 180) * angle1);
+        this.waveCurve(context)
+        context.restore()
+
+        // Apply transformations on the second set of waves
+        context.save() //the left set of wave curves
+        this.centerX = this.positionX1;  // position on the x axis
+        context.translate(this.centerX, this.centerY);
+        context.rotate((Math.PI / 180) * angle2);
+        this.waveCurve(context)
+        context.restore()
+
+        this.updateWifiWaveIcon(deltaTime); //update wave Icon
+    
+    }
+    waveCurve(context){
+        for (let i = 0; i < this.totalBars; i++) {
+            const isBarFilled = i < this.filledBars;
+            const barHeight = isBarFilled ? this.initialHeight + i * this.heightIncrementValue : 0;
+            const x = -((this.barWidth + this.barSpacing) * this.totalBars) / 2 + i * (this.barWidth + this.barSpacing);
+
+            context.strokeStyle = isBarFilled ? "rgba(51,51,51, 1)" : "rgba(0,0,0,0)";
+            context.beginPath();
+            context.lineCap = "round";
+            context.moveTo(x, -barHeight / 2);
+            context.lineWidth = this.lineWidth;
+
+            const controlX = x + this.curveAmount;
+            const controlY = 0;
+
+            context.quadraticCurveTo(controlX, controlY, x, barHeight / 2);
+            context.stroke();
+        }
+    }
+    updateWifiWaveIcon(deltaTime){
+        this.frameInterval -= deltaTime; // Decrease the frameInterval by deltaTime
+        if (this.frameInterval <= 0) {
+            this.filledBars++;
+            if (this.filledBars > this.totalBars) {
+                this.filledBars = 0;
+            }
+            this.frameInterval = 20000 / this.FPS; // Reset the frameInterval to its original value
+        }
+    }        
     
     // Function to draw the fuel gauge
     drawFuelGauge(context, percentage, centerX, centerY) {
@@ -118,4 +260,10 @@ export class SpaceshipUserInterface{
         // console.log(hue, color)
         return color;
     }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.width = width;
+        this.height = height;
+    }
+  
 }
+

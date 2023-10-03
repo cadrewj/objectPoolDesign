@@ -8,20 +8,28 @@ export class PlayerUserInterface{
         this.spacer = 20;
         this.heartWidth = 15; 
         this.heartHeight = 15;
-        // this.x = 10;
-        // this.y = 10;
-        // this.dimension = Math.min(this.heartWidth, this.heartHeight);
+   
+        this.oxygenTankColor = "rgba(146,182,213, 0.5)";
+        this.handColor = "rgba(86, 124, 67, 1)";
+        this.oxygenTankRadius = 30;
+        this.clockRadius = 30;
+        
     }
-    update(context, lives, percentage, hurt, oxygenLevel) {  
+    update(context, player, deltaTime) {  
+        const lives = player.lives;
+        const percentage = player.health/100;
+        const hurt = player.hurt; 
+        const oxygenLevel = player.oxygenLevel;
+
         for (let i = 0; i < lives; i++) {
             this.drawHeart(context, i);
         }
         if(lives > 0){
             this.handleHeartHealth(context, lives, percentage, hurt)
         }
-        context.save();
-            this.oxygenTank(context, oxygenLevel)  
-        context.restore();
+        this.oxygenTank(context, oxygenLevel);
+        this.handleOxygen(player, deltaTime);
+
     }
     drawHeart(context, i) {
         context.beginPath()
@@ -72,70 +80,103 @@ export class PlayerUserInterface{
     }
     
     //cool pink "rgba(255, 105, 180, 0.8)";
-    oxygenTank(context, oxygenLevel, dx = 60, dy = 60, consumptionPerMinute = 0.1) {
-        const now = new Date();
-        //daw the clock at the correct position
-        context.translate(dx, dy);
-        //change the size of the clock
-        context.scale(0.15, 0.15);
+    oxygenTank(context, oxygenLevel, dx = 70, dy = 70, offset = 15) {
 
-
-
-        context.rotate(-Math.PI / 2);
-        context.strokeStyle = "rgba(255, 105, 180, 0.8)";
-        context.fillStyle = "blue";
-        context.lineWidth = 8;
-        context.lineCap = "round";
-      
-        // draw Hour marks lines / dashs on the clock
-        context.save();
-        for (let i = 0; i < 12; i++) {
-          context.beginPath();
-          context.rotate(Math.PI / 6);
-          context.moveTo(100, 0);
-          context.lineTo(120, 0);
-          context.stroke();
-        }
-        context.restore();
-      
-        // draw Minute marks lines / dashs on the clock
-        context.save();
-        context.lineWidth = 5;
-        for (let i = 0; i < 60; i++) {
-          if (i % 5 !== 0) {
-            context.beginPath();
-            context.moveTo(117, 0);
-            context.lineTo(120, 0);
-            context.stroke();
-          }
-          context.rotate(Math.PI / 30);
-        }
-        context.restore();
-      
-      
-        // Draw the seconds hand on the clock
-        const seconds = now.getSeconds();
-        context.save();
-        context.rotate((seconds * Math.PI) / 30);
-        context.strokeStyle = "#D40000";
-        context.fillStyle = "#D40000";
-        context.lineWidth = 6;
+        // Draw the oxygen tank
         context.beginPath();
-        context.moveTo(-30, 0);
-        context.lineTo(83, 0);
-        context.stroke();
-        context.beginPath();
-        context.arc(0, 0, 12, 0, Math.PI * 2, true);
+        context.arc(dx, dy, this.oxygenTankRadius, 0, 2 * Math.PI);
+        context.fillStyle = this.oxygenTankColor;
         context.fill();
+
+       
+    
+        // Calculate the angle for the oxygen level
+        const startAngle = -Math.PI / 2; // 12 o'clock position
+        const endAngle = startAngle + (Math.PI * 2 * (100 - oxygenLevel)) / 100;
+    
+        // Draw the oxygen level
         context.beginPath();
-        context.arc(95, 0, 10, 0, Math.PI * 2, true);
-        context.stroke();
-        context.fillStyle = "rgba(0, 0, 0, 0)";
-        context.arc(0, 0, 3, 0, Math.PI * 2, true);
+        context.moveTo(dx, dy);
+        context.arc(dx,dy, this.oxygenTankRadius, startAngle, endAngle, true);
+        context.lineTo(dx, dy);
+        context.fillStyle = 'rgba(0, 0, 255, 0.3)'; // Light bluish color with alpha
+    
+        //create a blinking effect
+        const pulsatingAlpha = 0.3 + Math.abs(Math.sin(Date.now() / 500)) * 0.5;
+        if (oxygenLevel <= 15 && oxygenLevel > 0) {
+            context.fillStyle = `rgba(255, 0, 0, ${pulsatingAlpha})`; // Pulsating red color
+        }
+        else if (oxygenLevel === 0) {
+        context.fillStyle = 'rgba(255, 0, 0, 0.7)'; // Solid red color
+        }
+    
         context.fill();
-        context.restore();
-        // context.restore();
-      }
+    
+        // Draw the clock
+        context.beginPath();
+        context.arc(dx, dy, this.clockRadius, 0, 2 * Math.PI);
+        context.lineWidth = 2;
+        context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        context.stroke();
+    
+        // Draw the hour, minute, and second lines
+        const date = new Date();
+        const seconds = date.getSeconds();
+        const minutes = date.getMinutes();
+        const hours = date.getHours() % 12;
+    
+        this.drawOxygenHand(context, hours * 30 + minutes * 0.5, this.clockRadius * 0.6, 4, dx, dy); // Hour hand
+        this.drawOxygenHand(context, minutes * 6, this.clockRadius * 0.8, 2, dx, dy); // Minute hand
+        this.drawOxygenHand(context, seconds * 6, this.clockRadius, 1, dx, dy); // Second hand
+
+
+
+        // draw percentage of oxygen left
+        context.textAlign = "center"
+        context.fillStyle = "rgba(245, 222, 179, 1)"
+        context.font = "8px Space Grotesk";
+        context.fillText(`${oxygenLevel.toFixed(0)}%`, dx ,dy + offset)
+
+      
+    }
+    drawOxygenHand(context, angle, length, width, dx, dy) {
+        context.beginPath();
+        context.moveTo(dx, dy);
+        const x = dx + Math.sin(angle * (Math.PI / 180)) * length;
+        const y = dy - Math.cos(angle * (Math.PI / 180)) * length;
+        context.lineTo(x, y);
+        context.lineWidth = width;
+        context.lineCap = "round"
+        context.strokeStyle = this.handColor;
+        context.stroke();
+    }
+    handleOxygen(player, deltaTime){
+        //handle oxygen
+        if(player.playerIsInSpace){
+            if(player.oxygenTimer > player.oxygenInterval){ // animate player sprite
+                player.updateOxygenLevel(-1); 
+                player.oxygenTimer = 0;
+            }
+            else{
+                player.oxygenTimer += deltaTime;
+            }
+        }
+        else if(!player.playerIsInSpace && player.oxygenLevel < player.oxygenMax){
+            if(player.oxygenTimer > player.oxygenInterval){ // animate player sprite
+                player.updateOxygenLevel(1); 
+                player.oxygenTimer = 0;
+            }
+            else{
+                player.oxygenTimer += deltaTime;
+            }
+        }
+    }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.width = width;
+        this.height = height;
+    }  
+      
+
       
 }
 

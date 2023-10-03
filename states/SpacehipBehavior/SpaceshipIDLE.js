@@ -7,8 +7,10 @@ export default class SpaceshipIDLE extends State{
     }
     enter(){
         this.game.spaceship.thrusting = false;
+        this.game.spaceship.revThrusting = false;
         this.game.spaceship.accelartionTime = 0;
         this.game.spaceship.decelerationTime = 0;
+        this.game.spaceship.rotation = 0; //stop rotating
         // this.game.universe.velocity.x = 0; 
         // this.game.universe.velocity.y = 0; 
     }
@@ -37,6 +39,9 @@ export default class SpaceshipIDLE extends State{
         }
         else if(input.gameLastKey === this.game.data.gameKeys.PRESS_DEBUG_MODE){
             this.game.setState(gameStates.DEBUG_MODE)
+        }
+        else if(this.game.spaceship.automationOn){
+            this.game.spaceship.setState(shipStates.SPACESHIP_AUTOPILOT);
         }
     }
 }

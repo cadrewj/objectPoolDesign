@@ -5,13 +5,16 @@ export default class DebugMode extends State{
     constructor(game){
         super("DEBUG MODE"); // used to access and call method on object's parent. meaning everything in their constructor; 
         this.game = game;
+        this.keyPressed = false;
        
     }
     enter(){
-        this.game.debug = !this.game.debug;
     }
-    handleInput(input, context){
+    handleInput(input, context){  
+        this.toggleInAndOutDebug(input) 
         if(this.game.debug){ //used for testing spaceship
+            context.save()
+            context.translate(this.game.camera.position.x, this.game.camera.position.y)
             context.beginPath()
             context.fillStyle = "rgba(234, 233, 0, 0.1)";
             context.fillRect(this.game.spaceship.cameraBox.position.x, this.game.spaceship.cameraBox.position.y, this.game.spaceship.cameraBox.width, this.game.spaceship.cameraBox.height);
@@ -26,7 +29,7 @@ export default class DebugMode extends State{
             //draw cameraBox
             context.beginPath()
             context.fillStyle = "rgba(211, 232, 200, 0.1)";
-            context.fillRect(this.game.player.camerabox.position.x, this.game.player.camerabox.position.y, this.game.player.camerabox.width, this.game.player.camerabox.height);
+            context.fillRect(this.game.player.cameraBox.position.x, this.game.player.cameraBox.position.y, this.game.player.cameraBox.width, this.game.player.cameraBox.height);
 
             //draw hitbox on player
             context.beginPath()
@@ -44,7 +47,21 @@ export default class DebugMode extends State{
                     context.stroke();
                 // }
             });
+            context.restore();
           
+        }  
+    }
+    toggleInAndOutDebug(input){
+        //toggle in and out of the ship
+        if(input.gameLastKey === this.game.data.gameKeys.PRESS_DEBUG_MODE){
+            if (!this.keyPressed) {
+                this.game.debug = !this.game.debug;
+                this.keyPressed = true; // Mark the key as pressed
+            }
+            
+        } else {
+            // Reset the keyPressed flag when the key is released
+            this.keyPressed = false;
         }
     }
 

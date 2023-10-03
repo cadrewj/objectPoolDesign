@@ -39,16 +39,17 @@ export const shipStates = {
     SPACESHIP_SHOOT: 4,
     SPACESHIP_EXPLODING: 5,
     SPACESHIP_BLINKING: 6,
-    // SPACESHIP_AUTOPILOT: 7,
+    SPACESHIP_AUTOPILOT: 7,
 }
 
 export const gameStates = {
     NEW_GAME: 0,
     GAME_OVER: 1,
     DEBUG_MODE: 2,
-    PAUSE_GAME: 3,
-    PLAYING_GAME: 4,
-    LOAD_GAME: 5,
+    LOAD_GAME: 3,
+    RESUME_GAME: 4,
+    PAUSE_GAME: 5,
+    PLAYING_GAME:5,
     DISPLAY_GAME_MESSAGE: 6,
     
 }

@@ -7,12 +7,12 @@
     <!-- google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Pen+Script&family=Press+Start+2P&family=Space+Grotesk&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nanum+Pen+Script&family=Space+Grotesk&display=swap" rel="stylesheet">
     <link href="style.css" rel="stylesheet"/>  
     <title>Object Pool</title>
 </head>
 <body>
-    <canvas id="main">
+    <canvas id="main" class=".slime-effect"></canvas>
         <img src="./images//Textures/Meteor1.png" alt="meteor" id="meteor"/>
 
 
@@ -34,22 +34,42 @@
 
        <!-- Textures -->
         <img src="./images/Textures/flameTexture.png" alt="flameTexture" id="flameTexture"/>
-        <img src="./images/Textures/Alpine-Clouds.png" alt="Alpine-Clouds" id="Alpine-Clouds"/>
+        
         <img src="./images/Textures/Desert.png" alt="Desert" id="Desert"/>
-        <img src="./images/Textures/Volcanic.png" alt="Volcanic" id="Volcanic"/>
-        <img src="./images/Textures//Rocky.png" alt="Rocky" id="Rocky"/>
-        <img src="./images/Textures/RedPlanet.png" alt="RedPlanet" id="RedPlanet"/>
+    
         <img src="./images/Textures/Radiated.png" alt="Radiated" id="Radiated"/>
+
+        <!-- planet patterns -->
+       
+        <img src="./images/Textures/Stormy.png" alt="Stormy" id="Stormy"/>
+        <img src="./images/Textures/Volcanic.png" alt="Volcanic" id="Volcanic"/>
+        <img src="./images/Textures/Alpine-Clouds.png" alt="Alpine-Clouds" id="AlpineClouds"/>
+        <img src="./images/Textures/Oceanic.png" alt="Oceanic" id="Oceanic"/>
+        <img src="./images/Textures/RedPlanet.png" alt="RedPlanet" id="RedPlanet"/>
+        <img src="./images/Textures/Rocky.png" alt="Rocky" id="Rocky"/>
+        <img src="./images/Textures/GasGiant.png" alt="GasGiant" id="GasGiant"/>
+        <img src="./images/Textures/Tropical.png" alt="Tropical" id="Tropical"/>
+        <img src="./images/Textures/Radiated.png" alt="Radiated" id="Radiated"/>
+        <img src="./images/Textures/Ice.png" alt="Ice" id="Ice"/>
+        <img src="./images/Textures/Cracked.png" alt="Cracked" id="Cracked"/>
+        <img src="./images/Textures/Poison.png" alt="Poison" id="Poison"/>
+        <img src="./images/Textures/Ocean-Clouds.png" alt="OceanClouds" id="OceanClouds"/>
+        <img src="./images/Textures/Moon.png" alt="Moon" id="Moon"/>
+        
+        
+        
 
         <!-- Effect Images -->
         <img src="./images/Effects/smoke.png" alt="smoke" id="smoke"/>
 
         <!-- Player Images -->
         <img id="player"  alt="player" src="./images/Player/dog_left_right_white.png"/>
+        <img src="./images/Player/playerSprite.png" id="playerSprite" alt="playerSprite"/>
     </canvas>
     <canvas id="miniMapCanvas" width="200" height="150"></canvas>
     <h1 id="loading">Loading....</h1>
     <div id="userInterface">
+        <div id="startUpButtons"></div>
         <div id="messageBox"></div>
     </div>
 

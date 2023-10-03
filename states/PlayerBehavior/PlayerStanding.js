@@ -6,19 +6,21 @@ export class Player_Standing_Left extends State{
         this.game = game; 
     }
     enter(){
-        this.game.player.frame.y = 1; //the row position of the player image you want to use
-        this.game.player.maxFrames = 6;  //the max number of columns for the player image
-        this.game.player.velocity.x = 0;
-        this.game.player.velocity.y = 0;
-        // this.game.background.velocity.x = 0;
-        // this.game.background.velocity.y = 0;
+        if(this.game.player.isOnPlanet){
+            this.game.player.frame.y = 1; //the row position of the player image you want to use
+            this.game.player.maxFrames = 6;  //the max number of columns for the player image
+            this.game.player.velocity.x = 0;
+            this.game.player.velocity.y = 0;
+            // this.game.background.velocity.x = 0;
+            // this.game.background.velocity.y = 0;
+        }
 
     }
     handleInput(input){
-        if(this.game.player.playerIsInSpace){
-            this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_LEFT);
+        if(!this.game.player.isOnPlanet){
+            return
         }
-        else {
+        else{
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_RIGHT){ // note: "d" = right
                 this.game.player.setState(states.PLAYER_RUNNING_RIGHT); //set the player current state to standing right
             }
@@ -33,9 +35,9 @@ export class Player_Standing_Left extends State{
             } 
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP){ // note: "up" = down 
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_LEFT); //set the player current state to standing right
-            }       
+            }          
         }
-    }
+    }  
 }
 
 export class Player_Standing_Right extends State{
@@ -44,16 +46,18 @@ export class Player_Standing_Right extends State{
         this.game = game
     }
     enter(){
-        this.game.player.frame.y = 0;  //the row position of the player image you want to use
-        this.game.player.maxFrames = 6;   //the max number of columns for the player image
-        this.game.player.velocity.x = 0;
-        this.game.player.velocity.y = 0;
+        if(this.game.player.isOnPlanet){
+            this.game.player.frame.y = 0;  //the row position of the player image you want to use
+            this.game.player.maxFrames = 6;   //the max number of columns for the player image
+            this.game.player.velocity.x = 0;
+            this.game.player.velocity.y = 0;
+        }
         // this.game.background.velocity.x = 0;
         // this.game.background.velocity.y = 0;
     }
     handleInput(input){
-        if(this.game.player.playerIsInSpace){
-            this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_RIGHT);
+        if(!this.game.player.isOnPlanet){
+            return
         }
         else{
             if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_LEFT){  // note: "a" = left 
@@ -70,7 +74,7 @@ export class Player_Standing_Right extends State{
             }
             else if(input.lastKey === this.game.data.gameKeys.PLAYER_PRESS_ENTER_SHIP){ // note: "up" = down 
                 this.game.player.setState(states.PLAYER_SPACEWALK_STANDING_RIGHT); //set the player current state to standing right
-            }       
-        }
+            }         
+        }  
     }
 }

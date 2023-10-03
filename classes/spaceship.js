@@ -1,5 +1,4 @@
 import { degToRad } from "../utilityFunctions/utilityFunctions.js";
-import { collisionCircleDetection } from "../utilityFunctions/utilityFunctions.js";
 
 import SpaceshipIDLE from "../states/SpacehipBehavior/SpaceshipIDLE.js";
 import { SpaceshipReverseThrust, SpaceshipThrust } from "../states/SpacehipBehavior/SpaceshipThrusting.js";
@@ -7,23 +6,26 @@ import SpaceshipChangeDirection from "../states/SpacehipBehavior/SpaceshipChange
 import SpaceshipShootLaser from "../states/SpacehipBehavior/SpaceshipShootLaser.js";
 import SpaceshipExploding from "../states/SpacehipBehavior/SpaceshipExploding.js";
 import SpaceshipBlinking from "../states/SpacehipBehavior/SpaceshipBlink.js";
+import SpaceshipAutopilot from "../states/SpacehipBehavior/SpaceshipAutoPilot.js";
 
 class Spaceship{
     constructor(game){
         this.game = game;
-        this.states =[ new SpaceshipIDLE(this.game), 
+        this.states =[ 
+            new SpaceshipIDLE(this.game), 
             new SpaceshipThrust(this.game),
             new SpaceshipReverseThrust(this.game),
             new SpaceshipChangeDirection(this.game),
             new SpaceshipShootLaser(this.game),
             new SpaceshipExploding(this.game),
             new SpaceshipBlinking(this.game),
+            new SpaceshipAutopilot(this.game)
         ];
         this.currentState = this.states[6]; //state idle
 
         this.position ={
-            x: this.game.width / 2, //position the ship at the center of x axis
-            y: this.game.height / 2, //position the ship at the center of y axis
+            x: innerWidth/2 , //position the ship at the center of x axis
+            y: innerHeight/2, //position the ship at the center of y axis
         }  
         this.image =  document.querySelector("#spaceshipSprite"),//document.querySelector("#spaceship"),
         this.width = this.game.data.SPACESHIP_SIZE,
@@ -58,8 +60,9 @@ class Spaceship{
         }
         this.animate = false;
         this.rotation = 0;
-        this.angle = 0;
+        this.angle = 0//degToRad(90);
         this.thrusting = false;
+        this.revThrusting = false;
         this.thrust = { x: 0, y: 0 }; //used to calulate the trusting speed and increase it over time
 
         this.blinkOn;
@@ -71,14 +74,16 @@ class Spaceship{
         this.lives = this.game.data.GAME_LIVES;
         this.health = 100;
 
-        this.fuel = 100;
+        this.fuel = 1000;
         this.accelartionTime = 0; // used for calculating fuel consumption for thrusting over time
         this.decelerationTime = 0; // used for calculating fuel consumption for thrusting over time
         this.shots = 0 // used for calculating fuel consumption per shot.
 
-        this.canShoot = true;
+        this.canShoot = false;
         this.lasers = [];
         this.shooting = false;
+
+        this.automationOn = this.game.data.AUTOMATION_ON;
 
         this.hitCircle = {
             position:{
@@ -151,15 +156,76 @@ class Spaceship{
                 this.drawLaser(context);
 
                 if(playerIsInSpace === false && isOnPlanet === false){
-                       // this.pan(camera) //note should only pan when thrusting
                     this.updateHitCircle();
                     this.updateCameraBox();
                     this.handleScreen() 
-                    this.shouldPanCamera(camera)                
+                    this.shouldPanCamera(camera);
+                    this.changeDirection();    
+                    
                 }          
             }
         }    
     }
+   
+    changeDirection() {
+        this.angle += this.rotation; // Accumulate rotation
+    
+        // Keep the angle between 0 and 360 degrees
+        if (this.angle < 0) {
+            this.angle += degToRad(360);
+        } else if (this.angle >= degToRad(360)) {
+            this.angle -= degToRad(360);
+        }
+    }
+    rotateShip(turnRight) {
+        const sign = turnRight ? 1 : -1;
+        // const rotationSpeed = this.game.data.SPACESHIP_TURN_SPEED / 180 * Math.PI / this.game.data.FPS * sign;
+        // this.rotation = rotationSpeed;
+        this.rotation = 0.05 * sign
+        
+        // Add a damping effect to gradually reduce rotation
+        // const damping = 0.98; // Adjust the damping factor as needed (between 0 and 1)
+        // this.rotation *= damping;
+    }
+    shootLaser(){
+        console.log("shooting asteroid")
+        for(let i = 0; i < this.lasers.length; i++){
+          
+            let laser = this.lasers[i]
+            if(this.canShoot && laser.free){
+                let angle = this.angle - degToRad(90); //Math.PI / 2; // adjust for the image facing upwards
+                 //the location you are shooting from is the nose of the ship
+                laser = {
+                    x: this.position.x + this.radius * Math.cos(angle), // from center of the ship draw a line
+                    y: this.position.y + this.radius * Math.sin(angle),
+                    velocity: {
+                        x:this.game.data.SPACESHIP_LASER_SPEED * Math.cos(angle) / this.game.data.FPS,
+                        y: this.game.data.SPACESHIP_LASER_SPEED * Math.sin(angle) / this.game.data.FPS,
+                    },
+                    dist: 0,
+                    explodeTime: 0,
+                    free: false
+                }
+                this.lasers[i] = laser;
+                this.shots++;
+                return;
+            }
+        }
+
+    }
+    fuelConsumption(isShooting){
+        let burntFuel = 0;
+ 
+        if(isShooting && this.fuel > 0){
+            burntFuel = this.game.data.SPACESHIP_LASER_CONSUMPTION * (this.shots * this.game.data.SPACESHIP_LASER_CONSUMPTION_RATIO)
+            this.fuel -= burntFuel;
+            console.log("burntFuel" + burntFuel)
+        }
+        else if (this.fuel <= 0){
+            console.log("No fuel")
+        }
+    }
+    
     checkForCollisions(){
         this.game.rewards.forEach(reward=>{
             if(reward.type === "recovery"){
@@ -174,7 +240,6 @@ class Spaceship{
                     if(this.lives < this.game.data.GAME_LIVES){
                         this.lives++;
                     }
-                    // console.log(this.fuel, this.health, this.lives)
                 }
             }
         })
@@ -216,7 +281,7 @@ class Spaceship{
     drawThruster(context){
         context.save();
         // Translate context to center of image
-        context.translate(this.position.x , this.position.y);
+        context.translate(this.position.x, this.position.y);
         context.rotate(this.angle);
         // Translate context to bottom of image
         context.translate(0, this.thruster.offset); // offset is used to position the thruster at the back of the space ship
@@ -386,7 +451,7 @@ class Spaceship{
             return
         }
         //left panRight
-        else if(cameraBoxLeftSide + this.thrust.x <= Math.abs(camera.position.x)){
+        else if(cameraBoxLeftSide + this.thrust.x <=0 -  Math.abs(camera.position.x)){
             camera.position.x -= this.thrust.x  // translate right
             console.log("Lgo")
         }  
@@ -441,23 +506,11 @@ class Spaceship{
             }
             this.lasers.push(laser)
         }
+    }
+    resize(width, height){ // used to resize the effect when the window size changes
+        this.game.width = width;
+        this.game.height = height;
     }  
 }
 
 export default Spaceship;
-
-
-
-
-
-   // resetSpaceship(){
-    //     this.explodeTime = Math.ceil(this.game.data.SPACESHIP_EXPLODING_DUR * this.game.data.FPS); //reset exploding time
-    //     this.blinkTime = Math.ceil(this.game.data.SPACESHIP_BLINK_DUR * this.game.data.FPS); //reset blinking time
-    //     this.blinkNum = Math.ceil(this.game.data.SPACESHIP_INV_DUR / this.game.data.SPACESHIP_BLINK_DUR); //reset number of blinks
-    //     this.health = 100; //reset health of ship
-    //     this.lives = this.game.data.GAME_LIVES;
-    //     this.position ={
-    //         x: this.game.width / 2, //position the ship at the center of x axis
-    //         y: this.game.height / 2, //position the ship at the center of y axis
-    //     }  
-    // }
