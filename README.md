@@ -22,7 +22,8 @@ You can initialize this repository with code from a Subversion, Mercurial, or TF
 *****************************
 
 
-**Game Idea, Story, and features**
+Game Idea, Story, and features:
+
 In a distant galaxy, a unique species of snails, known as the Forage Snails, have adapted to the harsh conditions of space. With dwindling food supplies and environmental threats, these snails have developed advanced technologies to survive. You are one of these brave Forage Snails, embarking on a perilous journey through the cosmos to gather essential resources and ensure the survival of your colony. Utilize your snail's unique abilities, such as slow-motion movement, shell defense, and acid spit, to overcome obstacles and defeat enemies. 
 
 Your primary mission is to travel from planet to planet, collecting food and vital resources to sustain your spaceship and colony. Along the way, you'll encounter various challenges, solve intricate puzzles, and battle formidable enemies. Your ultimate goal is to find a new, resource-rich home planet where your colony can thrive.
